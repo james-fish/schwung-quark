@@ -20,10 +20,10 @@ repo's `main`, so an entry takes effect for users as soon as the PR merges. Schw
 - [x] Licences: MIT `LICENSE`. Amino code and tables (MIT), AKWF-FREE (CC0), Super Arp design (MIT) and
       Schwung's `plugin_api.h` (MIT) are credited in `THIRD_PARTY_NOTICES.md`. No other manufacturer's
       names are used in the UI, presets or description.
-- [ ] **Make the repo public.** The catalog fetches `release.json` without auth, so a private repo cannot
+- [x] **Make the repo public.** The catalog fetches `release.json` without auth, so a private repo cannot
       be listed (Omega's PR #585 was bounced for exactly this).
-- [ ] Tag `v0.3.0` and push the tag, so the release workflow publishes the tarball.
-- [ ] Open the catalog PR (below).
+- [x] Tag `v0.3.0` and push the tag, so the release workflow publishes the tarball.
+- [x] Open the catalog PR: charlesvestal/schwung#687. Tags must be sorted (test_taxonomy.sh).
 
 ## Catalog entry
 
@@ -38,7 +38,7 @@ the end.
   "author": "James Fish",
   "component_type": "sound_generator",
   "subcategory": "polysynth",
-  "tags": ["chord", "wavetable", "fm"],
+  "tags": ["chord", "fm", "wavetable"],
   "github_repo": "james-fish/schwung-quark",
   "default_branch": "main",
   "asset_name": "quark-module.tar.gz",
