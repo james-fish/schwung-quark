@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d1e21">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Quark — Schwung module test bench</title>
+<style>/*@@STYLE@@*/</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo">QUARK<span>for Schwung · Move</span></div>
+  <div class="presets">
+    <button id="pprev" title="Previous preset">&#9664;</button>
+    <select id="preset"></select>
+    <button id="pnext" title="Next preset">&#9654;</button>
+  </div>
+  <button id="power" class="power">&#9211; Start audio</button>
+  <div class="stat hide-s"><canvas id="scope" width="160" height="34"></canvas></div>
+  <div class="stat"><label>Peak</label><div class="meter"><div id="peak"></div></div></div>
+  <div class="stat hide-s"><label>CPU <small>(click to measure)</small></label><b id="load" title="Renders 3 s of the current patch with 8 Pads notes + a Mono line, single-threaded WebAssembly">measure</b></div>
+  <div class="stat"><label>Voices</label><b id="voices">–</b></div>
+  <div class="stat hide-s"><label>MIDI</label><b id="midi">–</b></div>
+  <div class="stat tempo"><label>Tempo</label><input id="bpm" type="number" min="40" max="240" value="120"><button id="run" title="Transport (arp sync)">&#9654;</button></div>
+</header>
+
+<main>
+  <section class="move">
+    <h2>Move display <small>(simulated — runs Quark's real canvas.js / cards.js drawers)</small></h2>
+    <div class="oled-wrap"><canvas id="oled" width="512" height="256"></canvas></div>
+    <div class="encoders" id="encoders"></div>
+    <div class="jog">
+      <button id="jprev">&#9664; Jog</button>
+      <span id="pagename"></span>
+      <button id="jnext">Jog &#9654;</button>
+    </div>
+    <div class="pages" id="pages"></div>
+    <p class="hint">Drag or scroll an encoder · <kbd>[</kbd> <kbd>]</kbd> jog pages · hold <kbd>Shift</kbd> for fine</p>
+  </section>
+
+  <section class="panel">
+    <div class="panelgrid">
+      <div class="box tex">
+        <h3>PADS</h3>
+        <div class="row">
+          <div class="col" id="c_tx_type"></div>
+          <div class="wavebox"><canvas id="wave" width="300" height="110"></canvas><div id="wavecap"></div></div>
+          <div class="col" id="c_tx_anim"></div>
+          <div class="col" id="c_tx_depth"></div>
+        </div>
+        <div class="row">
+          <div class="col" id="c_tx_var"></div>
+          <div class="envbox"><canvas id="txenv" width="220" height="70"></canvas></div>
+          <div class="col" id="c_tx_a"></div><div class="col" id="c_tx_d"></div>
+          <div class="col" id="c_tx_s"></div><div class="col" id="c_tx_r"></div>
+        </div>
+        <div class="row sub">
+          <span class="lbl">ENSEMBLE</span><div class="col" id="c_ens_amt"></div><div class="col wide" id="c_ens_type"></div>
+          <span class="lbl">MIX</span><div class="col" id="c_tx_vol"></div>
+        </div>
+        <div class="row sub">
+          <span class="lbl">DRIVE</span><div class="col" id="c_tx_drive"></div><div class="col wide" id="c_tx_drvpos"></div>
+          <span class="lbl">DETUNE</span><div class="col" id="c_tx_detune"></div><div class="col" id="c_tx_bloom"></div>
+          <div class="col wide" id="c_tx_latch"></div>
+        </div>
+      </div>
+      <div class="box lines">
+        <h3>MONO</h3>
+        <div class="row">
+          <div class="col wide" id="c_ln_shape"></div>
+        </div>
+        <div class="row">
+          <div class="wavebox small"><canvas id="lwave" width="150" height="60"></canvas></div>
+          <div class="col" id="c_ln_var"></div><div class="col" id="c_ln_wenv"></div>
+        </div>
+        <div class="row">
+          <div class="col" id="c_ln_a"></div><div class="col" id="c_ln_d"></div>
+          <div class="col wide" id="c_ln_sus"></div>
+        </div>
+        <div class="row sub">
+          <span class="lbl">MIX</span><div class="col" id="c_ln_vol"></div><div class="col" id="c_ln_spread"></div>
+          <span class="lbl">DELAY</span><div class="col" id="c_ln_dly"></div><div class="col wide" id="c_ln_dtime"></div>
+        </div>
+        <div class="row sub">
+          <span class="lbl">ARP</span><div class="col wide" id="c_arp_mode"></div><div class="col wide" id="c_arp_src"></div><div class="col wide" id="c_arp_oct"></div>
+          <div class="col wide" id="c_arp_hold"></div>
+        </div>
+        <div class="arpnotes" id="arpnotes"></div>
+      </div>
+      <div class="box fx">
+        <div class="fxcols">
+          <div><h3>EFFECT</h3><div class="col wide" id="c_fx_type"></div><div class="col" id="c_fx_ctrl"></div><div class="col" id="c_fx_amt"></div></div>
+          <div><h3>SHIMMER</h3><div class="col wide" id="c_sh_pitch"></div><div class="col" id="c_sh_amt"></div></div>
+          <div><h3>REVERB</h3><div class="col" id="c_rv_decay"></div><div class="col" id="c_rv_amt"></div></div>
+        </div>
+      </div>
+      <div class="box master">
+        <div class="col big" id="c_vol"></div>
+        <div class="col big beige" id="c_vintage"></div>
+      </div>
+    </div>
+
+    <div class="details">
+      <div class="tabs" id="tabs"></div>
+      <div class="tabbody" id="tabbody"></div>
+    </div>
+  </section>
+</main>
+
+<footer id="kb">
+  <div class="kbctl">
+    <button id="octdn" class="big">Oct −</button><b id="octv">C3</b><button id="octup" class="big">Oct +</button>
+    <button id="kblatch" class="big" title="Tap keys to hold them; tap again to release">Latch</button>
+    <button id="kbclear" class="big">Release all</button>
+    <button id="hold" class="hide-s">Sustain</button>
+    <button id="panic">All notes off</button>
+    <label class="hide-s">Vel <input id="vel" type="range" min="1" max="127" value="100"></label>
+    <label class="hide-s">Mod wheel <input id="wheel" type="range" min="0" max="127" value="0"></label>
+    <label class="hide-s">Bend <input id="bend" type="range" min="-8192" max="8191" value="0"></label>
+    <span class="hint hide-s">Keys: <kbd>A</kbd>–<kbd>'</kbd> white, <kbd>W E T Y U O P</kbd> black · <kbd>Z</kbd>/<kbd>X</kbd> octave · <kbd>C</kbd>/<kbd>V</kbd> velocity · <kbd>Space</kbd> sustain</span>
+  </div>
+  <div class="piano" id="piano"></div>
+</footer>
+
+<script>/*@@SCRIPTS@@*/</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+name: Release
+
+# Push a tag vX.Y.Z (matching src/module.json "version"): builds, tests, attaches quark-module.tar.gz
+# to the GitHub release, then points release.json on main at it (Schwung Manager reads release.json).
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: python -m pip install ziglang
+      - name: Tag matches module.json version
+        run: |
+          V=$(python -c 'import json; print(json.load(open("src/module.json"))["version"])')
+          [ "v$V" = "$GITHUB_REF_NAME" ] || { echo "tag $GITHUB_REF_NAME != module.json $V"; exit 1; }
+      - name: Build + test
+        run: scripts/build.sh
+      - name: Check the tarball layout (quark/ with module.json + dsp.so)
+        run: tar tzf dist/quark-module.tar.gz | grep -qx 'quark/module.json' && tar tzf dist/quark-module.tar.gz | grep -qx 'quark/dsp.so'
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/quark-module.tar.gz --title "Quark $GITHUB_REF_NAME" --generate-notes
+      - name: Update release.json on main
+        run: |
+          V="${GITHUB_REF_NAME#v}"
+          git fetch origin main && git checkout -f main
+          printf '{\n  "version": "%s",\n  "download_url": "https://github.com/%s/releases/download/%s/quark-module.tar.gz"\n}\n' \
+            "$V" "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME" > release.json
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add release.json
+          git commit -m "chore: release.json for $GITHUB_REF_NAME" || echo "release.json already current"
+          git push origin main

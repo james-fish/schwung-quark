@@ -1,0 +1,160 @@
+{
+ "title": "Quark",
+ "children": [
+  {
+   "title": "Overview",
+   "lines": [
+    "Two layers: PADS",
+    "(strings, 89 WTs,",
+    "FM) and MONO (solo",
+    "synth + arp). Then",
+    "FX, shimmer and",
+    "reverb. Jog: Presets,",
+    "Pads pages, Mono",
+    "pages, then Mix,",
+    "Reverb and Play."
+   ]
+  },
+  {
+   "title": "Pads",
+   "lines": [
+    "Type: 100 engines.",
+    "Strings: Variation",
+    "sweeps violin >",
+    "cello > brass >",
+    "organ > choir. WT:",
+    "Variation scans the",
+    "table. Chord WTs",
+    "(Fifths, Minor 9,",
+    "Major 9, Dom 11,",
+    "Fourths): Variation",
+    "stacks intervals."
+   ]
+  },
+  {
+   "title": "Pads Filter",
+   "lines": [
+    "LP12 LP24 HP12",
+    "BP12 BP24, Dual BP",
+    "(2 bands), Notch,",
+    "Comb+ / Comb- (Res",
+    "= feedback), Morph",
+    "(Res = LP>BP>HP).",
+    "Vintage: each note",
+    "drifts in pitch,",
+    "cutoff, env speed",
+    "and level."
+   ]
+  },
+  {
+   "title": "Pads Drive",
+   "lines": [
+    "Drive + Position:",
+    "Pre filter, Post",
+    "filter or Amp (the",
+    "whole chord, notes",
+    "intermodulate).",
+    "Tone darkens it.",
+    "Detune: each chord",
+    "note drifts apart.",
+    "Bloom: how long",
+    "the drift takes."
+   ]
+  },
+  {
+   "title": "Drones",
+   "lines": [
+    "Ensemble type Deep",
+    "= wide slow chorus.",
+    "Pads Motion page:",
+    "Pads Latch holds",
+    "chords after",
+    "release; the next",
+    "chord replaces them.",
+    "Try Detune + Bloom",
+    "+ Deep."
+   ]
+  },
+  {
+   "title": "Mono",
+   "lines": [
+    "Shape: Saw, Pulse,",
+    "Saw+Pulse, Sync, or",
+    "any of 89 wave-",
+    "tables. Analog:",
+    "Variation adds PWM",
+    "> trem > vibrato.",
+    "Wavetable: Variation",
+    "= position, Wave Env",
+    "moves it (plucks)."
+   ]
+  },
+  {
+   "title": "Mono Space",
+   "lines": [
+    "Mono Filter page,",
+    "row 2: Spread < 0:",
+    "notes land at",
+    "random; > 0: notes",
+    "step through fixed",
+    "spots (Poly: per",
+    "voice). Delay: one",
+    "knob, synced Time,",
+    "band-passed echoes."
+   ]
+  },
+  {
+   "title": "Mono Arp",
+   "lines": [
+    "Source Pads Chord:",
+    "Mono arpeggiates",
+    "what the pads hold",
+    "(latched too). Keys:",
+    "keys sent to Mono.",
+    "Types: Up Down UpDn",
+    "DnUp Rnd Order Chord",
+    "Leap In/Out Pattern.",
+    "Octaves 0..+-3."
+   ]
+  },
+  {
+   "title": "Arp Variation",
+   "lines": [
+    "Pattern: 40 note",
+    "orders (chord steps).",
+    "Drop skips steps.",
+    "Velocity: 0 = as",
+    "played. Random vel,",
+    "gate, octave, note.",
+    "Loop > 0 repeats",
+    "the variation."
+   ]
+  },
+  {
+   "title": "Effects",
+   "lines": [
+    "Mix & Effect: layer",
+    "volumes and routes",
+    "(All, Rev, Dry),",
+    "then the Effect:",
+    "type, Control,",
+    "Control 2, Amount.",
+    "Reverb page: decay,",
+    "size, tone, amount,",
+    "shimmer, Vintage."
+   ]
+  },
+  {
+   "title": "Play",
+   "lines": [
+    "Key mode: Stack,",
+    "Split, Pads or Mono",
+    "only. Split point:",
+    "Mono below. Mod",
+    "wheel target.",
+    "Vibrato + rate act",
+    "on both layers."
+   ]
+  }
+ ]
+}
