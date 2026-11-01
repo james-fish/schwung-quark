@@ -161,21 +161,25 @@
         ctx.print(1, top + 21, src ? "(+ Mono keys)" : "to Mono", 1);
         return;
       }
+      case "an_shape":
+      case "an_dest":
       case "an_lfo2": {
-        /* two cycles of the main LFO (Variation, solid) and LFO 2 (Filter, dotted) */
+        /* two cycles of the selected shape: the main LFO solid, LFO 2 dotted (pair targets only),
+         * each labelled with the destination it moves */
         var shp = Math.round(Q.val(values, "an_shape")), r2 = Q.val(values, "an_lfo2");
-        var fw = Math.round(Q.val(values, "an_dest")) === 5;
+        var src = Q.M.anSrc[Math.max(0, Math.min(Q.M.anSrc.length - 1, Math.round(Q.val(values, "an_dest"))))];
+        var t1 = src.indexOf(1), t2 = src.indexOf(2);
         var gx2 = 26, gw2 = W - 28, cy2 = top + Math.floor(bh / 2), am2 = bh / 2 - 1, py1 = 0;
-        ctx.print(1, top + 1, "Wave", 1);
-        ctx.print(1, top + bh - 8, "Filt", 1);
+        ctx.print(1, top + 1, Q.M.anTargets[t1], 1);
+        if (t2 >= 0) ctx.print(1, top + bh - 8, Q.M.anTargets[t2], 1);
         for (var xi2 = 0; xi2 < gw2; xi2++) {
           var ph = 2 * xi2 / gw2;
-          var y1 = Math.round(cy2 - am2 * Q.lfoShape(shp, ph)), y2 = Math.round(cy2 - am2 * Q.lfoShape(shp, ph * r2));
+          var y1 = Math.round(cy2 - am2 * Q.lfoShape(shp, ph));
           if (xi2) Q.line(ctx, gx2 + xi2 - 1, py1, gx2 + xi2, y1);
-          if (fw && xi2 % 2 === 0) ctx.fillRect(gx2 + xi2, y2, 1, 1, 1);
+          if (t2 >= 0 && xi2 % 2 === 0) ctx.fillRect(gx2 + xi2, Math.round(cy2 - am2 * Q.lfoShape(shp, ph * r2, 3)), 1, 1, 1);
           py1 = y1;
         }
-        if (!fw) ctx.print(gx2 + 2, top + bh - 8, "Target: F+W", 1);
+        if (t2 < 0 && key === "an_lfo2") ctx.print(1, top + bh - 8, "Pair targets", 1);
         return;
       }
       case "split": {

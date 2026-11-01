@@ -127,6 +127,7 @@ extern const int quark_cp_nfrag;
 #define Q_NUM_LINE_SHAPES 109
 #define Q_NUM_ENS_TYPES 4
 #define Q_NUM_FILTER_TYPES 11
+#define Q_AN_DEST_N 15
 extern const signed char quark_amino_wt[Q_NUM_WT_AMINO][Q_AM_WAVES][Q_AM_LEN];
 
 #endif

@@ -65,15 +65,14 @@
    "title": "Pads Motion",
    "lines": [
     "Animate: an LFO on",
-    "Var, Pitch, Filter,",
-    "Pan or Level. Target",
-    "Filter+Wave: the",
-    "LFO moves Variation",
-    "and LFO 2 moves the",
-    "cutoff. LFO 2 rate =",
-    "x the main rate;",
-    "below 0 it runs",
-    "backwards."
+    "Wave Pos, Pitch,",
+    "Filter, Pan or Amp,",
+    "or a pair: the LFO",
+    "moves the first and",
+    "LFO 2 the second.",
+    "LFO 2 Rate = x the",
+    "main rate; below 0",
+    "it runs backwards."
    ]
   },
   {
@@ -96,7 +95,7 @@
     "Shape: Saw, Pulse,",
     "Saw+Pulse, Sync, or",
     "any wavetable. WT:",
-    "Variation = position",
+    "Variation = Wave Pos",
     "and Wave Env moves",
     "it. Filter and Wave",
     "Env decay faster",

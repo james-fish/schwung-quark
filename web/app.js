@@ -165,7 +165,7 @@
     return el;
   }
   function labelFor(p) {
-    var map = { tx_var: "Variation", tx_anim: "Animate", tx_depth: "Var Env", tx_a: "Attack", tx_d: "Decay", tx_s: "Sustain", tx_r: "Release",
+    var map = { tx_var: "Variation", tx_anim: "Animate", tx_depth: "Wave Env", tx_a: "Attack", tx_d: "Decay", tx_s: "Sustain", tx_r: "Release",
       ln_var: "Variation", ln_a: "Attack", ln_d: "Decay", ens_amt: "Amount", tx_vol: "Volume", ln_vol: "Volume", ln_spread: "Spread", ln_dly: "Delay", ln_dtime: "Time",
       tx_drive: "Drive", tx_drvpos: "Position", tx_detune: "Detune", tx_bloom: "Bloom", tx_latch: "Pads Latch", ln_wenv: "Wave Env",
       arp_mode: "Arp Type", arp_src: "Source", arp_hold: "Arp Latch", arp_oct: "Octaves",

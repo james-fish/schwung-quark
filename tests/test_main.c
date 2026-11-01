@@ -500,7 +500,7 @@ int main(int argc, char **argv) {
         api->set_param(in, "ln_dly", "0");
     }
 
-    /* ---- LFO 2 (Animate Target = Filter+Wave): Variation follows the main LFO, the cutoff LFO 2 at
+    /* ---- LFO 2 (Animate Target = Wave Pos+Filter): Variation follows the main LFO, the cutoff LFO 2 at
      * LFO2 x the rate (counted as sign changes of each offset over 4 s) ---- */
     {
         static int16_t lb[256];
@@ -532,6 +532,74 @@ int main(int argc, char **argv) {
         CHECK(cv[0] >= 4 && abs(cc[0] - cv[0]) <= 1, "lfo2 x1 runs with the main lfo");
         CHECK(abs(cc[1] - 2 * cv[1]) <= 2, "lfo2 x2 runs at twice the rate");
         CHECK(abs(cc[2] - cv[2]) <= 1, "lfo2 x-1 runs at the same rate, backwards");
+        api->set_param(in, "an_dest", "0");
+    }
+
+    /* ---- every Animate Target: each destination is moved by the LFO the routing table names
+     * (main LFO 1x, LFO 2 2x, counted as sign changes of Wave Pos / Cutoff), and Amp / Pan move the
+     * audio only when targeted. Filter off for the audio half, so only Amp changes the level ---- */
+    {
+        static int16_t rb[256];
+        const char *ts[][2] = {{"tx_anim", "1"}, {"an_shape", "0"}, {"an_rate", "0.6"}, {"tx_var", "0.5"},
+                               {"flt_cut", "0.5"}, {"an_lfo2", "2"}, {"wheel", "0"}, {"rv_amt", "0"}, {"ens_amt", "0"},
+                               {"fx_amt", "0"}, {"sh_amt", "0"}, {"tx_spread", "0"}, {"vintage", "0"}, {"tx_a", "0"},
+                               {"tx_s", "1"}, {"tx_detune", "0"}};
+        int fails = 0;
+        for (int d = 0; d < Q_AN_DEST_N; d++) {
+            api->set_param(in, "preset", "0");
+            for (size_t k = 0; k < sizeof ts / sizeof ts[0]; k++) api->set_param(in, ts[k][0], ts[k][1]);
+            char dv[8];
+            snprintf(dv, sizeof dv, "%d", d);
+            api->set_param(in, "an_dest", dv);
+            for (int i = 0; i < 50; i++) api->render_block(in, rb, 128);
+            int sv = 0, sc = 0, cv = 0, cc = 0;
+            char t[32];
+            for (int i = 0; i < 1378; i++) {
+                api->render_block(in, rb, 128);
+                api->get_param(in, "tx_var:effective", t, sizeof t);
+                double v = atof(t) - 0.5;
+                api->get_param(in, "flt_cut:effective", t, sizeof t);
+                double c = atof(t) - 0.5;
+                int nv = v > 0.01 ? 1 : v < -0.01 ? -1 : sv, nc = c > 0.01 ? 1 : c < -0.01 ? -1 : sc;
+                if (sv && nv != sv) cv++;
+                if (sc && nc != sc) cc++;
+                sv = nv; sc = nc;
+            }
+            /* audio: a held note, level and balance per 1024 samples */
+            api->set_param(in, "flt_type", "0");
+            api->set_param(in, "tx_type", "5");   /* Poly Saw: its frames sit at one level */
+            midi(api, in, 0x90, 60, 100);
+            for (int i = 0; i < 100; i++) api->render_block(in, rb, 128);
+            double lmin = 1e30, lmax = 0, bmin = 1, bmax = 0;
+            int finite = 1;
+            for (int w = 0; w < 120; w++) {
+                double el = 0, er = 0;
+                for (int i = 0; i < 8; i++) {
+                    api->render_block(in, rb, 128);
+                    for (int j = 0; j < 128; j++) { el += (double)rb[2 * j] * rb[2 * j]; er += (double)rb[2 * j + 1] * rb[2 * j + 1]; }
+                }
+                if (!(el + er < 1e30)) finite = 0;
+                double e = el + er + 1e-9, b = el / e;
+                if (e < lmin) lmin = e;
+                if (e > lmax) lmax = e;
+                if (b < bmin) bmin = b;
+                if (b > bmax) bmax = b;
+            }
+            midi(api, in, 0x80, 60, 0);
+            for (int i = 0; i < 400; i++) api->render_block(in, rb, 128);
+            api->set_param(in, "flt_type", "1");
+            const unsigned char *src = Q_AN_SRC[d];
+            int want_v = src[0] ? 8 : 0, want_c = src[2] == 1 ? 8 : src[2] == 2 ? 16 : 0;
+            int amp = lmin / lmax < 0.2, pan = bmax - bmin > 0.3;
+            int ok = finite && lmax > 1e3 && abs(cv - want_v) <= 1 && abs(cc - want_c) <= 2 &&
+                     amp == (src[4] != 0) && pan == (src[3] != 0);
+            if (!ok || getenv("QUARK_AN_DEBUG")) {
+                printf("an_dest %d%s: var %d/%d cut %d/%d level %.3f pan %.3f max %.0f\n", d, ok ? "" : " FAIL", cv, want_v, cc, want_c,
+                       lmin / lmax, bmax - bmin, lmax);
+            }
+            fails += !ok;
+        }
+        CHECK(fails == 0, "every Animate Target moves exactly its destinations");
         api->set_param(in, "an_dest", "0");
     }
 

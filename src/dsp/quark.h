@@ -237,7 +237,7 @@ typedef struct QInstance {
 
     /* global modulators (control rate) */
     float an_ph, an_val, an_prev, an_next, vib_ph, vib_val;
-    float an2_ph, an2_prev, an2_next; /* LFO 2 (Animate Target = Filter+Wave) */
+    float an2_ph, an2_prev, an2_next; /* LFO 2 (pair Animate Targets) */
     float lfo_ln_pwm, lfo_ln_trem, lfo_ln_vib;
     float var_eff;                /* last effective Variation, for the live widget */
     float cut_eff;

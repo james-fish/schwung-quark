@@ -424,6 +424,11 @@ static inline float lfo_shape(int shape, float ph, float held, float prev) {
     }
 }
 
+/* 0 = not modulated, 1 = the main LFO, 2 = LFO 2 */
+static inline float an_pick(int src, float an, float an2) {
+    return src == 1 ? an : src == 2 ? an2 : 0.0f;
+}
+
 void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
     const float *P = q->ps;
     float sr = q->sr;
@@ -432,7 +437,11 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
     /* 0 Off 1 LP12 2 LP24 3 HP12 4 BP12 5 BP24 6 Dual BP 7 Notch 8 Comb+ 9 Comb- 10 Morph */
     int ftype = q_clampi((int)(P[P_FLT_TYPE] + 0.5f), 0, Q_NUM_FILTER_TYPES - 1);
     int comb = ftype == 8 || ftype == 9;
-    int dest = q_clampi((int)(P[P_AN_DEST] + 0.5f), 0, 5);   /* 5 Filter+Wave */
+    /* Animate Target: one destination for the main LFO, or a pair (main LFO -> first, LFO 2 ->
+     * second). Per destination 0 Wave Pos 1 Pitch 2 Filter 3 Pan 4 Amp: which LFO drives it */
+    int dest = q_clampi((int)(P[P_AN_DEST] + 0.5f), 0, Q_AN_DEST_N - 1);
+    int src_w = Q_AN_SRC[dest][0], src_p = Q_AN_SRC[dest][1], src_f = Q_AN_SRC[dest][2];
+    int src_n = Q_AN_SRC[dest][3], src_a = Q_AN_SRC[dest][4];
     int wheel_dst = q_clampi((int)(P[P_WHEEL] + 0.5f), 0, 3);
     int ticks = (n + Q_CTRL - 1) / Q_CTRL;
     float flav = P[P_VINTAGE], spread = P[P_TX_SPREAD], velsens = P[P_VEL];
@@ -467,10 +476,9 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
     float anim = P[P_TX_ANIM] + (wheel_dst == 1 ? q->wheel : 0.0f);
     float vib_amt = P[P_VIB] * 0.5f + q->at * 0.4f + (wheel_dst == 0 ? q->wheel * 0.6f : 0.0f);
     float var_base = P[P_TX_VAR] + (wheel_dst == 3 ? q->wheel * 0.6f : 0.0f);
-    int to_var = dest == 0 || dest == 5;
-    q->var_eff = q_clamp(var_base + (to_var ? anim * 0.5f * an_t[0] : 0.0f), 0.0f, 1.0f);
+    q->var_eff = q_clamp(var_base + anim * 0.5f * an_pick(src_w, an_t[0], an2_t[0]), 0.0f, 1.0f);
     float cut_base = 20.0f + 115.0f * P[P_FLT_CUT] + (wheel_dst == 2 ? q->wheel * 40.0f : 0.0f);
-    q->cut_eff = cut_base + (dest == 2 ? anim * 36.0f * an_t[0] : dest == 5 ? anim * 36.0f * an2_t[0] : 0.0f);
+    q->cut_eff = cut_base + anim * 36.0f * an_pick(src_f, an_t[0], an2_t[0]);
 
     float base_pitch = 12.0f * (float)q_clampi((int)lroundf(P[P_TX_OCT]), -2, 2) + q->bend * 2.0f;
     float res = P[P_FLT_RES];
@@ -504,6 +512,8 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
             int i0 = t * Q_CTRL;
             int m = n - i0 < Q_CTRL ? n - i0 : Q_CTRL;
             float an = an_t[t], an2 = an2_t[t];
+            float m_w = an_pick(src_w, an, an2), m_p = an_pick(src_p, an, an2), m_f = an_pick(src_f, an, an2);
+            float m_n = an_pick(src_n, an, an2), m_a = an_pick(src_a, an, an2);
             /* ---- control: pitch ---- */
             v->drift += (q_randb(&q->rng) * 0.05f - v->drift * 0.002f);
             v->drift = q_clamp(v->drift, -1.0f, 1.0f);
@@ -513,10 +523,10 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
             float cents = flav * (6.0f * v->drift + 4.0f * v->ndet) + spread * 9.0f * pat +
                           det_ct * DET_PAT[vi] * (0.85f + 0.15f * v->ndet) * v->bloom;
             float pitch = (float)v->note + base_pitch + cents * 0.01f + vib_amt * vib_t[t] +
-                          (dest == 1 ? anim * 0.6f * an : 0.0f);
+                          anim * 0.6f * m_p;
             float hz = q_note_hz(pitch);
             /* ---- control: variation ---- */
-            float var = var_base + (to_var ? anim * 0.5f * an : 0.0f) + P[P_TX_DEPTH] * v->mod;
+            float var = var_base + anim * 0.5f * m_w + P[P_TX_DEPTH] * v->mod;
             var = q_clamp(var, 0.0f, 1.0f);
             float inv_m = 1.0f / (float)m;
             float bright = 0.0f, swell = 0.0f;
@@ -560,7 +570,7 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
             }
             /* ---- control: filter ---- */
             if (ftype > 0) {
-                float cn = cut_base + (dest == 2 ? anim * 36.0f * an : dest == 5 ? anim * 36.0f * an2 : 0.0f) +
+                float cn = cut_base + anim * 36.0f * m_f +
                            P[P_FLT_KEY] * ((float)v->note - 60.0f) + P[P_FLT_ENV] * 72.0f * v->mod +
                            velsens * 24.0f * (v->vel - 0.6f) +
                            flav * (1.5f * v->ncut + 1.0f * v->cdrift); /* vintage: +-2.5 st at most */
@@ -582,8 +592,8 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
             }
             /* ---- control: output gains ---- */
             float vgain = tx_vol * (1.0f - velsens + velsens * v->vel) * (1.0f + 0.12f * flav * v->nlev);
-            if (dest == 4) vgain *= 1.0f - anim * (0.5f + 0.5f * an);
-            float pan = q_clamp(spread * 0.55f * pat + (dest == 3 ? anim * an : 0.0f), -1.0f, 1.0f);
+            if (src_a) vgain *= q_clamp(1.0f - anim * (0.5f + 0.5f * m_a), 0.0f, 1.0f);
+            float pan = q_clamp(spread * 0.55f * pat + anim * m_n, -1.0f, 1.0f);
             float pa = (pan + 1.0f) * (Q_PI * 0.25f);
             float tgl = cosf(pa) * vgain * 1.4142f, tgr = sinf(pa) * vgain * 1.4142f;
             v->dgl = (tgl - v->gl) * inv_m;

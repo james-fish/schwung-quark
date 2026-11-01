@@ -7,8 +7,8 @@ static const char *const O_sh_pitch[] = {"-12", "-7", "-5", "+5", "+7", "+12", "
 static const char *const O_fx_type[] = {"Chorus", "Chorus 2", "Flanger", "Flanger 2", "Phaser", "Phaser 2", "Tremolo", "Drive", "Delay", "Ping Pong", "Tape Echo"};
 static const char *const O_flt_type[] = {"Off", "LP12", "LP24", "HP12", "BP12", "BP24", "Dual BP", "Notch", "Comb+", "Comb-", "Morph"};
 static const char *const O_tx_drvpos[] = {"Pre Filter", "Post Filter", "Amp"};
-static const char *const O_an_shape[] = {"Sine", "Tri", "Saw", "Square", "S&H", "Random"};
-static const char *const O_an_dest[] = {"Variation", "Pitch", "Filter", "Pan", "Level", "Filter+Wave"};
+static const char *const O_an_shape[] = {"Sine", "Tri", "Saw", "Square", "S&H", "Random Walk"};
+static const char *const O_an_dest[] = {"Wave Pos", "Pitch", "Filter", "Pan", "Amp", "Wave Pos+Filter", "Wave Pos+Pitch", "Wave Pos+Pan", "Wave Pos+Amp", "Pitch+Filter", "Pitch+Pan", "Pitch+Amp", "Filter+Pan", "Filter+Amp", "Pan+Amp"};
 static const char *const O_ens_type[] = {"Strings", "Chorus", "Both", "Deep"};
 static const char *const O_ln_sus[] = {"Trigger", "Sustain"};
 static const char *const O_arp_mode[] = {"Off", "Up", "Down", "Up/Down", "Down/Up", "Random", "Order", "Chord", "Leap In", "Leap Out", "Pattern"};
@@ -20,7 +20,7 @@ static const char *const O_tx_fx[] = {"FX+Rev", "Rev", "Dry"};
 static const char *const O_ln_fx[] = {"FX+Rev", "Rev", "Dry"};
 static const char *const O_ln_dtime[] = {"1/32", "1/16T", "1/16", "1/8T", "1/16D", "1/8", "1/4T", "1/8D", "1/4", "1/2T", "1/4D", "1/2"};
 static const char *const O_key_mode[] = {"Stack", "Split", "Pads", "Mono"};
-static const char *const O_wheel[] = {"Vibrato", "Animate", "Cutoff", "Variation"};
+static const char *const O_wheel[] = {"Vibrato", "Animate", "Cutoff", "Wave Pos"};
 static const char *const O_ln_mode[] = {"Mono", "Legato", "Poly"};
 static const char *const O_tx_latch[] = {"Off", "On"};
 
@@ -67,7 +67,7 @@ const QParam quark_params[P_COUNT] = {
     {"flt_key", 'f', 0.0f, 1.0f, 0.5f, 0, 0},
     {"an_shape", 'e', 0.0f, 5.0f, 0.0f, 6, O_an_shape},
     {"an_rate", 'f', 0.0f, 1.0f, 0.35f, 0, 0},
-    {"an_dest", 'e', 0.0f, 5.0f, 0.0f, 6, O_an_dest},
+    {"an_dest", 'e', 0.0f, 14.0f, 0.0f, 15, O_an_dest},
     {"vib", 'f', 0.0f, 1.0f, 0.0f, 0, 0},
     {"vib_rate", 'f', 0.0f, 1.0f, 0.45f, 0, 0},
     {"ens_type", 'e', 0.0f, 3.0f, 0.0f, 4, O_ens_type},

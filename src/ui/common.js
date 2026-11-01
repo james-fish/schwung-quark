@@ -112,10 +112,12 @@ var Q = (function () {
     var s2 = (t * 2.6) % 1;
     return 2 * s2 - 1;
   }
-  /* the Animate LFO shapes (mirrors lfo_shape in tex.c); S&H / Random use fixed dice per cycle */
+  /* the Animate LFO shapes (mirrors lfo_shape in tex.c); S&H / Random Walk use fixed dice per cycle,
+   * `seed` offsets them so LFO 2 draws its own values */
   var DICE = [0.6, -0.8, 0.2, 0.9, -0.4, -0.1, 0.7, -0.6];
-  function lfoShape(shape, ph) {
-    var c = Math.floor(ph), t = ph - c, h = DICE[((c % 8) + 8) % 8], pv = DICE[((c - 1) % 8 + 8) % 8];
+  function lfoShape(shape, ph, seed) {
+    var c = Math.floor(ph) + (seed || 0), t = ph - Math.floor(ph);
+    var h = DICE[((c % 8) + 8) % 8], pv = DICE[((c - 1) % 8 + 8) % 8];
     switch (shape) {
       case 0: return Math.sin(2 * Math.PI * t);
       case 1: return t < 0.5 ? 4 * t - 1 : 3 - 4 * t;
