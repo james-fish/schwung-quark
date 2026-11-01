@@ -62,6 +62,21 @@
    ]
   },
   {
+   "title": "Pads Motion",
+   "lines": [
+    "Animate: an LFO on",
+    "Var, Pitch, Filter,",
+    "Pan or Level. Target",
+    "Filter+Wave: the",
+    "LFO moves Variation",
+    "and LFO 2 moves the",
+    "cutoff. LFO 2 rate =",
+    "x the main rate;",
+    "below 0 it runs",
+    "backwards."
+   ]
+  },
+  {
    "title": "Drones",
    "lines": [
     "Ensemble type Deep",
@@ -80,13 +95,30 @@
    "lines": [
     "Shape: Saw, Pulse,",
     "Saw+Pulse, Sync, or",
-    "any of 89 wave-",
-    "tables. Analog:",
-    "Variation adds PWM",
-    "> trem > vibrato.",
-    "Wavetable: Variation",
-    "= position, Wave Env",
-    "moves it (plucks)."
+    "any wavetable. WT:",
+    "Variation = position",
+    "and Wave Env moves",
+    "it. Filter and Wave",
+    "Env decay faster",
+    "than the amp: plucks.",
+    "Velocity knob sets",
+    "how much velocity",
+    "scales both envs."
+   ]
+  },
+  {
+   "title": "User Wavetables",
+   "lines": [
+    "Put WAV wavetables",
+    "(Serum/Vital: 2048",
+    "per frame, or one",
+    "single cycle) in",
+    "UserLibrary/Samples/",
+    "Schwung/Wavetables.",
+    "Reload Quark: they",
+    "appear at the end of",
+    "Pads Type and Mono",
+    "Shape (16 max)."
    ]
   },
   {

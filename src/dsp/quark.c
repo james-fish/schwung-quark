@@ -35,6 +35,9 @@ static float sanitize(int i, float v) {
 
 static void set_value(QInstance *q, int i, float v) {
     v = sanitize(i, v);
+    /* user wavetable slots exist only for the files found */
+    if (i == P_TX_TYPE && v >= (float)(Q_NUM_TEX_BUILTIN + q->uw_n)) v = q->uw_n ? (float)(Q_NUM_TEX_BUILTIN + q->uw_n - 1) : quark_params[i].def;
+    if (i == P_LN_SHAPE && v >= (float)(Q_NUM_LINE_BUILTIN + q->uw_n)) v = q->uw_n ? (float)(Q_NUM_LINE_BUILTIN + q->uw_n - 1) : quark_params[i].def;
     q->pv[i] = v;
     /* steps snap; continuous values glide (smoothed once per block) */
     if (quark_params[i].kind != 'f') q->ps[i] = v;
@@ -77,7 +80,14 @@ static int copy_out(const char *s, char *buf, int len) {
     return n;
 }
 
-/* state: {"v":1,"preset":3,"p":{"tx_type":0,...}} */
+/* the user table a layer plays, or -1 */
+static int user_of(const QInstance *q, int layer) {
+    int v = (int)q->pv[layer ? P_LN_SHAPE : P_TX_TYPE], b = layer ? Q_NUM_LINE_BUILTIN : Q_NUM_TEX_BUILTIN;
+    return v >= b && v < b + q->uw_n ? v - b : -1;
+}
+
+/* state: {"v":1,"preset":3,"p":{"tx_type":0,...},"tx_user":"name","ln_user":"name"}. A user table is
+ * saved by name, so the patch finds it again when the folder changes. */
 static int state_get(QInstance *q, char *buf, int len) {
     int pos = snprintf(buf, (size_t)len, "{\"v\":1,\"preset\":%d,\"p\":{", q->preset);
     if (pos < 0 || pos >= len) return -1;
@@ -88,7 +98,17 @@ static int state_get(QInstance *q, char *buf, int len) {
         if (n < 0 || n >= len - pos) return -1;
         pos += n;
     }
-    int n = snprintf(buf + pos, (size_t)(len - pos), "}}");
+    int n = snprintf(buf + pos, (size_t)(len - pos), "}");
+    if (n < 0 || n >= len - pos) return -1;
+    pos += n;
+    for (int layer = 0; layer < 2; layer++) {
+        int u = user_of(q, layer);
+        if (u < 0) continue;
+        n = snprintf(buf + pos, (size_t)(len - pos), ",\"%s_user\":\"%s\"", layer ? "ln" : "tx", q->uw[u].name);
+        if (n < 0 || n >= len - pos) return -1;
+        pos += n;
+    }
+    n = snprintf(buf + pos, (size_t)(len - pos), "}");
     if (n < 0 || n >= len - pos) return -1;
     return pos + n;
 }
@@ -104,7 +124,9 @@ static void state_set(QInstance *q, const char *js) {
     const char *s = strstr(js, "\"p\"");
     s = s ? strchr(s, '{') : js;
     if (!s) return;
-    while (*s) {
+    const char *pend = strchr(s, '}');   /* the values are numbers, so the first } closes "p" */
+    if (!pend) pend = s + strlen(s);
+    while (s < pend) {
         const char *k0 = strchr(s, '"');
         if (!k0) break;
         const char *k1 = strchr(k0 + 1, '"');
@@ -123,6 +145,21 @@ static void state_set(QInstance *q, const char *js) {
             if (end != s) set_value(q, i, v);
             s = end ? end : s;
         }
+    }
+    /* user tables by name; a missing file falls back to the parameter's default */
+    for (int layer = 0; layer < 2; layer++) {
+        int pi = layer ? P_LN_SHAPE : P_TX_TYPE, b = layer ? Q_NUM_LINE_BUILTIN : Q_NUM_TEX_BUILTIN;
+        const char *u = strstr(pend, layer ? "\"ln_user\"" : "\"tx_user\"");
+        int found = -1;
+        if (u && (u = strchr(u + 9, '"'))) {
+            char nm[Q_UW_NAME];
+            int k = 0;
+            for (u++; *u && *u != '"' && k < Q_UW_NAME - 1; u++) nm[k++] = *u;
+            nm[k] = 0;
+            found = q_uw_find(q, nm);
+        }
+        if (found >= 0) set_value(q, pi, (float)(b + found));
+        else if (q->pv[pi] >= (float)b) set_value(q, pi, quark_params[pi].def);
     }
     for (int i = 0; i < P_COUNT; i++) q->ps[i] = q->pv[i];
 }
@@ -496,6 +533,7 @@ static void *q_create(const char *module_dir, const char *json_defaults) {
     q->bpm = 120.0f;
     q->sm_vol = -1.0f;
     for (int i = 0; i < 2; i++) { q->am[i].have[0] = q->am[i].have[1] = -1; q->am[i].build_id = -1; }
+    q_uw_open(q);
     q_fx_init(q);
     q_fx_clear(q);
     apply_preset(q, 0);
@@ -505,6 +543,7 @@ static void *q_create(const char *module_dir, const char *json_defaults) {
 static void q_destroy(void *inst) {
     QInstance *q = (QInstance *)inst;
     if (!q) return;
+    q_uw_close(q);
     __atomic_store_n(&q->used, 0, __ATOMIC_RELEASE);
 }
 
@@ -568,7 +607,7 @@ static void q_set_param(void *inst, const char *key, const char *val) {
 static int q_get_param(void *inst, const char *key, char *buf, int len) {
     QInstance *q = (QInstance *)inst;
     if (!q || !key || !buf || len <= 0) return -1;
-    if (strcmp(key, "chain_params") == 0) return copy_out(quark_chain_params, buf, len);
+    if (strcmp(key, "chain_params") == 0) return copy_out(q->cp_dyn ? q->cp_dyn : quark_chain_params, buf, len);
     if (strcmp(key, "ui_hierarchy") == 0) return copy_out(quark_ui_hierarchy, buf, len);
     if (strcmp(key, "state") == 0) return state_get(q, buf, len);
     if (strcmp(key, "preset") == 0) { char t[16]; snprintf(t, sizeof t, "%d", q->preset); return copy_out(t, buf, len); }

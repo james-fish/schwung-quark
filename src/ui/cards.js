@@ -161,6 +161,23 @@
         ctx.print(1, top + 21, src ? "(+ Mono keys)" : "to Mono", 1);
         return;
       }
+      case "an_lfo2": {
+        /* two cycles of the main LFO (Variation, solid) and LFO 2 (Filter, dotted) */
+        var shp = Math.round(Q.val(values, "an_shape")), r2 = Q.val(values, "an_lfo2");
+        var fw = Math.round(Q.val(values, "an_dest")) === 5;
+        var gx2 = 26, gw2 = W - 28, cy2 = top + Math.floor(bh / 2), am2 = bh / 2 - 1, py1 = 0;
+        ctx.print(1, top + 1, "Wave", 1);
+        ctx.print(1, top + bh - 8, "Filt", 1);
+        for (var xi2 = 0; xi2 < gw2; xi2++) {
+          var ph = 2 * xi2 / gw2;
+          var y1 = Math.round(cy2 - am2 * Q.lfoShape(shp, ph)), y2 = Math.round(cy2 - am2 * Q.lfoShape(shp, ph * r2));
+          if (xi2) Q.line(ctx, gx2 + xi2 - 1, py1, gx2 + xi2, y1);
+          if (fw && xi2 % 2 === 0) ctx.fillRect(gx2 + xi2, y2, 1, 1, 1);
+          py1 = y1;
+        }
+        if (!fw) ctx.print(gx2 + 2, top + bh - 8, "Target: F+W", 1);
+        return;
+      }
       case "split": {
         var sp = Q.val(values, "split");
         for (var kk = 24; kk <= 96; kk++) {

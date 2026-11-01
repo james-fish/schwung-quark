@@ -8,6 +8,9 @@
  * Shapes past the four analog ones are wavetables (the whole wave bank, Pads' and Amino's): both
  * oscillators read the table, Variation is the table position and Wave Env moves it with the
  * envelope (plucks that open and close), and the PWM / tremolo / vibrato macro is off.
+ * Filter Env and Wave Env follow their own mod envelope: the amp attack, then 66% of the amp decay
+ * (Sustain mode: down to half while held), so the tone closes before the note fades. Velocity scales
+ * both env amounts (depth: the Velocity knob) and the level (a fixed 9 dB range).
  * Mono and Legato use a last-note stack with glide; Poly runs up to four voices.
  * Mono Spread places notes in the stereo field: below centre each note lands somewhere at random,
  * above centre notes step through fixed slots (Poly: each voice keeps its own), so arps walk around.
@@ -61,6 +64,7 @@ static void start(QInstance *q, QLineVoice *v, int key, float vel, int retrig, i
     v->age = ++q->age;
     if (!v->active) {
         v->env = 0.0f;
+        v->menv = 0.0f;
         v->y[0] = v->y[1] = v->y[2] = v->y[3] = 0.0f;
         v->p1 = 0.0f;
         v->p2 = q->pv[P_LN_SHAPE] >= (float)Q_LINE_VA ? 0.0f : 0.37f;
@@ -72,6 +76,7 @@ static void start(QInstance *q, QLineVoice *v, int key, float vel, int retrig, i
     }
     if (retrig || !v->active) {
         v->st = 1;
+        v->mst = 1;
         v->t_on = 0.0f;
     }
     v->active = 1;
@@ -161,6 +166,8 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
     float d_t = 0.005f + 0.9f * q_env_time(P[P_LN_D]);
     float ac_base = 1.0f - expf(-1.0f / (a_t / 1.609f * sr));
     float dc_base = 1.0f - expf(-1.0f / (d_t / 5.0f * sr));
+    float dcm_base = 1.0f - expf(-1.0f / (0.66f * d_t / 5.0f * sr));   /* mod env: 66% of the decay */
+    const float MOD_SUS = 0.5f;
     float glide_t = 1.2f * P[P_LN_GLIDE] * P[P_LN_GLIDE];
     float gc = glide_t > 0.0005f ? 1.0f - expf(-(float)Q_CTRL / (glide_t * 0.25f * sr)) : 1.0f;
     float vol = P[P_LN_VOL] * 0.42f;
@@ -180,6 +187,11 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
         /* vintage: each note's envelope runs up to +-25% faster or slower */
         float ek = 1.0f + 0.25f * flav * v->nenv;
         float ac = q_clamp(ac_base * ek, 0.0f, 1.0f), dc = q_clamp(dc_base * ek, 0.0f, 1.0f);
+        /* the mod env runs at control rate: one tick = Q_CTRL samples of the same one-pole */
+        float mac = 1.0f - powf(1.0f - ac, (float)Q_CTRL);
+        float mdc = 1.0f - powf(1.0f - q_clamp(dcm_base * ek, 0.0f, 1.0f), (float)Q_CTRL);
+        float vs = 1.0f - velsens * (1.0f - v->vel);              /* velocity -> env amounts */
+        float vg = vol * expf(-1.036f * (1.0f - v->vel));          /* velocity -> level, 9 dB */
         float pwm_ph = q->lfo_ln_pwm, trem_ph = q->lfo_ln_trem, vib_ph = q->lfo_ln_vib;
         for (int t = 0; t < ticks; t++) {
             int i0 = t * Q_CTRL;
@@ -189,6 +201,14 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
             vib_ph += vib_hz * dt_tick; vib_ph -= floorf(vib_ph);
             float s_pwm = sinf(Q_TAU * pwm_ph), s_trem = sinf(Q_TAU * trem_ph), s_vib = sinf(Q_TAU * vib_ph);
             v->t_on += dt_tick;
+            if (v->mst == 1) {
+                v->menv += (1.25f - v->menv) * mac;
+                if (v->menv >= 1.0f) { v->menv = 1.0f; v->mst = 2; }
+            } else {
+                if (v->mst == 2 && v->st == 3) v->mst = 3;            /* key released (Sustain mode) */
+                float tgt = v->mst == 2 && sus_mode ? MOD_SUS : 0.0f;
+                v->menv += (tgt - v->menv) * mdc;
+            }
             v->pitch += (v->target - v->pitch) * gc;
             v->drift += q_randb(&q->rng) * 0.05f - v->drift * 0.002f;
             v->drift = q_clamp(v->drift, -1.0f, 1.0f);
@@ -205,7 +225,7 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
             v->inc2 = q_clamp(hz2 / sr, 0.0f, 0.45f);
             v->pw = 0.5f + 0.42f * pwm_d * s_pwm;
             float cn = 20.0f + 115.0f * P[P_LN_CUT] + 0.5f * (v->pitch - 60.0f) +
-                       P[P_LN_FENV] * 72.0f * v->env + velsens * 18.0f * (v->vel - 0.6f) +
+                       P[P_LN_FENV] * 72.0f * vs * v->menv + velsens * 18.0f * (v->vel - 0.6f) +
                        flav * (1.2f * v->ncut + 0.8f * v->cdrift); /* vintage: +-2 st at most */
             float fc = q_clamp(q_note_hz(cn), 16.0f, 0.33f * sr);
             v->cg = 1.0f - expf(-Q_TAU * fc / sr);
@@ -214,14 +234,13 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
             if (wt >= 0 && have) {
                 /* Wave Env scales to the room left in the table, so Variation + Wave Env never
                  * runs past either end (full Wave Env reaches exactly the last / first wave) */
-                float we = wenv * (v->env < 1.0f ? v->env : 1.0f);
+                float we = wenv * vs * (v->menv < 1.0f ? v->menv : 1.0f);
                 float pos = q_clamp(var + we * (we >= 0.0f ? 1.0f - var : var), 0.0f, 1.0f);
                 if (v->wpos < 0.0f) v->wpos = pos;
                 dwp = (pos - v->wpos) / (float)m;
                 m1 = q_wave_mip(&wv, hz1, sr);
                 m2 = q_wave_mip(&wv, hz2, sr);
             }
-            float vg = vol * (1.0f - velsens + velsens * v->vel);
             float ptg = spread < 0.0f ? -spread * v->sp_rnd : spread * v->sp_slot;
             v->pan = v->pan > 1.5f ? ptg : v->pan + (ptg - v->pan) * pan_c;
             float pa = (q_clamp(v->pan, -1.0f, 1.0f) + 1.0f) * (Q_PI * 0.25f);

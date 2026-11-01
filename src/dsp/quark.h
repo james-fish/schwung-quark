@@ -76,6 +76,8 @@ typedef struct {
     float p1, p2;                  /* osc phases */
     float env;
     int st;                        /* 0 off 1 attack 2 hold/sustain 3 decay */
+    float menv;                    /* mod env (filter + wave): amp attack, 66% of the amp decay */
+    int mst;                       /* 1 attack 2 decay (to its sustain level while held) 3 release */
     float y[4];                    /* ladder state */
     float drift;
     float wpos;                    /* wavetable position 0..1 (wavetable shapes) */
@@ -156,6 +158,26 @@ typedef struct {
     float div;                    /* periods of the played note in one table cycle (chord stacks > 1) */
 } QWave;
 
+/* ---- user wavetables (userwt.c) -------------------------------------------------------------
+ * WAV files in the user folder, scanned at create (names only), then loaded by a worker thread into
+ * harmonic spectra. When a layer selects one, the worker band-limits it into that layer's back
+ * buffer and swaps it in; the audio thread only reads the front buffer and acknowledges it. */
+#define Q_UW_FRAMES 64             /* frames kept per table (longer tables are sampled evenly) */
+#define Q_UW_H 256                 /* harmonics kept per frame */
+#define Q_UW_NAME 24
+typedef struct {
+    char name[Q_UW_NAME], shortn[5];
+    int nf;                        /* frames */
+    float *spec;                   /* nf x Q_UW_H x (cos, sin), normalised for the whole table */
+    volatile int ready;            /* 0 loading, 1 ready, -1 unreadable */
+} QUserTable;
+
+typedef struct {
+    float *buf[2];                 /* Q_UW_FRAMES x Q_FRAME_FLOATS each, allocated by the worker */
+    volatile int have[2];          /* user table in each buffer, -1 none */
+    volatile int front, want, inuse;
+} QUwSlot;
+
 /* ---- arpeggiator ----------------------------------------------------------------------------- */
 typedef struct {
     int note[Q_ARP_MAX];          /* keys routed to Mono while the arp is on */
@@ -193,6 +215,12 @@ typedef struct QInstance {
     uint32_t pad_ord[128], ord;
     int pad_down_n;
     QAmSlot am[2];                /* 0 pads, 1 mono */
+    QUserTable uw[Q_UW_MAX];
+    int uw_n;
+    QUwSlot uws[2];               /* 0 pads, 1 mono */
+    void *uw_thread;              /* worker (userwt.c), 0 when none */
+    volatile int uw_quit;
+    char *cp_dyn;                 /* chain_params naming the user tables, 0 = the static one */
 
     /* lines mono note stack */
     int stack[Q_STACK_MAX];
@@ -209,6 +237,7 @@ typedef struct QInstance {
 
     /* global modulators (control rate) */
     float an_ph, an_val, an_prev, an_next, vib_ph, vib_val;
+    float an2_ph, an2_prev, an2_next; /* LFO 2 (Animate Target = Filter+Wave) */
     float lfo_ln_pwm, lfo_ln_trem, lfo_ln_vib;
     float var_eff;                /* last effective Variation, for the live widget */
     float cut_eff;
@@ -234,6 +263,17 @@ void q_tex_render(QInstance *q, float *l, float *r, int n);
 void q_tex_bus(QInstance *q, float *l, float *r, int n);
 void q_wave_update(QInstance *q, int slot, int wt);
 int q_wave_get(QInstance *q, int slot, int wt, QWave *w);
+
+/* Quark's dense tables: 8 mips of up to 256 harmonics, in one frame of Q_FRAME_FLOATS */
+#define Q_FRAME_FLOATS (2049 + 1025 + 513 + 257 + 129 + 65 + 65 + 65)
+void q_uw_build_frame(const float *spec, float *dst);
+void q_uw_spectrum(const float *x, int n, float *spec);
+
+/* userwt.c */
+#define Q_WT_USER0 Q_NUM_WT
+void q_uw_open(QInstance *q);
+void q_uw_close(QInstance *q);
+int q_uw_find(const QInstance *q, const char *name);
 
 /* lines.c */
 void q_lines_note_on(QInstance *q, int key, float vel);

@@ -304,6 +304,12 @@ for i, n in enumerate(AMINO_NAMES):
     _used_short.add(sh)
     AMINO_TYPES.append((disp, sh))
     TEX_TYPES.append((disp, sh, 1, NUM_WT_QUARK + i))
+# user wavetables: fixed slots after the built-ins. The DSP names them after the files it finds and
+# serves only those slots in chain_params (the "@U<n>@" / "@S<n>@" placeholders below).
+NUM_WT_USER = 16
+NUM_TEX_BUILTIN = len(TEX_TYPES)
+for i in range(NUM_WT_USER):
+    TEX_TYPES.append(("User %d" % (i + 1), "U%d" % (i + 1), 1, NUM_WT_QUARK + len(AMINO_NAMES) + i))
 # every wavetable, in Type order: (name, short, wave-bank index)
 ALL_WT = [(t[0], t[1], t[3]) for t in TEX_TYPES if t[2] == 1]
 
@@ -335,8 +341,9 @@ DRIVE_POS = ["Pre Filter", "Post Filter", "Amp"]
 DRIVE_POS_S = ["Pre", "Post", "Amp"]
 LFO_SHAPES = ["Sine", "Tri", "Saw", "Square", "S&H", "Random"]
 LFO_SHAPES_S = ["Sine", "Tri", "Saw", "Sqr", "S&H", "Rnd"]
-ANIM_DEST = ["Variation", "Pitch", "Filter", "Pan", "Level"]
-ANIM_DEST_S = ["Var", "Ptch", "Filt", "Pan", "Lvl"]
+# Filter+Wave: the main LFO moves Variation, LFO 2 (its rate a multiple of the main one) the cutoff
+ANIM_DEST = ["Variation", "Pitch", "Filter", "Pan", "Level", "Filter+Wave"]
+ANIM_DEST_S = ["Var", "Ptch", "Filt", "Pan", "Lvl", "F+W"]
 ROUTES = ["FX+Rev", "Rev", "Dry"]
 ROUTES_S = ["All", "Rev", "Dry"]
 # Arp types. Leap In / Leap Out, Pattern, the octave-range set, the 40 progression patterns, the 40
@@ -497,6 +504,8 @@ F("vel", "Velocity", "Vel", 0.5)
 E("wheel", "Mod Wheel", "Wheel", 0, WHEEL, WHEEL_S)
 E("ln_mode", "Mono Mode", "Mode", 1, LINE_MODES, LINE_MODES_S)
 E("tx_latch", "Pads Latch", "Latch", 0, ONOFF, viz={"kind": "switch"})
+# LFO 2 (Animate Target = Filter+Wave): rate as a multiple of Animate Rate; below 0 it runs backwards
+F("an_lfo2", "LFO 2 Rate", "LFO2", 1.0, -4.0, 4.0, card=CARD)
 
 KEYS = [p["key"] for p in P]
 assert len(KEYS) == len(set(KEYS)), "duplicate key"
@@ -518,7 +527,7 @@ PAGES = [
     ("root", "Pads", ["tx_type", "tx_var", "tx_anim", "tx_depth", "tx_a", "tx_d", "tx_s", "tx_r"]),
     ("ptone", "Pads Filter", ["flt_cut", "flt_res", "flt_type", "flt_env", "me_a", "me_d", "me_s", "me_r"]),
     ("pdrive", "Pads Drive", ["tx_drive", "tx_drvpos", "tx_dtone", "tx_spread", "tx_detune", "tx_bloom", "tx_voices", "flt_key"]),
-    ("pmotion", "Pads Motion", ["an_shape", "an_rate", "tx_anim", "an_dest", "ens_amt", "ens_type", None, "tx_latch"]),
+    ("pmotion", "Pads Motion", ["an_shape", "an_rate", "tx_anim", "an_dest", "ens_amt", "ens_type", "an_lfo2", "tx_latch"]),
     ("mono", "Mono", ["ln_shape", "ln_var", "ln_det", "ln_int", "ln_a", "ln_d", "ln_sus", "ln_mode"]),
     ("mtone", "Mono Filter", ["ln_cut", "ln_res", "ln_wenv", "ln_fenv", "ln_glide", "ln_spread", "ln_dly", "ln_dtime"]),
     ("arp", "Mono Arp", ["arp_mode", "arp_src", "arp_rate", "arp_oct", "arp_gate", "arp_swing", "arp_hold", "arp_rhy"]),
@@ -637,6 +646,10 @@ PRESETS += [
     ("Major 9 Keys", dict(tx_type=T["Major 9"], tx_var=0.43, tx_anim=0.0, tx_a=0.02, tx_d=0.55, tx_s=0.5, tx_r=0.4,
                           flt_type=2, flt_cut=0.6, flt_env=0.3, me_a=0.0, me_d=0.5, me_s=0.2, ens_amt=0.5,
                           ens_type=1, rv_amt=0.3, vintage=0.3)),
+    # Filter+Wave: the wave scans with the main LFO while the filter breathes at half speed, backwards
+    ("Tidal Vocal", dict(tx_type=T["Vocal"], tx_var=0.5, tx_anim=0.55, an_dest=5, an_lfo2=-0.5, an_shape=1,
+                         an_rate=0.3, tx_a=0.45, tx_r=0.6, flt_type=2, flt_cut=0.55, flt_res=0.25, ens_amt=0.55,
+                         ens_type=0, rv_amt=0.4, rv_decay=0.65, sh_amt=0.15, vintage=0.3)),
 ]
 for name, d in PRESETS:
     for k in d:
@@ -705,6 +718,12 @@ def gen_params():
     h.append("#define Q_NUM_WT_QUARK %d" % NUM_WT_QUARK)
     h.append("#define Q_NUM_WT_AMINO %d" % len(AMINO_NAMES))
     h.append("#define Q_NUM_WT (Q_NUM_WT_QUARK + Q_NUM_WT_AMINO)")
+    h.append("#define Q_UW_MAX %d" % NUM_WT_USER)
+    h.append("#define Q_NUM_TEX_BUILTIN %d" % NUM_TEX_BUILTIN)
+    h.append("#define Q_NUM_LINE_BUILTIN %d" % (len(LINE_SHAPES) - NUM_WT_USER))
+    h.append("extern const char *const quark_cp_frag[];")
+    h.append("extern const short quark_cp_hole[];")
+    h.append("extern const int quark_cp_nfrag;")
     h.append("#define Q_AM_WAVES %d" % AM_WAVES)
     h.append("#define Q_AM_LEN %d" % AM_LEN)
     h.append("#define Q_LINE_VA %d" % LINE_VA)
@@ -808,6 +827,9 @@ def num(x):
     return x
 
 
+USER_KEYS = ("tx_type", "ln_shape")
+
+
 def chain_params():
     out = []
     for p in P:
@@ -817,6 +839,10 @@ def chain_params():
             e["options"] = p["opts"]
             if p.get("sopts") and p["sopts"] != p["opts"]:
                 e["short_options"] = p["sopts"]
+            if p["key"] in USER_KEYS:
+                nb = len(p["opts"]) - NUM_WT_USER
+                e["options"] = p["opts"][:nb] + ["@U%d@" % i for i in range(NUM_WT_USER)]
+                e["short_options"] = (p.get("sopts") or p["opts"])[:nb] + ["@S%d@" % i for i in range(NUM_WT_USER)]
         else:
             e["type"] = "int" if p["kind"] == "i" else "float"
             e["min"] = num(p["mn"])
@@ -857,9 +883,20 @@ def ui_hierarchy():
 
 def gen_contract():
     cp = json.dumps(chain_params(), separators=(",", ":"))
+    # split at the user-table placeholders: the DSP fills a hole with ,"<name>" for each file it found
+    parts = re.split(r',"@([US])(\d+)@"', cp)
+    frags, holes = parts[0::3], [(1 if k == "S" else 0) * 100 + int(i) for k, i in zip(parts[1::3], parts[2::3])]
+    assert len(holes) == 4 * NUM_WT_USER and "@" not in "".join(frags)
+    cp_static = "".join(frags)
+    fr = ["const int quark_cp_nfrag = %d;" % len(frags), "const short quark_cp_hole[] = {%s};" % ", ".join(map(str, holes)),
+          "const char *const quark_cp_frag[] = {"]
+    for f in frags:
+        fr.append("    " + " ".join(cstr(f[i:i + 100]) for i in range(0, len(f), 100)) if f else '    ""')
+        fr[-1] += ","
+    fr.append("};")
     uh = json.dumps(ui_hierarchy(), separators=(",", ":"))
     c = ["/* GENERATED by tools/gen.py. Do not edit. */", '#include "params_gen.h"', "",
-         safe_chunks(cp, "quark_chain_params"), "", safe_chunks(uh, "quark_ui_hierarchy"), ""]
+         safe_chunks(cp_static, "quark_chain_params"), "", safe_chunks(uh, "quark_ui_hierarchy"), ""] + fr + [""]
     write(os.path.join(DSP, "contract_gen.c"), "\n".join(c))
     write(os.path.join(BUILD, "chain_params.json"), json.dumps(chain_params(), indent=1))
     write(os.path.join(BUILD, "ui_hierarchy.json"), json.dumps(ui_hierarchy(), indent=1))
@@ -931,6 +968,14 @@ def wt_previews():
             for i in range(PREV_N):
                 b.append(int(round(sum(raw[i * step:(i + 1) * step]) / step)) & 255)
         out.append(base64.b64encode(bytes(b)).decode())
+    for _ in range(NUM_WT_USER):
+        b = bytearray()
+        for k in range(PREV_FRAMES):
+            xs = [sum(math.sin(2 * math.pi * h * i / PREV_N) / h * (1 if h == 1 else k / 7) for h in range(1, 9))
+                  for i in range(PREV_N)]
+            pk = max(abs(x) for x in xs)
+            b += bytes((int(round(x / pk * 120)) & 255) for x in xs)
+        out.append(base64.b64encode(bytes(b)).decode())
     return out
 
 
@@ -962,6 +1007,7 @@ def gen_meta():
         "fm": [FM_TYPES[n] for n in FM_TYPES],
         "wt": wt_previews(),
         "wtQuark": NUM_WT_QUARK,
+        "wtUser0": NUM_WT_QUARK + len(AMINO_NAMES),
         "lineVA": LINE_VA,
         "amWaves": AM_WAVES,
         "wtQuarkDense": len(WAVETABLES),
@@ -975,6 +1021,16 @@ def gen_meta():
         "arpOctSeq": ARP_OCT_SEQ,
     }
     js = "/* GENERATED by tools/gen.py. Do not edit. */\nvar QUARK_META = " + json.dumps(meta, separators=(",", ":")) + ";\n"
+    # the browser has no user folder: the web page lists only the built-in tables
+    web = json.loads(json.dumps(meta))
+    for p in web["params"]:
+        if p["key"] in USER_KEYS:
+            nb = len(p["opts"]) - NUM_WT_USER
+            p["opts"] = p["opts"][:nb]
+            if p.get("sopts"):
+                p["sopts"] = p["sopts"][:nb]
+            p["mx"] = nb - 1
+    js = "/* GENERATED by tools/gen.py. Do not edit. */\nvar QUARK_META = " + json.dumps(web, separators=(",", ":")) + ";\n"
     write(os.path.join(BUILD, "web", "meta_gen.js"), js)
     # device scripts: a compact META (no presets/pages) plus the shared helpers, pasted into each
     dev = dict(meta)

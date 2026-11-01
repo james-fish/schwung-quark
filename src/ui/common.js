@@ -112,6 +112,19 @@ var Q = (function () {
     var s2 = (t * 2.6) % 1;
     return 2 * s2 - 1;
   }
+  /* the Animate LFO shapes (mirrors lfo_shape in tex.c); S&H / Random use fixed dice per cycle */
+  var DICE = [0.6, -0.8, 0.2, 0.9, -0.4, -0.1, 0.7, -0.6];
+  function lfoShape(shape, ph) {
+    var c = Math.floor(ph), t = ph - c, h = DICE[((c % 8) + 8) % 8], pv = DICE[((c - 1) % 8 + 8) % 8];
+    switch (shape) {
+      case 0: return Math.sin(2 * Math.PI * t);
+      case 1: return t < 0.5 ? 4 * t - 1 : 3 - 4 * t;
+      case 2: return 2 * t - 1;
+      case 3: return t < 0.5 ? 1 : -1;
+      case 4: return h;
+      default: var s = t * t * (3 - 2 * t); return pv + (h - pv) * s;
+    }
+  }
   function familyName(type) {
     var tt = M.texTypes[Math.max(0, Math.min(M.texTypes.length - 1, Math.round(type)))];
     return ["STRINGS", "WAVETABLE", "FM"][tt.family];
@@ -147,6 +160,7 @@ var Q = (function () {
       case "ln_a": return fmtS(0.5 * envTime(x));
       case "ln_d": return fmtS(0.005 + 0.9 * envTime(x));
       case "tx_type": return p.opts[Math.round(x)];
+      case "an_lfo2": return (x < 0 ? "-" : "+") + Math.abs(x).toFixed(2) + "x";
       case "tx_var": return variationText(values);
       case "flt_cut": return fmtHz(hz(20 + 115 * x));
       case "flt_res": {
@@ -346,7 +360,7 @@ var Q = (function () {
 
   return {
     M: M, byKey: byKey, byName: byName, val: val, num: num, hz: hz, envTime: envTime, texWave: texWave,
-    lineWave: lineWave, lineIsWave: lineIsWave, bankWave: bankWave, driveCurve: driveCurve, detCents: detCents, fmtS: fmtS, envTimeS: envTime, familyName: familyName, variationText: variationText, describe: describe,
+    lineWave: lineWave, lineIsWave: lineIsWave, bankWave: bankWave, driveCurve: driveCurve, detCents: detCents, fmtS: fmtS, envTimeS: envTime, familyName: familyName, lfoShape: lfoShape, variationText: variationText, describe: describe,
     ctrlLabel: ctrlLabel, line: line, plot: plot, tw: tw, fit: fit, dotted: dotted, envShape: envShape,
     filterCurve: filterCurve, filterMag: filterMag, noteName: noteName, pct: pct, arpPreview: arpPreview, revPre: revPre, wenvTo: wenvTo
   };

@@ -105,77 +105,79 @@ const char quark_chain_params[] =
     "\"default\":0,\"viz\":{\"group\":\"an\",\"role\":\"shape\",\"kind\":\"lfo\"}},{\"key\":\"an_rate\",\"name\":\"Animate Rate\""
     ",\"short_name\":\"Rate\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.35,\"viz\":{\"group\":\"an\",\""
     "role\":\"rate\",\"kind\":\"lfo\"}},{\"key\":\"an_dest\",\"name\":\"Animate Target\",\"short_name\":\"Dest\",\"type\":\"enu"
-    "m\",\"options\":[\"Variation\",\"Pitch\",\"Filter\",\"Pan\",\"Level\"],\"short_options\":[\"Var\",\"Ptch\",\"Filt\",\"Pan\""
-    ",\"Lvl\"],\"default\":0},{\"key\":\"vib\",\"name\":\"Vibrato\",\"short_name\":\"Vib\",\"type\":\"float\",\"min\":0,\"max\":1"
-    ",\"step\":0.01,\"default\":0},{\"key\":\"vib_rate\",\"name\":\"Vibrato Rate\",\"short_name\":\"VRate\",\"type\":\"float"
-    "\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.45},{\"key\":\"ens_type\",\"name\":\"Ensemble Type\",\"short_name\":"
-    "\"EnsTp\",\"type\":\"enum\",\"options\":[\"Strings\",\"Chorus\",\"Both\",\"Deep\"],\"short_options\":[\"Str\",\"Cho\",\"Bot"
-    "h\",\"Deep\"],\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"ln_cut\""
-    ",\"name\":\"Mono Cutoff\",\"short_name\":\"Cut\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.75,\""
-    "viz\":{\"group\":\"lf\",\"role\":\"cutoff\",\"kind\":\"filter\"}},{\"key\":\"ln_res\",\"name\":\"Mono Resonance\",\"short_"
-    "name\":\"Res\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.15,\"viz\":{\"group\":\"lf\",\"role\":\"re"
-    "sonance\",\"kind\":\"filter\"}},{\"key\":\"ln_fenv\",\"name\":\"Mono Filter Env\",\"short_name\":\"FEnv\",\"type\":\"flo"
-    "at\",\"min\":-1,\"max\":1,\"step\":0.01,\"default\":0.3},{\"key\":\"ln_wenv\",\"name\":\"Mono Wave Env\",\"short_name\""
-    ":\"WvEnv\",\"type\":\"float\",\"min\":-1,\"max\":1,\"step\":0.01,\"default\":0},{\"key\":\"ln_det\",\"name\":\"Mono Detun"
-    "e\",\"short_name\":\"Detun\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.22},{\"key\":\"ln_int\",\""
-    "name\":\"Mono Interval\",\"short_name\":\"Intvl\",\"type\":\"int\",\"min\":-24,\"max\":24,\"step\":1,\"default\":0,\"uni"
-    "t\":\"st\"},{\"key\":\"ln_glide\",\"name\":\"Mono Glide\",\"short_name\":\"Glide\",\"type\":\"float\",\"min\":0,\"max\":1,\""
-    "step\":0.01,\"default\":0},{\"key\":\"ln_sus\",\"name\":\"Mono Envelope\",\"short_name\":\"EnvMd\",\"type\":\"enum\",\"o"
-    "ptions\":[\"Trigger\",\"Sustain\"],\"short_options\":[\"Trig\",\"Sus\"],\"default\":1},{\"key\":\"arp_mode\",\"name\":\""
-    "Arp Type\",\"short_name\":\"Type\",\"type\":\"enum\",\"options\":[\"Off\",\"Up\",\"Down\",\"Up/Down\",\"Down/Up\",\"Random"
-    "\",\"Order\",\"Chord\",\"Leap In\",\"Leap Out\",\"Pattern\"],\"short_options\":[\"Off\",\"Up\",\"Down\",\"UpDn\",\"DnUp\",\""
-    "Rnd\",\"Ord\",\"Chrd\",\"LpIn\",\"LpOt\",\"Patt\"],\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104"
-    ",\"card_h\":40},{\"key\":\"arp_src\",\"name\":\"Arp Source\",\"short_name\":\"Src\",\"type\":\"enum\",\"options\":[\"Keys"
-    "\",\"Pads Chord\"],\"short_options\":[\"Keys\",\"Chrd\"],\"default\":1,\"card_script\":\"cards.js#quark_card\",\"car"
-    "d_w\":104,\"card_h\":40},{\"key\":\"arp_rate\",\"name\":\"Arp Rate\",\"short_name\":\"Rate\",\"type\":\"enum\",\"options"
-    "\":[\"1/4\",\"1/8D\",\"1/8\",\"1/8T\",\"1/16\",\"1/16T\",\"1/32\"],\"default\":4},{\"key\":\"arp_oct\",\"name\":\"Arp Octave"
-    "s\",\"short_name\":\"Oct\",\"type\":\"enum\",\"options\":[\"0\",\"+1\",\"+2\",\"+3\",\"-1\",\"-2\",\"-3\",\"-1..+1\",\"-2..+2\"],"
-    "\"short_options\":[\"0\",\"+1\",\"+2\",\"+3\",\"-1\",\"-2\",\"-3\",\"+-1\",\"+-2\"],\"default\":0,\"card_script\":\"cards.js#"
-    "quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_gate\",\"name\":\"Arp Gate\",\"short_name\":\"Gate\",\"type\""
-    ":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.55,\"card_script\":\"cards.js#quark_card\",\"card_w\":104"
-    ",\"card_h\":40},{\"key\":\"arp_swing\",\"name\":\"Arp Swing\",\"short_name\":\"Swing\",\"type\":\"float\",\"min\":0,\"max"
-    "\":1,\"step\":0.01,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"ar"
-    "p_hold\",\"name\":\"Arp Latch\",\"short_name\":\"Latch\",\"type\":\"enum\",\"options\":[\"Off\",\"On\"],\"default\":0,\"vi"
-    "z\":{\"kind\":\"switch\"}},{\"key\":\"arp_rhy\",\"name\":\"Arp Rhythm\",\"short_name\":\"Rhym\",\"type\":\"int\",\"min\":0,"
-    "\"max\":39,\"step\":1,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\""
-    "arp_pat\",\"name\":\"Arp Pattern\",\"short_name\":\"Patt\",\"type\":\"int\",\"min\":0,\"max\":39,\"step\":1,\"default\":0"
-    ",\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_drop\",\"name\":\"Arp Drop\",\""
-    "short_name\":\"Drop\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"card_script\":\"cards.js#qu"
-    "ark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_vel\",\"name\":\"Arp Velocity\",\"short_name\":\"Vel\",\"type\""
-    ":\"int\",\"min\":0,\"max\":127,\"step\":1,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card"
-    "_h\":40},{\"key\":\"arp_vrnd\",\"name\":\"Arp Vel Random\",\"short_name\":\"VRnd\",\"type\":\"float\",\"min\":0,\"max\":1"
-    ",\"step\":0.01,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_g"
-    "rnd\",\"name\":\"Arp Gate Random\",\"short_name\":\"GRnd\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"defaul"
-    "t\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_ornd\",\"name\":\"Arp Oct"
-    " Random\",\"short_name\":\"ORnd\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"card_script\":\"c"
-    "ards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_nrnd\",\"name\":\"Arp Note Random\",\"short_name"
-    "\":\"NRnd\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"card_script\":\"cards.js#quark_card\","
-    "\"card_w\":104,\"card_h\":40},{\"key\":\"arp_loop\",\"name\":\"Arp Var Loop\",\"short_name\":\"Loop\",\"type\":\"int\",\""
-    "min\":0,\"max\":32,\"step\":1,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{"
-    "\"key\":\"fx_tone\",\"name\":\"Effect Control 2\",\"short_name\":\"Ctrl2\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\""
-    ":0.01,\"default\":0.4},{\"key\":\"rv_size\",\"name\":\"Reverb Size\",\"short_name\":\"Size\",\"type\":\"float\",\"min\":"
-    "0,\"max\":1,\"step\":0.01,\"default\":0.6},{\"key\":\"rv_tone\",\"name\":\"Reverb Tone\",\"short_name\":\"Tone\",\"type"
-    "\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.55},{\"key\":\"tx_fx\",\"name\":\"Pads FX Route\",\"short_n"
-    "ame\":\"PdFX\",\"type\":\"enum\",\"options\":[\"FX+Rev\",\"Rev\",\"Dry\"],\"short_options\":[\"All\",\"Rev\",\"Dry\"],\"defa"
-    "ult\":0},{\"key\":\"ln_fx\",\"name\":\"Mono FX Route\",\"short_name\":\"MnFX\",\"type\":\"enum\",\"options\":[\"FX+Rev\","
-    "\"Rev\",\"Dry\"],\"short_options\":[\"All\",\"Rev\",\"Dry\"],\"default\":0},{\"key\":\"ln_spread\",\"name\":\"Mono Spread"
-    "\",\"short_name\":\"Wide\",\"type\":\"float\",\"min\":-1,\"max\":1,\"step\":0.01,\"default\":0},{\"key\":\"ln_dly\",\"name"
-    "\":\"Mono Delay\",\"short_name\":\"Delay\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0},{\"key\":\""
-    "ln_dtime\",\"name\":\"Mono Delay Time\",\"short_name\":\"Time\",\"type\":\"enum\",\"options\":[\"1/32\",\"1/16T\",\"1/16"
-    "\",\"1/8T\",\"1/16D\",\"1/8\",\"1/4T\",\"1/8D\",\"1/4\",\"1/2T\",\"1/4D\",\"1/2\"],\"short_options\":[\"32\",\"16T\",\"16\",\"8T"
-    "\",\"16D\",\"8\",\"4T\",\"8D\",\"4\",\"2T\",\"4D\",\"2\"],\"default\":7},{\"key\":\"tx_oct\",\"name\":\"Pads Octave\",\"short_na"
-    "me\":\"PdOct\",\"type\":\"int\",\"min\":-2,\"max\":2,\"step\":1,\"default\":0,\"unit\":\"oct\"},{\"key\":\"ln_oct\",\"name\":"
-    "\"Mono Octave\",\"short_name\":\"MnOct\",\"type\":\"int\",\"min\":-2,\"max\":2,\"step\":1,\"default\":0,\"unit\":\"oct\"},"
-    "{\"key\":\"key_mode\",\"name\":\"Key Mode\",\"short_name\":\"Keys\",\"type\":\"enum\",\"options\":[\"Stack\",\"Split\",\"Pa"
-    "ds\",\"Mono\"],\"short_options\":[\"Stk\",\"Splt\",\"Pads\",\"Mono\"],\"default\":0},{\"key\":\"split\",\"name\":\"Split P"
-    "oint\",\"short_name\":\"Split\",\"type\":\"int\",\"min\":24,\"max\":96,\"step\":1,\"default\":60,\"card_script\":\"cards"
-    ".js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"vel\",\"name\":\"Velocity\",\"short_name\":\"Vel\",\"type\":\""
-    "float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.5},{\"key\":\"wheel\",\"name\":\"Mod Wheel\",\"short_name\":\"Wh"
-    "eel\",\"type\":\"enum\",\"options\":[\"Vibrato\",\"Animate\",\"Cutoff\",\"Variation\"],\"short_options\":[\"Vib\",\"Anim"
-    "\",\"Cut\",\"Var\"],\"default\":0},{\"key\":\"ln_mode\",\"name\":\"Mono Mode\",\"short_name\":\"Mode\",\"type\":\"enum\",\"o"
-    "ptions\":[\"Mono\",\"Legato\",\"Poly\"],\"short_options\":[\"Mono\",\"Leg\",\"Poly\"],\"default\":1},{\"key\":\"tx_latch"
-    "\",\"name\":\"Pads Latch\",\"short_name\":\"Latch\",\"type\":\"enum\",\"options\":[\"Off\",\"On\"],\"default\":0,\"viz\":{\""
-    "kind\":\"switch\"}},{\"key\":\"preset\",\"name\":\"Preset\",\"type\":\"int\",\"min\":0,\"max\":35,\"step\":1}]";
+    "m\",\"options\":[\"Variation\",\"Pitch\",\"Filter\",\"Pan\",\"Level\",\"Filter+Wave\"],\"short_options\":[\"Var\",\"Ptch"
+    "\",\"Filt\",\"Pan\",\"Lvl\",\"F+W\"],\"default\":0},{\"key\":\"vib\",\"name\":\"Vibrato\",\"short_name\":\"Vib\",\"type\":\"fl"
+    "oat\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0},{\"key\":\"vib_rate\",\"name\":\"Vibrato Rate\",\"short_name\":\""
+    "VRate\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.45},{\"key\":\"ens_type\",\"name\":\"Ensemble"
+    " Type\",\"short_name\":\"EnsTp\",\"type\":\"enum\",\"options\":[\"Strings\",\"Chorus\",\"Both\",\"Deep\"],\"short_option"
+    "s\":[\"Str\",\"Cho\",\"Both\",\"Deep\"],\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\""
+    ":40},{\"key\":\"ln_cut\",\"name\":\"Mono Cutoff\",\"short_name\":\"Cut\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0"
+    ".01,\"default\":0.75,\"viz\":{\"group\":\"lf\",\"role\":\"cutoff\",\"kind\":\"filter\"}},{\"key\":\"ln_res\",\"name\":\"Mon"
+    "o Resonance\",\"short_name\":\"Res\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.15,\"viz\":{\"gr"
+    "oup\":\"lf\",\"role\":\"resonance\",\"kind\":\"filter\"}},{\"key\":\"ln_fenv\",\"name\":\"Mono Filter Env\",\"short_name"
+    "\":\"FEnv\",\"type\":\"float\",\"min\":-1,\"max\":1,\"step\":0.01,\"default\":0.3},{\"key\":\"ln_wenv\",\"name\":\"Mono Wa"
+    "ve Env\",\"short_name\":\"WvEnv\",\"type\":\"float\",\"min\":-1,\"max\":1,\"step\":0.01,\"default\":0},{\"key\":\"ln_det"
+    "\",\"name\":\"Mono Detune\",\"short_name\":\"Detun\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.2"
+    "2},{\"key\":\"ln_int\",\"name\":\"Mono Interval\",\"short_name\":\"Intvl\",\"type\":\"int\",\"min\":-24,\"max\":24,\"step"
+    "\":1,\"default\":0,\"unit\":\"st\"},{\"key\":\"ln_glide\",\"name\":\"Mono Glide\",\"short_name\":\"Glide\",\"type\":\"floa"
+    "t\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0},{\"key\":\"ln_sus\",\"name\":\"Mono Envelope\",\"short_name\":\"Env"
+    "Md\",\"type\":\"enum\",\"options\":[\"Trigger\",\"Sustain\"],\"short_options\":[\"Trig\",\"Sus\"],\"default\":1},{\"key\""
+    ":\"arp_mode\",\"name\":\"Arp Type\",\"short_name\":\"Type\",\"type\":\"enum\",\"options\":[\"Off\",\"Up\",\"Down\",\"Up/Dow"
+    "n\",\"Down/Up\",\"Random\",\"Order\",\"Chord\",\"Leap In\",\"Leap Out\",\"Pattern\"],\"short_options\":[\"Off\",\"Up\",\"D"
+    "own\",\"UpDn\",\"DnUp\",\"Rnd\",\"Ord\",\"Chrd\",\"LpIn\",\"LpOt\",\"Patt\"],\"default\":0,\"card_script\":\"cards.js#quar"
+    "k_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_src\",\"name\":\"Arp Source\",\"short_name\":\"Src\",\"type\":\"en"
+    "um\",\"options\":[\"Keys\",\"Pads Chord\"],\"short_options\":[\"Keys\",\"Chrd\"],\"default\":1,\"card_script\":\"cards"
+    ".js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_rate\",\"name\":\"Arp Rate\",\"short_name\":\"Rate\",\"t"
+    "ype\":\"enum\",\"options\":[\"1/4\",\"1/8D\",\"1/8\",\"1/8T\",\"1/16\",\"1/16T\",\"1/32\"],\"default\":4},{\"key\":\"arp_oct"
+    "\",\"name\":\"Arp Octaves\",\"short_name\":\"Oct\",\"type\":\"enum\",\"options\":[\"0\",\"+1\",\"+2\",\"+3\",\"-1\",\"-2\",\"-3\""
+    ",\"-1..+1\",\"-2..+2\"],\"short_options\":[\"0\",\"+1\",\"+2\",\"+3\",\"-1\",\"-2\",\"-3\",\"+-1\",\"+-2\"],\"default\":0,\"car"
+    "d_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_gate\",\"name\":\"Arp Gate\",\"short"
+    "_name\":\"Gate\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.55,\"card_script\":\"cards.js#quar"
+    "k_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_swing\",\"name\":\"Arp Swing\",\"short_name\":\"Swing\",\"type\":"
+    "\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"ca"
+    "rd_h\":40},{\"key\":\"arp_hold\",\"name\":\"Arp Latch\",\"short_name\":\"Latch\",\"type\":\"enum\",\"options\":[\"Off\",\""
+    "On\"],\"default\":0,\"viz\":{\"kind\":\"switch\"}},{\"key\":\"arp_rhy\",\"name\":\"Arp Rhythm\",\"short_name\":\"Rhym\",\""
+    "type\":\"int\",\"min\":0,\"max\":39,\"step\":1,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\""
+    "card_h\":40},{\"key\":\"arp_pat\",\"name\":\"Arp Pattern\",\"short_name\":\"Patt\",\"type\":\"int\",\"min\":0,\"max\":39,"
+    "\"step\":1,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_drop\""
+    ",\"name\":\"Arp Drop\",\"short_name\":\"Drop\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"card_"
+    "script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_vel\",\"name\":\"Arp Velocity\",\"shor"
+    "t_name\":\"Vel\",\"type\":\"int\",\"min\":0,\"max\":127,\"step\":1,\"default\":0,\"card_script\":\"cards.js#quark_card"
+    "\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_vrnd\",\"name\":\"Arp Vel Random\",\"short_name\":\"VRnd\",\"type\":\"fl"
+    "oat\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_"
+    "h\":40},{\"key\":\"arp_grnd\",\"name\":\"Arp Gate Random\",\"short_name\":\"GRnd\",\"type\":\"float\",\"min\":0,\"max\":1"
+    ",\"step\":0.01,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_o"
+    "rnd\",\"name\":\"Arp Oct Random\",\"short_name\":\"ORnd\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default"
+    "\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_nrnd\",\"name\":\"Arp Note"
+    " Random\",\"short_name\":\"NRnd\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"card_script\":\"c"
+    "ards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_loop\",\"name\":\"Arp Var Loop\",\"short_name\":\""
+    "Loop\",\"type\":\"int\",\"min\":0,\"max\":32,\"step\":1,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w"
+    "\":104,\"card_h\":40},{\"key\":\"fx_tone\",\"name\":\"Effect Control 2\",\"short_name\":\"Ctrl2\",\"type\":\"float\",\"m"
+    "in\":0,\"max\":1,\"step\":0.01,\"default\":0.4},{\"key\":\"rv_size\",\"name\":\"Reverb Size\",\"short_name\":\"Size\",\""
+    "type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.6},{\"key\":\"rv_tone\",\"name\":\"Reverb Tone\",\"shor"
+    "t_name\":\"Tone\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.55},{\"key\":\"tx_fx\",\"name\":\"Pad"
+    "s FX Route\",\"short_name\":\"PdFX\",\"type\":\"enum\",\"options\":[\"FX+Rev\",\"Rev\",\"Dry\"],\"short_options\":[\"All"
+    "\",\"Rev\",\"Dry\"],\"default\":0},{\"key\":\"ln_fx\",\"name\":\"Mono FX Route\",\"short_name\":\"MnFX\",\"type\":\"enum\","
+    "\"options\":[\"FX+Rev\",\"Rev\",\"Dry\"],\"short_options\":[\"All\",\"Rev\",\"Dry\"],\"default\":0},{\"key\":\"ln_spread\""
+    ",\"name\":\"Mono Spread\",\"short_name\":\"Wide\",\"type\":\"float\",\"min\":-1,\"max\":1,\"step\":0.01,\"default\":0},{"
+    "\"key\":\"ln_dly\",\"name\":\"Mono Delay\",\"short_name\":\"Delay\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\""
+    "default\":0},{\"key\":\"ln_dtime\",\"name\":\"Mono Delay Time\",\"short_name\":\"Time\",\"type\":\"enum\",\"options\":["
+    "\"1/32\",\"1/16T\",\"1/16\",\"1/8T\",\"1/16D\",\"1/8\",\"1/4T\",\"1/8D\",\"1/4\",\"1/2T\",\"1/4D\",\"1/2\"],\"short_options\":"
+    "[\"32\",\"16T\",\"16\",\"8T\",\"16D\",\"8\",\"4T\",\"8D\",\"4\",\"2T\",\"4D\",\"2\"],\"default\":7},{\"key\":\"tx_oct\",\"name\":\"Pa"
+    "ds Octave\",\"short_name\":\"PdOct\",\"type\":\"int\",\"min\":-2,\"max\":2,\"step\":1,\"default\":0,\"unit\":\"oct\"},{\"k"
+    "ey\":\"ln_oct\",\"name\":\"Mono Octave\",\"short_name\":\"MnOct\",\"type\":\"int\",\"min\":-2,\"max\":2,\"step\":1,\"defau"
+    "lt\":0,\"unit\":\"oct\"},{\"key\":\"key_mode\",\"name\":\"Key Mode\",\"short_name\":\"Keys\",\"type\":\"enum\",\"options\":"
+    "[\"Stack\",\"Split\",\"Pads\",\"Mono\"],\"short_options\":[\"Stk\",\"Splt\",\"Pads\",\"Mono\"],\"default\":0},{\"key\":\"sp"
+    "lit\",\"name\":\"Split Point\",\"short_name\":\"Split\",\"type\":\"int\",\"min\":24,\"max\":96,\"step\":1,\"default\":60,"
+    "\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"vel\",\"name\":\"Velocity\",\"short_"
+    "name\":\"Vel\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.5},{\"key\":\"wheel\",\"name\":\"Mod Whe"
+    "el\",\"short_name\":\"Wheel\",\"type\":\"enum\",\"options\":[\"Vibrato\",\"Animate\",\"Cutoff\",\"Variation\"],\"short_o"
+    "ptions\":[\"Vib\",\"Anim\",\"Cut\",\"Var\"],\"default\":0},{\"key\":\"ln_mode\",\"name\":\"Mono Mode\",\"short_name\":\"Mo"
+    "de\",\"type\":\"enum\",\"options\":[\"Mono\",\"Legato\",\"Poly\"],\"short_options\":[\"Mono\",\"Leg\",\"Poly\"],\"default\""
+    ":1},{\"key\":\"tx_latch\",\"name\":\"Pads Latch\",\"short_name\":\"Latch\",\"type\":\"enum\",\"options\":[\"Off\",\"On\"],"
+    "\"default\":0,\"viz\":{\"kind\":\"switch\"}},{\"key\":\"an_lfo2\",\"name\":\"LFO 2 Rate\",\"short_name\":\"LFO2\",\"type\""
+    ":\"float\",\"min\":-4,\"max\":4,\"step\":0.01,\"default\":1,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\""
+    "card_h\":40},{\"key\":\"preset\",\"name\":\"Preset\",\"type\":\"int\",\"min\":0,\"max\":36,\"step\":1}]";
 
 const char quark_ui_hierarchy[] =
     "{\"levels\":{\"root\":{\"label\":\"Quark\",\"knobs\":[\"tx_type\",\"tx_var\",\"tx_anim\",\"tx_depth\",\"tx_a\",\"tx_d\",\"t"
@@ -189,20 +191,90 @@ const char quark_ui_hierarchy[] =
     "res\",\"flt_type\",\"flt_env\",\"me_a\",\"me_d\",\"me_s\",\"me_r\"]},\"pdrive\":{\"label\":\"Pads Drive\",\"knobs\":[\"tx_"
     "drive\",\"tx_drvpos\",\"tx_dtone\",\"tx_spread\",\"tx_detune\",\"tx_bloom\",\"tx_voices\",\"flt_key\"],\"params\":[\"t"
     "x_drive\",\"tx_drvpos\",\"tx_dtone\",\"tx_spread\",\"tx_detune\",\"tx_bloom\",\"tx_voices\",\"flt_key\"]},\"pmotion\""
-    ":{\"label\":\"Pads Motion\",\"knobs\":[\"an_shape\",\"an_rate\",\"tx_anim\",\"an_dest\",\"ens_amt\",\"ens_type\",null,"
-    "\"tx_latch\"],\"params\":[\"an_shape\",\"an_rate\",\"tx_anim\",\"an_dest\",\"ens_amt\",\"ens_type\",\"tx_latch\"]},\"mo"
-    "no\":{\"label\":\"Mono\",\"knobs\":[\"ln_shape\",\"ln_var\",\"ln_det\",\"ln_int\",\"ln_a\",\"ln_d\",\"ln_sus\",\"ln_mode\"]"
-    ",\"params\":[\"ln_shape\",\"ln_var\",\"ln_det\",\"ln_int\",\"ln_a\",\"ln_d\",\"ln_sus\",\"ln_mode\"]},\"mtone\":{\"label\""
-    ":\"Mono Filter\",\"knobs\":[\"ln_cut\",\"ln_res\",\"ln_wenv\",\"ln_fenv\",\"ln_glide\",\"ln_spread\",\"ln_dly\",\"ln_dt"
-    "ime\"],\"params\":[\"ln_cut\",\"ln_res\",\"ln_wenv\",\"ln_fenv\",\"ln_glide\",\"ln_spread\",\"ln_dly\",\"ln_dtime\"]},\""
-    "arp\":{\"label\":\"Mono Arp\",\"knobs\":[\"arp_mode\",\"arp_src\",\"arp_rate\",\"arp_oct\",\"arp_gate\",\"arp_swing\",\""
-    "arp_hold\",\"arp_rhy\"],\"params\":[\"arp_mode\",\"arp_src\",\"arp_rate\",\"arp_oct\",\"arp_gate\",\"arp_swing\",\"arp"
-    "_hold\",\"arp_rhy\"]},\"arp2\":{\"label\":\"Arp Variation\",\"knobs\":[\"arp_pat\",\"arp_drop\",\"arp_vel\",\"arp_vrnd"
-    "\",\"arp_grnd\",\"arp_ornd\",\"arp_nrnd\",\"arp_loop\"],\"params\":[\"arp_pat\",\"arp_drop\",\"arp_vel\",\"arp_vrnd\",\""
-    "arp_grnd\",\"arp_ornd\",\"arp_nrnd\",\"arp_loop\"]},\"mix\":{\"label\":\"Mix & Effect\",\"knobs\":[\"tx_vol\",\"ln_vol"
-    "\",\"tx_fx\",\"ln_fx\",\"fx_type\",\"fx_ctrl\",\"fx_tone\",\"fx_amt\"],\"params\":[\"tx_vol\",\"ln_vol\",\"tx_fx\",\"ln_fx"
-    "\",\"fx_type\",\"fx_ctrl\",\"fx_tone\",\"fx_amt\"]},\"space\":{\"label\":\"Reverb\",\"knobs\":[\"rv_decay\",\"rv_size\",\""
-    "rv_tone\",\"rv_amt\",\"sh_pitch\",\"sh_amt\",\"vintage\",\"vol\"],\"params\":[\"rv_decay\",\"rv_size\",\"rv_tone\",\"rv_"
-    "amt\",\"sh_pitch\",\"sh_amt\",\"vintage\",\"vol\"]},\"play\":{\"label\":\"Play\",\"knobs\":[\"tx_oct\",\"ln_oct\",\"key_mo"
-    "de\",\"split\",\"vel\",\"wheel\",\"vib\",\"vib_rate\"],\"params\":[\"tx_oct\",\"ln_oct\",\"key_mode\",\"split\",\"vel\",\"wh"
-    "eel\",\"vib\",\"vib_rate\"]}}}";
+    ":{\"label\":\"Pads Motion\",\"knobs\":[\"an_shape\",\"an_rate\",\"tx_anim\",\"an_dest\",\"ens_amt\",\"ens_type\",\"an_l"
+    "fo2\",\"tx_latch\"],\"params\":[\"an_shape\",\"an_rate\",\"tx_anim\",\"an_dest\",\"ens_amt\",\"ens_type\",\"an_lfo2\",\""
+    "tx_latch\"]},\"mono\":{\"label\":\"Mono\",\"knobs\":[\"ln_shape\",\"ln_var\",\"ln_det\",\"ln_int\",\"ln_a\",\"ln_d\",\"ln_"
+    "sus\",\"ln_mode\"],\"params\":[\"ln_shape\",\"ln_var\",\"ln_det\",\"ln_int\",\"ln_a\",\"ln_d\",\"ln_sus\",\"ln_mode\"]},\""
+    "mtone\":{\"label\":\"Mono Filter\",\"knobs\":[\"ln_cut\",\"ln_res\",\"ln_wenv\",\"ln_fenv\",\"ln_glide\",\"ln_spread\","
+    "\"ln_dly\",\"ln_dtime\"],\"params\":[\"ln_cut\",\"ln_res\",\"ln_wenv\",\"ln_fenv\",\"ln_glide\",\"ln_spread\",\"ln_dly\""
+    ",\"ln_dtime\"]},\"arp\":{\"label\":\"Mono Arp\",\"knobs\":[\"arp_mode\",\"arp_src\",\"arp_rate\",\"arp_oct\",\"arp_gate"
+    "\",\"arp_swing\",\"arp_hold\",\"arp_rhy\"],\"params\":[\"arp_mode\",\"arp_src\",\"arp_rate\",\"arp_oct\",\"arp_gate\",\""
+    "arp_swing\",\"arp_hold\",\"arp_rhy\"]},\"arp2\":{\"label\":\"Arp Variation\",\"knobs\":[\"arp_pat\",\"arp_drop\",\"arp"
+    "_vel\",\"arp_vrnd\",\"arp_grnd\",\"arp_ornd\",\"arp_nrnd\",\"arp_loop\"],\"params\":[\"arp_pat\",\"arp_drop\",\"arp_ve"
+    "l\",\"arp_vrnd\",\"arp_grnd\",\"arp_ornd\",\"arp_nrnd\",\"arp_loop\"]},\"mix\":{\"label\":\"Mix & Effect\",\"knobs\":[\""
+    "tx_vol\",\"ln_vol\",\"tx_fx\",\"ln_fx\",\"fx_type\",\"fx_ctrl\",\"fx_tone\",\"fx_amt\"],\"params\":[\"tx_vol\",\"ln_vol\""
+    ",\"tx_fx\",\"ln_fx\",\"fx_type\",\"fx_ctrl\",\"fx_tone\",\"fx_amt\"]},\"space\":{\"label\":\"Reverb\",\"knobs\":[\"rv_dec"
+    "ay\",\"rv_size\",\"rv_tone\",\"rv_amt\",\"sh_pitch\",\"sh_amt\",\"vintage\",\"vol\"],\"params\":[\"rv_decay\",\"rv_size\""
+    ",\"rv_tone\",\"rv_amt\",\"sh_pitch\",\"sh_amt\",\"vintage\",\"vol\"]},\"play\":{\"label\":\"Play\",\"knobs\":[\"tx_oct\",\""
+    "ln_oct\",\"key_mode\",\"split\",\"vel\",\"wheel\",\"vib\",\"vib_rate\"],\"params\":[\"tx_oct\",\"ln_oct\",\"key_mode\",\"s"
+    "plit\",\"vel\",\"wheel\",\"vib\",\"vib_rate\"]}}}";
+
+const int quark_cp_nfrag = 65;
+const short quark_cp_hole[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115};
+const char *const quark_cp_frag[] = {
+    "[{\"key\":\"tx_type\",\"name\":\"Pads Type\",\"short_name\":\"Type\",\"type\":\"enum\",\"options\":[\"Strings\",\"Vintage" "\",\"Brass\",\"Organ\",\"Choir\",\"Poly Saw\",\"Square\",\"Drawbar\",\"Reed\",\"Resonant\",\"Mallet\",\"Bellish\",\"Add Ha" "rm\",\"Vocal\",\"Glass\",\"Fifths\",\"Minor 9\",\"Major 9\",\"Dom 11\",\"Fourths\",\"E.Piano\",\"FM Bells\",\"FM Keys\",\"" "FM Glass\",\"Metal\",\"FM Pad\",\"Basic\",\"Pulse\",\"Resonant WT\",\"Resonant 2\",\"Sync\",\"Formant A\",\"Formant B\"" ",\"Harmonic\",\"Odd\",\"Bell\",\"Organ WT\",\"Digital\",\"Noise\",\"PWM Saw\",\"Fold\",\"Steps\",\"Strings WT\",\"Brass W" "T\",\"Bass Spectra\",\"Choir WT\",\"Glass WT\",\"Chaos\",\"Comb\",\"PhaseDist\",\"Fractal\",\"Upper\",\"Clav\",\"Breath\"" ",\"SqSync\",\"Metal WT\",\"Stack\",\"Granite\",\"Cello\",\"Violin\",\"Voice\",\"EPiano\",\"Clavinet\",\"E-Organ\",\"FM\",\"" "Chip\",\"VGame\",\"Sax\",\"Flute\",\"Overtone\",\"Crushed\",\"Granular\",\"Upright\",\"Piano\",\"Even\",\"Partials\",\"Fee" "dback\",\"Window\",\"Rave\",\"Octaves\",\"Logic\",\"Reed WT\",\"Pluck\",\"Sweep\",\"Chord\",\"Vosim\",\"Scanned\",\"Prime\"" ",\"SineSync\",\"Mallet WT\",\"Mixer\",\"Sub\",\"Notch\",\"Drive\",\"E-Bass\",\"E-Guitar\",\"Distorted\",\"Theremin\",\"Ra" "w\",\"Drawn\"",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "],\"short_options\":[\"Str\",\"Vint\",\"Bras\",\"Orgn\",\"Chor\",\"PSaw\",\"Sqr\",\"Draw\",\"Reed\",\"Reso\",\"Malt\",\"Bell\"" ",\"Add\",\"Vox\",\"Glas\",\"5ths\",\"Min9\",\"Maj9\",\"Dm11\",\"4ths\",\"EP\",\"FMBl\",\"Keys\",\"FMGl\",\"Metl\",\"FMPd\",\"Basi" "\",\"Puls\",\"RsWT\",\"Res2\",\"Sync\",\"Frmn\",\"Form\",\"Hrmn\",\"Odd\",\"Blll\",\"OrWT\",\"Dgtl\",\"Nois\",\"PWMS\",\"Fold\",\"" "Stps\",\"StWT\",\"BrWT\",\"BssS\",\"ChWT\",\"GlWT\",\"Chao\",\"Comb\",\"PhsD\",\"Frct\",\"Uppr\",\"Clav\",\"Brth\",\"SqSy\",\"Mt" "WT\",\"Stck\",\"Grnt\",\"Cell\",\"Viol\",\"Voic\",\"EPia\",\"Clvn\",\"Ergn\",\"FM\",\"Chip\",\"VGam\",\"Sax\",\"Flut\",\"Ovrt\",\"" "Crsh\",\"Grnl\",\"Uprg\",\"Pian\",\"Even\",\"Prtl\",\"Fdbc\",\"Wndw\",\"Rave\",\"Octv\",\"Logi\",\"RdWT\",\"Plck\",\"Swee\",\"Ch" "rd\",\"Vosi\",\"Scnn\",\"Prim\",\"SnSy\",\"MlWT\",\"Mixe\",\"Sub\",\"Ntch\",\"Driv\",\"EBss\",\"EGtr\",\"Dstr\",\"Thrm\",\"Raw\"," "\"Drwn\"",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "],\"default\":0,\"viz\":{\"group\":\"txw\",\"role\":\"type\",\"kind\":\"custom:qwave\"},\"card_script\":\"cards.js#quar" "k_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"tx_var\",\"name\":\"Variation\",\"short_name\":\"Var\",\"type\":\"floa" "t\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.3,\"viz\":{\"group\":\"txw\",\"role\":\"variation\",\"kind\":\"custom:" "qwave\"},\"live\":true},{\"key\":\"tx_anim\",\"name\":\"Animate\",\"short_name\":\"Anim\",\"type\":\"float\",\"min\":0,\"m" "ax\":1,\"step\":0.01,\"default\":0.25},{\"key\":\"tx_depth\",\"name\":\"Var Env\",\"short_name\":\"VEnv\",\"type\":\"flo" "at\",\"min\":-1,\"max\":1,\"step\":0.01,\"default\":0},{\"key\":\"tx_a\",\"name\":\"Pads Attack\",\"short_name\":\"Atk\"," "\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.32,\"viz\":{\"group\":\"tx\",\"role\":\"attack\",\"kind\"" ":\"envelope\"}},{\"key\":\"tx_d\",\"name\":\"Pads Decay\",\"short_name\":\"Dec\",\"type\":\"float\",\"min\":0,\"max\":1,\"s" "tep\":0.01,\"default\":0.5,\"viz\":{\"group\":\"tx\",\"role\":\"decay\",\"kind\":\"envelope\"}},{\"key\":\"tx_s\",\"name\":" "\"Pads Sustain\",\"short_name\":\"Sus\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.85,\"viz\":{\"" "group\":\"tx\",\"role\":\"sustain\",\"kind\":\"envelope\"}},{\"key\":\"tx_r\",\"name\":\"Pads Release\",\"short_name\":\"R" "el\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.5,\"viz\":{\"group\":\"tx\",\"role\":\"release\",\"k" "ind\":\"envelope\"}},{\"key\":\"ln_shape\",\"name\":\"Mono Shape\",\"short_name\":\"Shape\",\"type\":\"enum\",\"options\"" ":[\"Saw\",\"Pulse\",\"Saw+Pulse\",\"Sync\",\"Poly Saw\",\"Square\",\"Drawbar\",\"Reed\",\"Resonant\",\"Mallet\",\"Bellish" "\",\"Add Harm\",\"Vocal\",\"Glass\",\"Fifths\",\"Minor 9\",\"Major 9\",\"Dom 11\",\"Fourths\",\"Basic\",\"Pulse WT\",\"Res" "onant WT\",\"Resonant 2\",\"Sync WT\",\"Formant A\",\"Formant B\",\"Harmonic\",\"Odd\",\"Bell\",\"Organ WT\",\"Digital" "\",\"Noise\",\"PWM Saw\",\"Fold\",\"Steps\",\"Strings WT\",\"Brass WT\",\"Bass Spectra\",\"Choir WT\",\"Glass WT\",\"Cha" "os\",\"Comb\",\"PhaseDist\",\"Fractal\",\"Upper\",\"Clav\",\"Breath\",\"SqSync\",\"Metal WT\",\"Stack\",\"Granite\",\"Cell" "o\",\"Violin\",\"Voice\",\"EPiano\",\"Clavinet\",\"E-Organ\",\"FM\",\"Chip\",\"VGame\",\"Sax\",\"Flute\",\"Overtone\",\"Crus" "hed\",\"Granular\",\"Upright\",\"Piano\",\"Even\",\"Partials\",\"Feedback\",\"Window\",\"Rave\",\"Octaves\",\"Logic\",\"Re" "ed WT\",\"Pluck\",\"Sweep\",\"Chord\",\"Vosim\",\"Scanned\",\"Prime\",\"SineSync\",\"Mallet WT\",\"Mixer\",\"Sub\",\"Notch" "\",\"Drive\",\"E-Bass\",\"E-Guitar\",\"Distorted\",\"Theremin\",\"Raw\",\"Drawn\"",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "],\"short_options\":[\"Saw\",\"Puls\",\"S+P\",\"Sync\",\"PSaw\",\"Sqr\",\"Draw\",\"Reed\",\"Reso\",\"Malt\",\"Bell\",\"Add\",\"" "Vox\",\"Glas\",\"5ths\",\"Min9\",\"Maj9\",\"Dm11\",\"4ths\",\"Basi\",\"PeWT\",\"RsWT\",\"Res2\",\"ScWT\",\"Frmn\",\"Form\",\"Hrm" "n\",\"Odd\",\"Blll\",\"OrWT\",\"Dgtl\",\"Nois\",\"PWMS\",\"Fold\",\"Stps\",\"StWT\",\"BrWT\",\"BssS\",\"ChWT\",\"GlWT\",\"Chao\"," "\"Comb\",\"PhsD\",\"Frct\",\"Uppr\",\"Clav\",\"Brth\",\"SqSy\",\"MtWT\",\"Stck\",\"Grnt\",\"Cell\",\"Viol\",\"Voic\",\"EPia\",\"C" "lvn\",\"Ergn\",\"FM\",\"Chip\",\"VGam\",\"Sax\",\"Flut\",\"Ovrt\",\"Crsh\",\"Grnl\",\"Uprg\",\"Pian\",\"Even\",\"Prtl\",\"Fdbc\"," "\"Wndw\",\"Rave\",\"Octv\",\"Logi\",\"RdWT\",\"Plck\",\"Swee\",\"Chrd\",\"Vosi\",\"Scnn\",\"Prim\",\"SnSy\",\"MlWT\",\"Mixe\",\"S" "ub\",\"Ntch\",\"Driv\",\"EBss\",\"EGtr\",\"Dstr\",\"Thrm\",\"Raw\",\"Drwn\"",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "],\"default\":0,\"viz\":{\"group\":\"lnw\",\"role\":\"shape\",\"kind\":\"custom:qline\"},\"card_script\":\"cards.js#qua" "rk_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"ln_var\",\"name\":\"Mono Variation\",\"short_name\":\"Var\",\"type\"" ":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.15,\"viz\":{\"group\":\"lnw\",\"role\":\"variation\",\"kind\":\"" "custom:qline\"}},{\"key\":\"ln_a\",\"name\":\"Mono Attack\",\"short_name\":\"Atk\",\"type\":\"float\",\"min\":0,\"max\":1" ",\"step\":0.01,\"default\":0.04,\"viz\":{\"group\":\"ln\",\"role\":\"attack\",\"kind\":\"envelope\"}},{\"key\":\"ln_d\",\"n" "ame\":\"Mono Decay\",\"short_name\":\"Dec\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.42,\"viz\"" ":{\"group\":\"ln\",\"role\":\"decay\",\"kind\":\"envelope\"}},{\"key\":\"ens_amt\",\"name\":\"Pads Ensemble\",\"short_nam" "e\":\"Ens\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.65,\"card_script\":\"cards.js#quark_car" "d\",\"card_w\":104,\"card_h\":40},{\"key\":\"tx_vol\",\"name\":\"Pads Volume\",\"short_name\":\"PdVol\",\"type\":\"float" "\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.8,\"viz\":{\"kind\":\"fader\"}},{\"key\":\"ln_vol\",\"name\":\"Mono Vol" "ume\",\"short_name\":\"MnVol\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"viz\":{\"kind\":\"fade" "r\"}},{\"key\":\"vintage\",\"name\":\"Vintage\",\"short_name\":\"Vint\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.0" "1,\"default\":0.25},{\"key\":\"fx_ctrl\",\"name\":\"Effect Control\",\"short_name\":\"Ctrl\",\"type\":\"float\",\"min\":" "0,\"max\":1,\"step\":0.01,\"default\":0.3},{\"key\":\"fx_amt\",\"name\":\"Effect Amount\",\"short_name\":\"FxAmt\",\"ty" "pe\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0},{\"key\":\"sh_pitch\",\"name\":\"Shimmer Pitch\",\"short" "_name\":\"Pitch\",\"type\":\"enum\",\"options\":[\"-12\",\"-7\",\"-5\",\"+5\",\"+7\",\"+12\",\"+19\",\"+24\"],\"default\":5,\"ca" "rd_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"sh_amt\",\"name\":\"Shimmer Amount\",\"" "short_name\":\"Shim\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"card_script\":\"cards.js#qu" "ark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"rv_decay\",\"name\":\"Reverb Decay\",\"short_name\":\"Decay\",\"ty" "pe\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.5},{\"key\":\"rv_amt\",\"name\":\"Reverb Amount\",\"short" "_name\":\"Rvb\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.28},{\"key\":\"fx_type\",\"name\":\"Eff" "ect Type\",\"short_name\":\"FxTyp\",\"type\":\"enum\",\"options\":[\"Chorus\",\"Chorus 2\",\"Flanger\",\"Flanger 2\",\"P" "haser\",\"Phaser 2\",\"Tremolo\",\"Drive\",\"Delay\",\"Ping Pong\",\"Tape Echo\"],\"short_options\":[\"Cho\",\"Cho2\",\"" "Flng\",\"Flg2\",\"Phas\",\"Phs2\",\"Trem\",\"Drv\",\"Dly\",\"Ping\",\"Tape\"],\"default\":0},{\"key\":\"vol\",\"name\":\"Volum" "e\",\"short_name\":\"Vol\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.75,\"viz\":{\"kind\":\"fader" "\"}},{\"key\":\"flt_type\",\"name\":\"Filter Type\",\"short_name\":\"Type\",\"type\":\"enum\",\"options\":[\"Off\",\"LP12\"" ",\"LP24\",\"HP12\",\"BP12\",\"BP24\",\"Dual BP\",\"Notch\",\"Comb+\",\"Comb-\",\"Morph\"],\"short_options\":[\"Off\",\"LP12" "\",\"LP24\",\"HP12\",\"BP12\",\"BP24\",\"2BP\",\"Ntch\",\"Cmb+\",\"Cmb-\",\"Mrph\"],\"default\":1},{\"key\":\"flt_cut\",\"name" "\":\"Cutoff\",\"short_name\":\"Cut\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.9,\"viz\":{\"group" "\":\"flt\",\"role\":\"cutoff\",\"kind\":\"custom:qflt\"},\"live\":true},{\"key\":\"flt_res\",\"name\":\"Resonance\",\"shor" "t_name\":\"Res\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.1,\"viz\":{\"group\":\"flt\",\"role\":\"" "resonance\",\"kind\":\"custom:qflt\"}},{\"key\":\"flt_env\",\"name\":\"Filter Env\",\"short_name\":\"FEnv\",\"type\":\"f" "loat\",\"min\":-1,\"max\":1,\"step\":0.01,\"default\":0},{\"key\":\"me_a\",\"name\":\"Mod Env Attack\",\"short_name\":\"" "Atk\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"viz\":{\"group\":\"me\",\"role\":\"attack\",\"kin" "d\":\"envelope\"}},{\"key\":\"me_d\",\"name\":\"Mod Env Decay\",\"short_name\":\"Dec\",\"type\":\"float\",\"min\":0,\"max\"" ":1,\"step\":0.01,\"default\":0.5,\"viz\":{\"group\":\"me\",\"role\":\"decay\",\"kind\":\"envelope\"}},{\"key\":\"me_s\",\"n" "ame\":\"Mod Env Sustain\",\"short_name\":\"Sus\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"vi" "z\":{\"group\":\"me\",\"role\":\"sustain\",\"kind\":\"envelope\"}},{\"key\":\"me_r\",\"name\":\"Mod Env Release\",\"short_" "name\":\"Rel\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.4,\"viz\":{\"group\":\"me\",\"role\":\"rel" "ease\",\"kind\":\"envelope\"}},{\"key\":\"tx_drive\",\"name\":\"Pads Drive\",\"short_name\":\"Drive\",\"type\":\"float\"," "\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"viz\":{\"group\":\"drv\",\"role\":\"drive\",\"kind\":\"custom:qdrive\"}}" ",{\"key\":\"tx_drvpos\",\"name\":\"Drive Position\",\"short_name\":\"DrvPs\",\"type\":\"enum\",\"options\":[\"Pre Filte" "r\",\"Post Filter\",\"Amp\"],\"short_options\":[\"Pre\",\"Post\",\"Amp\"],\"default\":0,\"viz\":{\"group\":\"drv\",\"role\"" ":\"position\",\"kind\":\"custom:qdrive\"}},{\"key\":\"tx_dtone\",\"name\":\"Drive Tone\",\"short_name\":\"DTone\",\"typ" "e\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.7},{\"key\":\"tx_detune\",\"name\":\"Pads Detune\",\"short" "_name\":\"Detun\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"viz\":{\"group\":\"det\",\"role\":\"d" "etune\",\"kind\":\"custom:qdet\"},\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"t" "x_bloom\",\"name\":\"Detune Bloom\",\"short_name\":\"Bloom\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"defa" "ult\":0,\"viz\":{\"group\":\"det\",\"role\":\"bloom\",\"kind\":\"custom:qdet\"},\"card_script\":\"cards.js#quark_card\"" ",\"card_w\":104,\"card_h\":40},{\"key\":\"tx_spread\",\"name\":\"Spread\",\"short_name\":\"Sprd\",\"type\":\"float\",\"mi" "n\":0,\"max\":1,\"step\":0.01,\"default\":0.3},{\"key\":\"tx_voices\",\"name\":\"Pads Voices\",\"short_name\":\"Voics\"" ",\"type\":\"int\",\"min\":2,\"max\":12,\"step\":1,\"default\":8},{\"key\":\"flt_key\",\"name\":\"Filter Keytrack\",\"shor" "t_name\":\"KeyTk\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.5},{\"key\":\"an_shape\",\"name\":\"" "Animate Shape\",\"short_name\":\"Shape\",\"type\":\"enum\",\"options\":[\"Sine\",\"Tri\",\"Saw\",\"Square\",\"S&H\",\"Rand" "om\"],\"short_options\":[\"Sine\",\"Tri\",\"Saw\",\"Sqr\",\"S&H\",\"Rnd\"],\"default\":0,\"viz\":{\"group\":\"an\",\"role\":\"" "shape\",\"kind\":\"lfo\"}},{\"key\":\"an_rate\",\"name\":\"Animate Rate\",\"short_name\":\"Rate\",\"type\":\"float\",\"min" "\":0,\"max\":1,\"step\":0.01,\"default\":0.35,\"viz\":{\"group\":\"an\",\"role\":\"rate\",\"kind\":\"lfo\"}},{\"key\":\"an_d" "est\",\"name\":\"Animate Target\",\"short_name\":\"Dest\",\"type\":\"enum\",\"options\":[\"Variation\",\"Pitch\",\"Filte" "r\",\"Pan\",\"Level\",\"Filter+Wave\"],\"short_options\":[\"Var\",\"Ptch\",\"Filt\",\"Pan\",\"Lvl\",\"F+W\"],\"default\":0}" ",{\"key\":\"vib\",\"name\":\"Vibrato\",\"short_name\":\"Vib\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"defaul" "t\":0},{\"key\":\"vib_rate\",\"name\":\"Vibrato Rate\",\"short_name\":\"VRate\",\"type\":\"float\",\"min\":0,\"max\":1,\"s" "tep\":0.01,\"default\":0.45},{\"key\":\"ens_type\",\"name\":\"Ensemble Type\",\"short_name\":\"EnsTp\",\"type\":\"enum" "\",\"options\":[\"Strings\",\"Chorus\",\"Both\",\"Deep\"],\"short_options\":[\"Str\",\"Cho\",\"Both\",\"Deep\"],\"default\"" ":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"ln_cut\",\"name\":\"Mono Cutoff" "\",\"short_name\":\"Cut\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.75,\"viz\":{\"group\":\"lf\",\"" "role\":\"cutoff\",\"kind\":\"filter\"}},{\"key\":\"ln_res\",\"name\":\"Mono Resonance\",\"short_name\":\"Res\",\"type\":\"" "float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.15,\"viz\":{\"group\":\"lf\",\"role\":\"resonance\",\"kind\":\"fil" "ter\"}},{\"key\":\"ln_fenv\",\"name\":\"Mono Filter Env\",\"short_name\":\"FEnv\",\"type\":\"float\",\"min\":-1,\"max\":1" ",\"step\":0.01,\"default\":0.3},{\"key\":\"ln_wenv\",\"name\":\"Mono Wave Env\",\"short_name\":\"WvEnv\",\"type\":\"flo" "at\",\"min\":-1,\"max\":1,\"step\":0.01,\"default\":0},{\"key\":\"ln_det\",\"name\":\"Mono Detune\",\"short_name\":\"Det" "un\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.22},{\"key\":\"ln_int\",\"name\":\"Mono Interval" "\",\"short_name\":\"Intvl\",\"type\":\"int\",\"min\":-24,\"max\":24,\"step\":1,\"default\":0,\"unit\":\"st\"},{\"key\":\"ln_" "glide\",\"name\":\"Mono Glide\",\"short_name\":\"Glide\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\"" ":0},{\"key\":\"ln_sus\",\"name\":\"Mono Envelope\",\"short_name\":\"EnvMd\",\"type\":\"enum\",\"options\":[\"Trigger\",\"" "Sustain\"],\"short_options\":[\"Trig\",\"Sus\"],\"default\":1},{\"key\":\"arp_mode\",\"name\":\"Arp Type\",\"short_nam" "e\":\"Type\",\"type\":\"enum\",\"options\":[\"Off\",\"Up\",\"Down\",\"Up/Down\",\"Down/Up\",\"Random\",\"Order\",\"Chord\",\"L" "eap In\",\"Leap Out\",\"Pattern\"],\"short_options\":[\"Off\",\"Up\",\"Down\",\"UpDn\",\"DnUp\",\"Rnd\",\"Ord\",\"Chrd\",\"L" "pIn\",\"LpOt\",\"Patt\"],\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\"" ":\"arp_src\",\"name\":\"Arp Source\",\"short_name\":\"Src\",\"type\":\"enum\",\"options\":[\"Keys\",\"Pads Chord\"],\"sho" "rt_options\":[\"Keys\",\"Chrd\"],\"default\":1,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40" "},{\"key\":\"arp_rate\",\"name\":\"Arp Rate\",\"short_name\":\"Rate\",\"type\":\"enum\",\"options\":[\"1/4\",\"1/8D\",\"1/8" "\",\"1/8T\",\"1/16\",\"1/16T\",\"1/32\"],\"default\":4},{\"key\":\"arp_oct\",\"name\":\"Arp Octaves\",\"short_name\":\"Oct" "\",\"type\":\"enum\",\"options\":[\"0\",\"+1\",\"+2\",\"+3\",\"-1\",\"-2\",\"-3\",\"-1..+1\",\"-2..+2\"],\"short_options\":[\"0\"" ",\"+1\",\"+2\",\"+3\",\"-1\",\"-2\",\"-3\",\"+-1\",\"+-2\"],\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\"" ":104,\"card_h\":40},{\"key\":\"arp_gate\",\"name\":\"Arp Gate\",\"short_name\":\"Gate\",\"type\":\"float\",\"min\":0,\"ma" "x\":1,\"step\":0.01,\"default\":0.55,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\"" ":\"arp_swing\",\"name\":\"Arp Swing\",\"short_name\":\"Swing\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"def" "ault\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_hold\",\"name\":\"Arp " "Latch\",\"short_name\":\"Latch\",\"type\":\"enum\",\"options\":[\"Off\",\"On\"],\"default\":0,\"viz\":{\"kind\":\"switch\"}" "},{\"key\":\"arp_rhy\",\"name\":\"Arp Rhythm\",\"short_name\":\"Rhym\",\"type\":\"int\",\"min\":0,\"max\":39,\"step\":1,\"d" "efault\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_pat\",\"name\":\"Arp" " Pattern\",\"short_name\":\"Patt\",\"type\":\"int\",\"min\":0,\"max\":39,\"step\":1,\"default\":0,\"card_script\":\"card" "s.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_drop\",\"name\":\"Arp Drop\",\"short_name\":\"Drop\",\"" "type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":1" "04,\"card_h\":40},{\"key\":\"arp_vel\",\"name\":\"Arp Velocity\",\"short_name\":\"Vel\",\"type\":\"int\",\"min\":0,\"max\"" ":127,\"step\":1,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_" "vrnd\",\"name\":\"Arp Vel Random\",\"short_name\":\"VRnd\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"defaul" "t\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_grnd\",\"name\":\"Arp Gat" "e Random\",\"short_name\":\"GRnd\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"card_script\":\"" "cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"arp_ornd\",\"name\":\"Arp Oct Random\",\"short_name" "\":\"ORnd\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"card_script\":\"cards.js#quark_card\"," "\"card_w\":104,\"card_h\":40},{\"key\":\"arp_nrnd\",\"name\":\"Arp Note Random\",\"short_name\":\"NRnd\",\"type\":\"flo" "at\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h" "\":40},{\"key\":\"arp_loop\",\"name\":\"Arp Var Loop\",\"short_name\":\"Loop\",\"type\":\"int\",\"min\":0,\"max\":32,\"ste" "p\":1,\"default\":0,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"fx_tone\",\"nam" "e\":\"Effect Control 2\",\"short_name\":\"Ctrl2\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0.4}" ",{\"key\":\"rv_size\",\"name\":\"Reverb Size\",\"short_name\":\"Size\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.0" "1,\"default\":0.6},{\"key\":\"rv_tone\",\"name\":\"Reverb Tone\",\"short_name\":\"Tone\",\"type\":\"float\",\"min\":0,\"m" "ax\":1,\"step\":0.01,\"default\":0.55},{\"key\":\"tx_fx\",\"name\":\"Pads FX Route\",\"short_name\":\"PdFX\",\"type\":\"" "enum\",\"options\":[\"FX+Rev\",\"Rev\",\"Dry\"],\"short_options\":[\"All\",\"Rev\",\"Dry\"],\"default\":0},{\"key\":\"ln_f" "x\",\"name\":\"Mono FX Route\",\"short_name\":\"MnFX\",\"type\":\"enum\",\"options\":[\"FX+Rev\",\"Rev\",\"Dry\"],\"short_" "options\":[\"All\",\"Rev\",\"Dry\"],\"default\":0},{\"key\":\"ln_spread\",\"name\":\"Mono Spread\",\"short_name\":\"Wide" "\",\"type\":\"float\",\"min\":-1,\"max\":1,\"step\":0.01,\"default\":0},{\"key\":\"ln_dly\",\"name\":\"Mono Delay\",\"shor" "t_name\":\"Delay\",\"type\":\"float\",\"min\":0,\"max\":1,\"step\":0.01,\"default\":0},{\"key\":\"ln_dtime\",\"name\":\"Mo" "no Delay Time\",\"short_name\":\"Time\",\"type\":\"enum\",\"options\":[\"1/32\",\"1/16T\",\"1/16\",\"1/8T\",\"1/16D\",\"1/" "8\",\"1/4T\",\"1/8D\",\"1/4\",\"1/2T\",\"1/4D\",\"1/2\"],\"short_options\":[\"32\",\"16T\",\"16\",\"8T\",\"16D\",\"8\",\"4T\",\"8D" "\",\"4\",\"2T\",\"4D\",\"2\"],\"default\":7},{\"key\":\"tx_oct\",\"name\":\"Pads Octave\",\"short_name\":\"PdOct\",\"type\":\"" "int\",\"min\":-2,\"max\":2,\"step\":1,\"default\":0,\"unit\":\"oct\"},{\"key\":\"ln_oct\",\"name\":\"Mono Octave\",\"short" "_name\":\"MnOct\",\"type\":\"int\",\"min\":-2,\"max\":2,\"step\":1,\"default\":0,\"unit\":\"oct\"},{\"key\":\"key_mode\",\"n" "ame\":\"Key Mode\",\"short_name\":\"Keys\",\"type\":\"enum\",\"options\":[\"Stack\",\"Split\",\"Pads\",\"Mono\"],\"short_o" "ptions\":[\"Stk\",\"Splt\",\"Pads\",\"Mono\"],\"default\":0},{\"key\":\"split\",\"name\":\"Split Point\",\"short_name\":\"" "Split\",\"type\":\"int\",\"min\":24,\"max\":96,\"step\":1,\"default\":60,\"card_script\":\"cards.js#quark_card\",\"car" "d_w\":104,\"card_h\":40},{\"key\":\"vel\",\"name\":\"Velocity\",\"short_name\":\"Vel\",\"type\":\"float\",\"min\":0,\"max\"" ":1,\"step\":0.01,\"default\":0.5},{\"key\":\"wheel\",\"name\":\"Mod Wheel\",\"short_name\":\"Wheel\",\"type\":\"enum\",\"" "options\":[\"Vibrato\",\"Animate\",\"Cutoff\",\"Variation\"],\"short_options\":[\"Vib\",\"Anim\",\"Cut\",\"Var\"],\"defa" "ult\":0},{\"key\":\"ln_mode\",\"name\":\"Mono Mode\",\"short_name\":\"Mode\",\"type\":\"enum\",\"options\":[\"Mono\",\"Leg" "ato\",\"Poly\"],\"short_options\":[\"Mono\",\"Leg\",\"Poly\"],\"default\":1},{\"key\":\"tx_latch\",\"name\":\"Pads Latch" "\",\"short_name\":\"Latch\",\"type\":\"enum\",\"options\":[\"Off\",\"On\"],\"default\":0,\"viz\":{\"kind\":\"switch\"}},{\"k" "ey\":\"an_lfo2\",\"name\":\"LFO 2 Rate\",\"short_name\":\"LFO2\",\"type\":\"float\",\"min\":-4,\"max\":4,\"step\":0.01,\"d" "efault\":1,\"card_script\":\"cards.js#quark_card\",\"card_w\":104,\"card_h\":40},{\"key\":\"preset\",\"name\":\"Pres" "et\",\"type\":\"int\",\"min\":0,\"max\":36,\"step\":1}]",
+};

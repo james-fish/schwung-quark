@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <sys/stat.h>
 
 #include "plugin_api.h"
 #include "params_gen.h"
@@ -38,6 +39,41 @@ static double now_s(void) {
     struct timespec t;
     clock_gettime(CLOCK_MONOTONIC, &t);
     return (double)t.tv_sec + (double)t.tv_nsec * 1e-9;
+}
+
+/* a mono wavetable WAV: 16-bit PCM, or 32-bit float when fl */
+static void write_wt(const char *path, const float *x, int n, int fl) {
+    FILE *f = fopen(path, "wb");
+    if (!f) return;
+    int bps = fl ? 4 : 2, bytes = n * bps;
+    uint32_t u; uint16_t s;
+    fwrite("RIFF", 1, 4, f); u = 36 + (uint32_t)bytes; fwrite(&u, 4, 1, f);
+    fwrite("WAVEfmt ", 1, 8, f); u = 16; fwrite(&u, 4, 1, f);
+    s = fl ? 3 : 1; fwrite(&s, 2, 1, f); s = 1; fwrite(&s, 2, 1, f);
+    u = 44100; fwrite(&u, 4, 1, f); u = 44100u * (uint32_t)bps; fwrite(&u, 4, 1, f);
+    s = (uint16_t)bps; fwrite(&s, 2, 1, f); s = (uint16_t)(bps * 8); fwrite(&s, 2, 1, f);
+    fwrite("data", 1, 4, f); u = (uint32_t)bytes; fwrite(&u, 4, 1, f);
+    for (int i = 0; i < n; i++) {
+        if (fl) fwrite(&x[i], 4, 1, f);
+        else { int16_t v = (int16_t)lrintf(x[i] * 32000.0f); fwrite(&v, 2, 1, f); }
+    }
+    fclose(f);
+}
+
+/* Goertzel magnitudes at fq[0..nb) over the left channel of nblk blocks */
+static void tones(plugin_api_v2_t *api, void *in, int nblk, const double *fq, int nb, double *g, int *bad) {
+    static int16_t b[256];
+    double re[8] = {0}, im[8] = {0};
+    long nn = 0;
+    for (int k = 0; k < nblk; k++) {
+        api->render_block(in, b, 128);
+        for (int i = 0; i < 128; i++, nn++) {
+            double x = b[2 * i] / 32768.0;
+            if (x != x) (*bad)++;
+            for (int j = 0; j < nb; j++) { double w = 2 * M_PI * fq[j] * nn / 44100.0; re[j] += x * cos(w); im[j] += x * sin(w); }
+        }
+    }
+    for (int j = 0; j < nb; j++) g[j] = sqrt(re[j] * re[j] + im[j] * im[j]) / (double)nn;
 }
 
 static void write_wav(const char *path, const int16_t *pcm, int frames) {
@@ -462,6 +498,181 @@ int main(int argc, char **argv) {
         printf("mono delay: echo window energy off %.5f on %.5f\n", echo[0], echo[1]);
         CHECK(echo[1] > 20.0 * echo[0] + 1e-4, "mono delay repeats");
         api->set_param(in, "ln_dly", "0");
+    }
+
+    /* ---- LFO 2 (Animate Target = Filter+Wave): Variation follows the main LFO, the cutoff LFO 2 at
+     * LFO2 x the rate (counted as sign changes of each offset over 4 s) ---- */
+    {
+        static int16_t lb[256];
+        api->set_param(in, "preset", "0");
+        const char *ls[][2] = {{"tx_anim", "1"}, {"an_shape", "0"}, {"an_rate", "0.6"}, {"tx_var", "0.5"},
+                               {"flt_cut", "0.5"}, {"an_dest", "5"}, {"wheel", "0"}};
+        for (size_t k = 0; k < sizeof ls / sizeof ls[0]; k++) api->set_param(in, ls[k][0], ls[k][1]);
+        const char *ratios[3] = {"1", "2", "-1"};
+        int cv[3], cc[3];
+        for (int r = 0; r < 3; r++) {
+            api->set_param(in, "an_lfo2", ratios[r]);
+            for (int i = 0; i < 50; i++) api->render_block(in, lb, 128);
+            char t[32];
+            int sv = 0, sc = 0;
+            cv[r] = cc[r] = 0;
+            for (int i = 0; i < 1378; i++) {
+                api->render_block(in, lb, 128);
+                api->get_param(in, "tx_var:effective", t, sizeof t);
+                double v = atof(t) - 0.5;
+                api->get_param(in, "flt_cut:effective", t, sizeof t);
+                double c = atof(t) - 0.5;
+                int nv = v > 0.01 ? 1 : v < -0.01 ? -1 : sv, nc = c > 0.01 ? 1 : c < -0.01 ? -1 : sc;
+                if (sv && nv != sv) cv[r]++;
+                if (sc && nc != sc) cc[r]++;
+                sv = nv; sc = nc;
+            }
+        }
+        printf("lfo2 sign changes (var / cut): x1 %d/%d  x2 %d/%d  x-1 %d/%d\n", cv[0], cc[0], cv[1], cc[1], cv[2], cc[2]);
+        CHECK(cv[0] >= 4 && abs(cc[0] - cv[0]) <= 1, "lfo2 x1 runs with the main lfo");
+        CHECK(abs(cc[1] - 2 * cv[1]) <= 2, "lfo2 x2 runs at twice the rate");
+        CHECK(abs(cc[2] - cv[2]) <= 1, "lfo2 x-1 runs at the same rate, backwards");
+        api->set_param(in, "an_dest", "0");
+    }
+
+    /* ---- Mono velocity: a fixed 9 dB level range, even with the Velocity knob at 0 ---- */
+    {
+        api->set_param(in, "preset", "0");
+        const char *ms[][2] = {{"key_mode", "3"}, {"ln_vol", "0.8"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"},
+                               {"ln_fenv", "0"}, {"ln_wenv", "0"}, {"vel", "0"}, {"ln_sus", "1"}, {"ln_a", "0"},
+                               {"ln_var", "0"}, {"vintage", "0"}, {"ln_cut", "0.8"}, {"ln_dly", "0"}, {"ln_det", "0"}, {"ln_d", "0.1"}};
+        for (size_t k = 0; k < sizeof ms / sizeof ms[0]; k++) api->set_param(in, ms[k][0], ms[k][1]);
+        static int16_t vb[256];
+        double e[2];
+        for (int k = 0; k < 2; k++) {
+            for (int i = 0; i < 200; i++) api->render_block(in, vb, 128);
+            midi(api, in, 0x90, 57, k ? 127 : 25);
+            double sum = 0.0;
+            for (int i = 0; i < 100; i++) {
+                api->render_block(in, vb, 128);
+                if (i >= 20) for (int j = 0; j < 256; j++) sum += (double)vb[j] * vb[j];
+            }
+            midi(api, in, 0x80, 57, 0);
+            e[k] = sum;
+        }
+        double db = 10.0 * log10(e[1] / (e[0] + 1e-9));
+        printf("mono velocity 25 -> 127: %+.1f dB (expect ~7.2)\n", db);
+        CHECK(db > 6.0 && db < 8.5, "mono velocity level range");
+        /* the mod env (Filter / Wave Env) in both modes: finite and sounding */
+        api->set_param(in, "vel", "1");
+        api->set_param(in, "ln_fenv", "1");
+        api->set_param(in, "ln_cut", "0.1");
+        api->set_param(in, "ln_d", "0.5");
+        for (int mode = 0; mode < 2; mode++) {
+            api->set_param(in, "ln_sus", mode ? "1" : "0");
+            int bad = 0; double g[1], f1[1] = {220.0};
+            midi(api, in, 0x90, 57, 100);
+            tones(api, in, 60, f1, 1, g, &bad);
+            midi(api, in, 0x80, 57, 0);
+            for (int i = 0; i < 300; i++) api->render_block(in, vb, 128);
+            CHECK(!bad && g[0] > 0.002, "mono mod env mode %d sounds (%.4f)", mode, g[0]);
+        }
+        api->set_param(in, "preset", "0");
+    }
+
+    /* ---- user wavetables: a 4-frame sine -> saw table and a single-cycle float square, from a folder ---- */
+    {
+        mkdir("build", 0755);
+        mkdir("build/uwtest", 0755);
+        static float wt[4 * 2048];
+        for (int k = 0; k < 4; k++)
+            for (int i = 0; i < 2048; i++) {
+                double t = i / 2048.0, saw = 0.0;
+                for (int h = 1; h <= 40; h++) saw += sin(2 * M_PI * h * t) / h;
+                wt[k * 2048 + i] = (float)(0.6 * ((1.0 - k / 3.0) * sin(2 * M_PI * t) + (k / 3.0) * 0.6 * saw));
+            }
+        write_wt("build/uwtest/Test_Saw Sine.wav", wt, 4 * 2048, 0);
+        for (int i = 0; i < 600; i++) wt[i] = i < 300 ? 0.5f : -0.5f;
+        write_wt("build/uwtest/single.WAV", wt, 600, 1);
+        FILE *junk = fopen("build/uwtest/notes.txt", "w");
+        if (junk) { fputs("not a wave", junk); fclose(junk); }
+        setenv("QUARK_WT_DIR", "build/uwtest", 1);
+        void *u = api->create_instance("", 0);
+        CHECK(u != 0, "create with a user folder");
+        if (u) {
+            static char cp[65536];
+            api->get_param(u, "chain_params", cp, sizeof cp);
+            CHECK(strstr(cp, ",\"single\",\"Test Saw Sine\"]") != 0, "chain_params names the user tables");
+            CHECK(strstr(cp, "User 3") == 0 && strstr(cp, "@U") == 0, "no empty user slots in chain_params");
+            const char *us[][2] = {{"key_mode", "2"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"}, {"ens_amt", "0"},
+                                   {"tx_a", "0"}, {"tx_s", "1"}, {"flt_type", "0"}, {"vintage", "0"}, {"tx_anim", "0"},
+                                   {"tx_spread", "0"}, {"tx_detune", "0"}, {"vib", "0"}, {"tx_depth", "0"}, {"tx_drive", "0"}};
+            for (size_t k = 0; k < sizeof us / sizeof us[0]; k++) api->set_param(u, us[k][0], us[k][1]);
+            char tv[16];
+            snprintf(tv, sizeof tv, "%d", Q_NUM_TEX_BUILTIN + 1);
+            api->set_param(u, "tx_type", tv);
+            const double fq[2] = {220.0, 440.0};
+            double g[2][2];
+            for (int fr = 0; fr < 2; fr++) {
+                api->set_param(u, "tx_var", fr ? "1" : "0");
+                midi(api, u, 0x90, 57, 110);
+                /* the worker loads and band-limits off the audio thread: wait for sound */
+                int bad = 0, waited = 0;
+                double pk[2];
+                do {
+                    struct timespec ts = {0, 2000000L};
+                    nanosleep(&ts, 0);
+                    tones(api, u, 4, fq, 1, pk, &bad);
+                } while (pk[0] < 0.002 && ++waited < 500);
+                tones(api, u, 100, fq, 2, g[fr], &bad);
+                midi(api, u, 0x80, 57, 0);
+                for (int i = 0; i < 300; i++) api->render_block(u, (int16_t[256]){0}, 128);
+                printf("user table frame %d: 220 %.4f  440 %.4f (waited %d)\n", fr ? 3 : 0, g[fr][0], g[fr][1], waited);
+                CHECK(!bad && g[fr][0] > 0.004, "user table frame %d sounds at the note", fr);
+            }
+            CHECK(g[0][1] < 0.05 * g[0][0], "user table frame 0 is the sine");
+            CHECK(g[1][1] > 0.3 * g[1][0] && g[1][1] < 0.7 * g[1][0], "user table last frame is the saw");
+            /* Mono plays the single-cycle square */
+            snprintf(tv, sizeof tv, "%d", Q_NUM_LINE_BUILTIN);
+            api->set_param(u, "key_mode", "3");
+            api->set_param(u, "tx_vol", "0");   /* no Pads tail at 220 Hz ending the wait early */
+            for (int i = 0; i < 400; i++) api->render_block(u, (int16_t[256]){0}, 128);
+            api->set_param(u, "ln_vol", "0.8");
+            api->set_param(u, "ln_det", "0");
+            api->set_param(u, "ln_var", "0");
+            api->set_param(u, "ln_shape", tv);
+            {
+                const double f3[2] = {220.0, 660.0};
+                double gm[2], pk[1];
+                int bad = 0, waited = 0;
+                midi(api, u, 0x90, 57, 110);
+                do {
+                    struct timespec ts = {0, 2000000L};
+                    nanosleep(&ts, 0);
+                    tones(api, u, 4, f3, 1, pk, &bad);
+                } while (pk[0] < 0.002 && ++waited < 500);
+                tones(api, u, 60, f3, 2, gm, &bad);
+                midi(api, u, 0x80, 57, 0);
+                printf("user single cycle on Mono: 220 %.4f  660 %.4f\n", gm[0], gm[1]);
+                CHECK(!bad && gm[0] > 0.004 && gm[1] > 0.2 * gm[0], "mono plays the single-cycle square");
+            }
+            /* saved by name; a missing file falls back to the default; slots past the files clamp */
+            snprintf(tv, sizeof tv, "%d", Q_NUM_TEX_BUILTIN + 1);
+            api->set_param(u, "tx_type", tv);
+            static char st[65536];
+            api->get_param(u, "state", st, sizeof st);
+            CHECK(strstr(st, "\"tx_user\":\"Test Saw Sine\"") && strstr(st, "\"ln_user\":\"single\""), "state names the user tables");
+            api->set_param(u, "preset", "3");
+            api->set_param(u, "state", st);
+            api->get_param(u, "tx_type", tv, sizeof tv);
+            CHECK(atoi(tv) == Q_NUM_TEX_BUILTIN + 1, "user table restored by name (got %s)", tv);
+            char *nm = strstr(st, "Test Saw Sine");
+            if (nm) memcpy(nm, "Gone Saw Sine", 13);
+            api->set_param(u, "state", st);
+            api->get_param(u, "tx_type", tv, sizeof tv);
+            CHECK(atoi(tv) == 0, "a missing user table falls back to the default (got %s)", tv);
+            snprintf(tv, sizeof tv, "%d", Q_NUM_TEX_BUILTIN + 9);
+            api->set_param(u, "tx_type", tv);
+            api->get_param(u, "tx_type", tv, sizeof tv);
+            CHECK(atoi(tv) == Q_NUM_TEX_BUILTIN + 1, "type past the files clamps (got %s)", tv);
+            api->destroy_instance(u);
+        }
+        unsetenv("QUARK_WT_DIR");
     }
 
     printf("\nCPU (this machine): mean %.2f%%, worst %.2f%% of one core for 8 texture voices + mono Lines + FX\n",

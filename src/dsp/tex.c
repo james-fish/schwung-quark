@@ -25,7 +25,6 @@
 #define Q_MIPS 8
 static const int MIP_N[Q_MIPS] = {2048, 1024, 512, 256, 128, 64, 64, 64};
 static const int MIP_H[Q_MIPS] = {256, 128, 64, 32, 16, 8, 4, 2};
-#define Q_FRAME_FLOATS (2049 + 1025 + 513 + 257 + 129 + 65 + 65 + 65)
 
 static float g_wt[Q_WT_COUNT][Q_WT_FRAMES][Q_FRAME_FLOATS];
 static int g_mip_off[Q_MIPS];
@@ -107,6 +106,55 @@ static void ch_build(int t) {
             for (int i = 0; i < N; i++) dst[i] = xr[i] * scale;
             dst[N] = dst[0];
         }
+    }
+}
+
+/* ------------------------------------------------------------------ user wavetables */
+
+/* One cycle of n samples -> amplitudes of harmonics 1..Q_UW_H as (cos, sin) pairs, so that
+ * x(t) = sum C cos(2 pi h t) + S sin(2 pi h t). FFT for powers of two up to 4096, else a DFT
+ * (single-cycle files of any length). Runs on the userwt worker, never on the audio thread. */
+void q_uw_spectrum(const float *x, int n, float *spec) {
+    int hmax = n / 2 < Q_UW_H ? n / 2 : Q_UW_H;
+    memset(spec, 0, sizeof(float) * 2 * Q_UW_H);
+    if (n <= 4096 && (n & (n - 1)) == 0) {
+        float re[4096], im[4096];
+        for (int i = 0; i < n; i++) { re[i] = x[i]; im[i] = 0.0f; }
+        ifft(re, im, n);   /* sum x e^{+j}: the forward DFT, conjugated */
+        for (int h = 1; h <= hmax; h++) {
+            float k = h == n / 2 ? 1.0f : 2.0f;
+            spec[2 * (h - 1)] = k * re[h] / (float)n;
+            spec[2 * (h - 1) + 1] = k * im[h] / (float)n;
+        }
+        return;
+    }
+    for (int h = 1; h <= hmax; h++) {
+        double c = 0.0, d = 0.0, w = 6.283185307179586 * (double)h / (double)n;
+        for (int i = 0; i < n; i++) { c += x[i] * cos(w * i); d += x[i] * sin(w * i); }
+        float k = 2 * h == n ? 1.0f : 2.0f;
+        spec[2 * (h - 1)] = k * (float)c / (float)n;
+        spec[2 * (h - 1) + 1] = k * (float)d / (float)n;
+    }
+}
+
+/* One frame's spectrum -> the 8 mips of a dense frame (same taper as Quark's own tables). The
+ * table is normalised as a whole when it loads, so frames keep their relative levels. */
+void q_uw_build_frame(const float *spec, float *dst) {
+    float xr[2048], xi[2048];
+    for (int m = 0; m < Q_MIPS; m++) {
+        int N = MIP_N[m], H = MIP_H[m];
+        memset(xr, 0, sizeof(float) * (size_t)N);
+        memset(xi, 0, sizeof(float) * (size_t)N);
+        for (int h = 1; h <= H; h++) {
+            float hf = (float)h / (float)H, tp = hf > 0.75f ? 1.0f - (hf - 0.75f) * 3.2f : 1.0f;
+            xr[h] = 0.5f * tp * spec[2 * (h - 1)];
+            xi[h] = -0.5f * tp * spec[2 * (h - 1) + 1];
+            xr[N - h] = xr[h]; xi[N - h] = -xi[h];
+        }
+        ifft(xr, xi, N);
+        float *o = dst + g_mip_off[m];
+        for (int i = 0; i < N; i++) o[i] = xr[i];
+        o[N] = o[0];
     }
 }
 
@@ -206,6 +254,10 @@ static void am_build_frame(const signed char *src, float *dst) {
 }
 
 void q_wave_update(QInstance *q, int slot, int wt) {
+    if (wt >= Q_WT_USER0) {   /* the worker builds it; just say which one */
+        __atomic_store_n(&q->uws[slot].want, wt - Q_WT_USER0, __ATOMIC_RELEASE);
+        return;
+    }
     if (wt < Q_NUM_WT_QUARK || wt >= Q_NUM_WT) return;
     int id = wt - Q_NUM_WT_QUARK;
     QAmSlot *s = &q->am[slot];
@@ -234,6 +286,19 @@ int q_wave_get(QInstance *q, int slot, int wt, QWave *w) {
         w->nf = Q_WT_FRAMES; w->stride = Q_CH_FF; w->nm = Q_MIPS;
         w->off = g_ch_off; w->len = CH_N; w->harm = g_ch_harm[t];
         w->div = (float)Q_CH_DIV[t];
+        return 1;
+    }
+    if (wt >= Q_WT_USER0) {
+        /* acknowledge the front buffer, so the worker never rebuilds one this block reads; while a
+         * new table loads, the previous one keeps playing */
+        QUwSlot *u = &q->uws[slot];
+        int f = __atomic_load_n(&u->front, __ATOMIC_ACQUIRE);
+        __atomic_store_n(&u->inuse, f, __ATOMIC_RELEASE);
+        int id = u->have[f];
+        if (id < 0 || !u->buf[f]) return 0;
+        w->base = u->buf[f];
+        w->nf = q->uw[id].nf; w->stride = Q_FRAME_FLOATS; w->nm = Q_MIPS;
+        w->off = g_mip_off; w->len = MIP_N; w->harm = MIP_H;
         return 1;
     }
     QAmSlot *s = &q->am[slot];
@@ -367,14 +432,14 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
     /* 0 Off 1 LP12 2 LP24 3 HP12 4 BP12 5 BP24 6 Dual BP 7 Notch 8 Comb+ 9 Comb- 10 Morph */
     int ftype = q_clampi((int)(P[P_FLT_TYPE] + 0.5f), 0, Q_NUM_FILTER_TYPES - 1);
     int comb = ftype == 8 || ftype == 9;
-    int dest = q_clampi((int)(P[P_AN_DEST] + 0.5f), 0, 4);
+    int dest = q_clampi((int)(P[P_AN_DEST] + 0.5f), 0, 5);   /* 5 Filter+Wave */
     int wheel_dst = q_clampi((int)(P[P_WHEEL] + 0.5f), 0, 3);
     int ticks = (n + Q_CTRL - 1) / Q_CTRL;
     float flav = P[P_VINTAGE], spread = P[P_TX_SPREAD], velsens = P[P_VEL];
     float sus_t = P[P_TX_S], sus_m = P[P_ME_S];
 
     /* ---- global modulators per control tick ---- */
-    float an_t[Q_BLOCK / Q_CTRL], vib_t[Q_BLOCK / Q_CTRL];
+    float an_t[Q_BLOCK / Q_CTRL], an2_t[Q_BLOCK / Q_CTRL], vib_t[Q_BLOCK / Q_CTRL];
     float an_hz = 0.03f * powf(333.0f, P[P_AN_RATE]);
     float vib_hz = 3.0f + 6.0f * P[P_VIB_RATE];
     int shape = q_clampi((int)(P[P_AN_SHAPE] + 0.5f), 0, 5);
@@ -386,6 +451,15 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
             q->an_next = q_randb(&q->rng);
         }
         an_t[t] = lfo_shape(shape, q->an_ph, q->an_next, q->an_prev);
+        /* LFO 2: the same shape at LFO2 x the rate; negative runs the phase backwards, so passing
+         * through 0 slows, stops and reverses without a jump */
+        q->an2_ph += P[P_AN_LFO2] * an_hz * (float)Q_CTRL / sr;
+        if (q->an2_ph >= 1.0f || q->an2_ph < 0.0f) {
+            q->an2_ph -= floorf(q->an2_ph);
+            q->an2_prev = q->an2_next;
+            q->an2_next = q_randb(&q->rng);
+        }
+        an2_t[t] = lfo_shape(shape, q->an2_ph, q->an2_next, q->an2_prev);
         q->vib_ph += vib_hz * (float)Q_CTRL / sr;
         if (q->vib_ph >= 1.0f) q->vib_ph -= 1.0f;
         vib_t[t] = sin_cyc(q->vib_ph);
@@ -393,9 +467,10 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
     float anim = P[P_TX_ANIM] + (wheel_dst == 1 ? q->wheel : 0.0f);
     float vib_amt = P[P_VIB] * 0.5f + q->at * 0.4f + (wheel_dst == 0 ? q->wheel * 0.6f : 0.0f);
     float var_base = P[P_TX_VAR] + (wheel_dst == 3 ? q->wheel * 0.6f : 0.0f);
-    q->var_eff = q_clamp(var_base + (dest == 0 ? anim * 0.5f * an_t[0] : 0.0f), 0.0f, 1.0f);
+    int to_var = dest == 0 || dest == 5;
+    q->var_eff = q_clamp(var_base + (to_var ? anim * 0.5f * an_t[0] : 0.0f), 0.0f, 1.0f);
     float cut_base = 20.0f + 115.0f * P[P_FLT_CUT] + (wheel_dst == 2 ? q->wheel * 40.0f : 0.0f);
-    q->cut_eff = cut_base + (dest == 2 ? anim * 36.0f * an_t[0] : 0.0f);
+    q->cut_eff = cut_base + (dest == 2 ? anim * 36.0f * an_t[0] : dest == 5 ? anim * 36.0f * an2_t[0] : 0.0f);
 
     float base_pitch = 12.0f * (float)q_clampi((int)lroundf(P[P_TX_OCT]), -2, 2) + q->bend * 2.0f;
     float res = P[P_FLT_RES];
@@ -428,7 +503,7 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
         for (int t = 0; t < ticks; t++) {
             int i0 = t * Q_CTRL;
             int m = n - i0 < Q_CTRL ? n - i0 : Q_CTRL;
-            float an = an_t[t];
+            float an = an_t[t], an2 = an2_t[t];
             /* ---- control: pitch ---- */
             v->drift += (q_randb(&q->rng) * 0.05f - v->drift * 0.002f);
             v->drift = q_clamp(v->drift, -1.0f, 1.0f);
@@ -441,7 +516,7 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
                           (dest == 1 ? anim * 0.6f * an : 0.0f);
             float hz = q_note_hz(pitch);
             /* ---- control: variation ---- */
-            float var = var_base + (dest == 0 ? anim * 0.5f * an : 0.0f) + P[P_TX_DEPTH] * v->mod;
+            float var = var_base + (to_var ? anim * 0.5f * an : 0.0f) + P[P_TX_DEPTH] * v->mod;
             var = q_clamp(var, 0.0f, 1.0f);
             float inv_m = 1.0f / (float)m;
             float bright = 0.0f, swell = 0.0f;
@@ -485,7 +560,7 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
             }
             /* ---- control: filter ---- */
             if (ftype > 0) {
-                float cn = cut_base + (dest == 2 ? anim * 36.0f * an : 0.0f) +
+                float cn = cut_base + (dest == 2 ? anim * 36.0f * an : dest == 5 ? anim * 36.0f * an2 : 0.0f) +
                            P[P_FLT_KEY] * ((float)v->note - 60.0f) + P[P_FLT_ENV] * 72.0f * v->mod +
                            velsens * 24.0f * (v->vel - 0.6f) +
                            flav * (1.5f * v->ncut + 1.0f * v->cdrift); /* vintage: +-2.5 st at most */

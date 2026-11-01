@@ -36,7 +36,7 @@ echo "== gen"
 
 if [ "$TEST" = 1 ]; then
   echo "== native tests + benchmark"
-  $CC $FLAGS -I src/dsp -o build/quark_test src/dsp/*.c tests/test_main.c -lm
+  $CC $FLAGS -I src/dsp -o build/quark_test src/dsp/*.c tests/test_main.c -lm -lpthread
   ./build/quark_test
   echo "== UI drawers"
   node tests/test_ui.mjs
@@ -46,7 +46,7 @@ echo "== dsp.so (aarch64-linux-gnu, zig $("$ZIG" version))"
 DEFS=""
 [ "$PROFILE" = 1 ] && DEFS="-DQUARK_PROFILE"
 "$ZIG" cc -target aarch64-linux-gnu.2.28 $FLAGS -fPIC -shared -s -fvisibility=hidden $DEFS -ffile-prefix-map="$ROOT"=. \
-  -I src/dsp -o "$MOD/dsp.so" src/dsp/*.c -lm
+  -I src/dsp -o "$MOD/dsp.so" src/dsp/*.c -lm -lpthread
 rm -f "$MOD/dsp.so.o"
 
 echo "== module folder"
