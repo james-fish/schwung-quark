@@ -138,11 +138,16 @@ static void state_set(QInstance *q, const char *js) {
         memcpy(key, k0 + 1, (size_t)kl);
         key[kl] = 0;
         while (*s == ' ' || *s == ':') s++;
-        int i = find_param(key);
+        int i = find_param(key), per = 1;
+        /* 0.4 and older saved octaves; transpose is in semitones now */
+        if (i < 0 && (strcmp(key, "tx_oct") == 0 || strcmp(key, "ln_oct") == 0)) {
+            i = key[0] == 't' ? P_TX_TR : P_LN_TR;
+            per = 12;
+        }
         if (i >= 0) {
             char *end = 0;
             float v = strtof(s, &end);
-            if (end != s) set_value(q, i, v);
+            if (end != s) set_value(q, i, v * (float)per);
             s = end ? end : s;
         }
     }

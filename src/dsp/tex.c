@@ -480,7 +480,7 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
     float cut_base = 20.0f + 115.0f * P[P_FLT_CUT] + (wheel_dst == 2 ? q->wheel * 40.0f : 0.0f);
     q->cut_eff = cut_base + anim * 36.0f * an_pick(src_f, an_t[0], an2_t[0]);
 
-    float base_pitch = 12.0f * (float)q_clampi((int)lroundf(P[P_TX_OCT]), -2, 2) + q->bend * 2.0f;
+    float base_pitch = (float)q_clampi((int)lroundf(P[P_TX_TR]), -24, 24) + q->bend * 2.0f;
     float res = P[P_FLT_RES];
     float fk_base = 2.0f - 1.94f * res; /* SVF damping, 2 = no resonance */
     float tx_vol = P[P_TX_VOL] * 0.26f;

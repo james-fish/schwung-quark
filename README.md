@@ -42,7 +42,7 @@ Pages are laid out so you always know where you are: **Presets** first, then all
 | 9 | Arp Variation | Pattern | Drop | Velocity | Vel Rand | Gate Rand | Oct Rand | Note Rand | Loop |
 | 10 | **Mix & Effect** | Pads Vol | Mono Vol | Pads Route | Mono Route | FX Type | FX Ctrl | FX Ctrl 2 | FX Amount |
 | 11 | Reverb | Decay | Size | Tone | Amount | Shimmer Pitch | Shimmer Amt | Vintage | Volume |
-| 12 | Play | Pads Oct | Mono Oct | Key Mode | Split | Velocity | Mod Wheel | Vibrato | Vib Rate |
+| 12 | Play | Pads Transpose | Mono Transpose | Key Mode | Split | Velocity | Mod Wheel | Vibrato | Vib Rate |
 
 💡 **Tip:** Cutoff and Resonance sit on knobs 1–2 on *both* filter pages, so your hands always know where to go.
 

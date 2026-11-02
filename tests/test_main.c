@@ -177,6 +177,34 @@ int main(int argc, char **argv) {
     api->get_param(in, "state", buf2, sizeof buf2);
     CHECK(strcmp(buf, buf2) == 0, "state round trip");
 
+    /* 0.4 states saved octaves: they load as 12 semitones each */
+    {
+        char tv[32], lv[32];
+        api->set_param(in, "state", "{\"v\":1,\"preset\":0,\"p\":{\"tx_oct\":-1,\"ln_oct\":2}}");
+        api->get_param(in, "tx_tr", tv, sizeof tv);
+        api->get_param(in, "ln_tr", lv, sizeof lv);
+        CHECK(atoi(tv) == -12 && atoi(lv) == 24, "old octave state -> semitones (got %s, %s)", tv, lv);
+    }
+
+    /* Pads Transpose +7 moves A2 (110 Hz) to E3 (164.8 Hz) */
+    {
+        api->set_param(in, "all_notes_off", "1");
+        api->set_param(in, "preset", "0");
+        api->set_param(in, "tx_type", "5");
+        api->set_param(in, "flt_type", "0");
+        api->set_param(in, "tx_tr", "7");
+        midi(api, in, 0x90, 45, 100);
+        double fq[2] = {110.0, 164.81}, g[2];
+        int bad = 0;
+        tones(api, in, 200, fq, 0, g, &bad);
+        tones(api, in, 400, fq, 2, g, &bad);
+        midi(api, in, 0x80, 45, 0);
+        api->set_param(in, "all_notes_off", "1");
+        api->set_param(in, "tx_tr", "0");
+        printf("transpose +7: 110 %.4f  164.8 %.4f\n", g[0], g[1]);
+        CHECK(!bad && g[1] > 4.0 * g[0], "Pads Transpose +7 sounds a fifth up");
+    }
+
     /* arp smoke test: runs, makes sound, stops when keys are released */
     api->set_param(in, "all_notes_off", "1");
     api->set_param(in, "preset", "21");

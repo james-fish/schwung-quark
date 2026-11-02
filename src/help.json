@@ -178,6 +178,8 @@
   {
    "title": "Play",
    "lines": [
+    "Transpose: +-24",
+    "semitones per layer.",
     "Key mode: Stack,",
     "Split, Pads or Mono",
     "only. Split point:",
