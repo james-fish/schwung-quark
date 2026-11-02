@@ -218,6 +218,35 @@ static void pad_note_off(QInstance *q, int key) {
     q_tex_note_off(q, key);
 }
 
+/* ---- Melody Latch with the arp off: the same rule as Atmos Latch (notes hold after release; the
+ * first key of a new chord clears the old one). With the arp on, Latch holds the arp's chord. ---- */
+static int mel_latch(QInstance *q) { return q->pv[P_ARP_HOLD] >= 0.5f; }
+
+static void mel_release_latched(QInstance *q) {
+    for (int k = 0; k < 128; k++)
+        if (q->mel_on[k] && !q->mel_down[k]) { q->mel_on[k] = 0; q_lines_note_off(q, k); }
+}
+
+static void mel_note_on(QInstance *q, int key, float vel) {
+    if (mel_latch(q) && q->mel_down_n == 0) mel_release_latched(q);
+    if (!q->mel_down[key]) { q->mel_down[key] = 1; q->mel_down_n++; }
+    q->mel_on[key] = 1;
+    q_lines_note_on(q, key, vel);
+}
+
+static void mel_note_off(QInstance *q, int key) {
+    if (q->mel_down[key]) { q->mel_down[key] = 0; q->mel_down_n--; }
+    if (q->mel_on[key] && mel_latch(q)) return;
+    q->mel_on[key] = 0;
+    q_lines_note_off(q, key);
+}
+
+static void mel_clear(QInstance *q) {
+    memset(q->mel_down, 0, sizeof q->mel_down);
+    memset(q->mel_on, 0, sizeof q->mel_on);
+    q->mel_down_n = 0;
+}
+
 /* ---- the Mono arp ---- */
 static void arp_silence(QInstance *q) {
     QArp *a = &q->arp;
@@ -293,7 +322,7 @@ static void note_on(QInstance *q, int key, float vel) {
     if (m & 1) pad_note_on(q, key, vel);
     if (m & 2) {
         if (arp_on(q)) arp_key_add(q, key);
-        else q_lines_note_on(q, key, vel);
+        else mel_note_on(q, key, vel);
     }
     if (arp_on(q)) arp_snapshot(q);
 }
@@ -301,7 +330,7 @@ static void note_on(QInstance *q, int key, float vel) {
 static void note_off(QInstance *q, int key) {
     /* release on every layer regardless of the current routing, so a mode change never hangs */
     arp_key_remove(q, key);
-    if (!arp_on(q)) q_lines_note_off(q, key);
+    if (!arp_on(q)) mel_note_off(q, key);
     pad_note_off(q, key);
 }
 
@@ -497,6 +526,7 @@ void q_release_all(QInstance *q, int hard) {
     memset(q->pad_down, 0, sizeof q->pad_down);
     memset(q->pad_on, 0, sizeof q->pad_on);
     q->pad_down_n = 0;
+    mel_clear(q);
     for (int i = 0; i < Q_MAX_TEX; i++) {
         QTexVoice *v = &q->tv[i];
         if (hard) { v->active = 0; continue; }
@@ -605,7 +635,7 @@ static void q_set_param(void *inst, const char *key, const char *val) {
     if (strcmp(key, "all_notes_off") == 0) { q_release_all(q, 0); return; }
     int i = find_param(key);
     if (i < 0) return;
-    int was_arp = arp_on(q), was_latch = q->pv[P_TX_LATCH] >= 0.5f;
+    int was_arp = arp_on(q), was_latch = q->pv[P_TX_LATCH] >= 0.5f, was_mlatch = mel_latch(q);
     param_set_str(q, i, val);
     if (i == P_ARP_MODE && was_arp != arp_on(q)) {
         arp_reset(q);
@@ -613,8 +643,10 @@ static void q_set_param(void *inst, const char *key, const char *val) {
         for (int k = 0; k < Q_MAX_LINES; k++)
             if (q->lv[k].active) { q->lv[k].gate = 0; q->lv[k].st = 3; q->lv[k].kill = 0; }
         q->stack_n = 0;
+        mel_clear(q);
     }
     if (i == P_TX_LATCH && was_latch && q->pv[P_TX_LATCH] < 0.5f) pad_release_latched(q);
+    if (i == P_ARP_HOLD && was_mlatch && !mel_latch(q) && !arp_on(q)) mel_release_latched(q);
 }
 
 static int q_get_param(void *inst, const char *key, char *buf, int len) {

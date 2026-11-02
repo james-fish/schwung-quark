@@ -488,7 +488,9 @@ E("arp_rate", "Arp Rate", "Rate", 4, ARP_RATES, [r.replace("1/", "") for r in AR
 E("arp_oct", "Arp Octaves", "Oct", 0, ARP_OCTS, ARP_OCTS_S, card=CARD)
 F("arp_gate", "Arp Gate", "Gate", 0.55, card=CARD)
 F("arp_swing", "Arp Swing", "Swing", 0.0, card=CARD)
-E("arp_hold", "Arp Latch", "Latch", 0, ONOFF, viz={"kind": "switch"})
+# Melody Latch: holds the arp's chord with the arp on, Melody's own notes with it off (the key
+# keeps its old arp_hold name so saved patches load)
+E("arp_hold", "Melody Latch", "Latch", 0, ONOFF, viz={"kind": "switch"})
 I("arp_rhy", "Arp Rhythm", "Rhym", 0, 0, len(ARP_RHYTHMS) - 1, card=CARD)
 # arp variation
 I("arp_pat", "Arp Pattern", "Patt", 0, 0, len(ARP_PATTERNS) - 1, card=CARD)

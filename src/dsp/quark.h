@@ -216,6 +216,8 @@ typedef struct QInstance {
 
     /* pads: keys down / sounding (latched or sustained count as sounding), press order */
     uint8_t pad_down[128], pad_on[128];
+    uint8_t mel_down[128], mel_on[128]; /* Melody Latch with the arp off: keys down / notes sounding */
+    int mel_down_n;
     uint32_t pad_ord[128], ord;
     int pad_down_n;
     QAmSlot am[2];                /* 0 pads, 1 mono */

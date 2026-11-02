@@ -143,13 +143,15 @@
    "lines": [
     "Source Atmos Chord:",
     "Melody arpeggiates",
-    "what Atmos holds",
-    "(latched too). Keys:",
-    "keys sent to Melody.",
+    "what Atmos holds.",
+    "Keys: keys sent to",
+    "Melody. Latch holds",
+    "the arp's chord; arp",
+    "off, it holds Melody",
+    "notes (2nd pad).",
     "Types: Up Down UpDn",
     "DnUp Rnd Order Chord",
-    "Leap In/Out Pattern.",
-    "Octaves 0..+-3."
+    "Leap In/Out Pattern."
    ]
   },
   {

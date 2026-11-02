@@ -760,6 +760,36 @@ int main(int argc, char **argv) {
         api->set_param(in, "ln_mode", "1");
     }
 
+    /* ---- Melody Latch with the arp off: a chord holds after release, the next chord replaces it,
+     * Latch off lets it go ---- */
+    {
+        static int16_t lb[256];
+        const char *ls[][2] = {{"preset", "0"}, {"key_mode", "4"}, {"ln_mode", "2"}, {"ln_sus", "1"}, {"ln_vol", "0.8"},
+                               {"arp_mode", "0"}, {"arp_hold", "1"}, {"ln_a", "0"}, {"ln_d", "0.1"}};
+        for (size_t k = 0; k < sizeof ls / sizeof ls[0]; k++) api->set_param(in, ls[k][0], ls[k][1]);
+        api->set_param(in, "all_notes_off", "1");
+        for (int i = 0; i < 3000; i++) api->render_block(in, lb, 128);
+        char vb[32];
+        #define LINES_NOW() (api->get_param(in, "voices", vb, sizeof vb), atoi(strchr(vb, ',') + 1))
+        for (int k = 0; k < 3; k++) midi(api, in, 0x90, 60 + 4 * k, 100);
+        for (int i = 0; i < 50; i++) api->render_block(in, lb, 128);
+        for (int k = 0; k < 3; k++) midi(api, in, 0x80, 60 + 4 * k, 0);
+        for (int i = 0; i < 1500; i++) api->render_block(in, lb, 128);
+        int held = LINES_NOW();
+        midi(api, in, 0x90, 50, 100);   /* a new chord: the latched one ends */
+        midi(api, in, 0x80, 50, 0);
+        for (int i = 0; i < 1500; i++) api->render_block(in, lb, 128);
+        int after = LINES_NOW();
+        api->set_param(in, "arp_hold", "0");   /* Latch off: the held note goes */
+        for (int i = 0; i < 1500; i++) api->render_block(in, lb, 128);
+        int off = LINES_NOW();
+        #undef LINES_NOW
+        printf("melody latch (arp off): held %d, after a new chord %d, latch off %d\n", held, after, off);
+        CHECK(held == 3 && after == 1 && off == 0, "Melody Latch holds Melody notes with the arp off");
+        api->set_param(in, "all_notes_off", "1");
+        api->set_param(in, "ln_mode", "1");
+    }
+
     /* ---- Mono velocity: a fixed 9 dB level range, even with the Velocity knob at 0 ---- */
     {
         api->set_param(in, "preset", "0");
