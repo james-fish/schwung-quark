@@ -54,14 +54,14 @@ static void apply_preset(QInstance *q, int idx) {
 
 static void param_set_str(QInstance *q, int i, const char *val) {
     const QParam *p = &quark_params[i];
-    char *end = 0;
-    float v = strtof(val, &end);
-    if (end == val) {
-        if (p->kind != 'e') return;
+    /* an enum may arrive as its option NAME: match names first, because several read as numbers
+     * ("-1" Arp Octaves, "1/8" Arp Rate, "+12" Shimmer Pitch) that are not their index */
+    if (p->kind == 'e')
         for (int k = 0; k < p->nopts; k++)
             if (strcmp(p->opts[k], val) == 0) { set_value(q, i, (float)k); return; }
-        return;
-    }
+    char *end = 0;
+    float v = strtof(val, &end);
+    if (end == val) return;
     set_value(q, i, v);
 }
 
@@ -86,10 +86,10 @@ static int user_of(const QInstance *q, int layer) {
     return v >= b && v < b + q->uw_n ? v - b : -1;
 }
 
-/* state: {"v":1,"preset":3,"p":{"tx_type":0,...},"tx_user":"name","ln_user":"name"}. A user table is
+/* state: {"v":2,"preset":3,"p":{"tx_type":0,...},"tx_user":"name","ln_user":"name"}. A user table is
  * saved by name, so the patch finds it again when the folder changes. */
 static int state_get(QInstance *q, char *buf, int len) {
-    int pos = snprintf(buf, (size_t)len, "{\"v\":1,\"preset\":%d,\"p\":{", q->preset);
+    int pos = snprintf(buf, (size_t)len, "{\"v\":2,\"preset\":%d,\"p\":{", q->preset);
     if (pos < 0 || pos >= len) return -1;
     for (int i = 0; i < P_COUNT; i++) {
         char tmp[48];
@@ -116,6 +116,10 @@ static int state_get(QInstance *q, char *buf, int len) {
 static void state_set(QInstance *q, const char *js) {
     /* start from the init patch so a state that omits keys is still complete */
     for (int i = 0; i < P_COUNT; i++) set_value(q, i, quark_params[i].def);
+    /* v1 (0.4.1 and older): Key Mode had no Mono High (Pads 2, Mono 3) and Mono Detune was 0..1 */
+    int ver = 1;
+    const char *vp = strstr(js, "\"v\"");
+    if (vp && (vp = strchr(vp, ':'))) ver = atoi(vp + 1);
     const char *pp = strstr(js, "\"preset\"");
     if (pp) {
         pp = strchr(pp, ':');
@@ -147,6 +151,8 @@ static void state_set(QInstance *q, const char *js) {
         if (i >= 0) {
             char *end = 0;
             float v = strtof(s, &end);
+            if (ver < 2 && i == P_KEY_MODE && v >= 1.5f) v += 1.0f;
+            if (ver < 2 && i == P_LN_DET) v *= 50.0f;
             if (end != s) set_value(q, i, v * (float)per);
             s = end ? end : s;
         }
@@ -173,12 +179,14 @@ static void state_set(QInstance *q, const char *js) {
 
 /* layers a key plays: bit 0 texture, bit 1 lines */
 static int key_layers(QInstance *q, int key) {
-    int mode = q_clampi((int)(q->pv[P_KEY_MODE] + 0.5f), 0, 3);
-    int m;
+    /* 0 Stack 1 Mono Low 2 Mono High 3 Pads Only 4 Mono Only */
+    int mode = q_clampi((int)(q->pv[P_KEY_MODE] + 0.5f), 0, 4);
+    int m, low = key < (int)q->pv[P_SPLIT];
     switch (mode) {
-    case 1: m = key < (int)q->pv[P_SPLIT] ? 2 : 1; break;
-    case 2: m = 1; break;
-    case 3: m = 2; break;
+    case 1: m = low ? 2 : 1; break;
+    case 2: m = low ? 1 : 2; break;
+    case 3: m = 1; break;
+    case 4: m = 2; break;
     default: m = 3; break;
     }
     if (q->pv[P_TX_VOL] < 0.001f) m &= ~1;

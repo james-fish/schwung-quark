@@ -4,19 +4,19 @@
   {
    "title": "Overview",
    "lines": [
-    "Two layers: PADS",
+    "Two layers: ATMOS",
     "(strings, 89 WTs,",
-    "FM) and MONO (solo",
+    "FM) and MELODY (a",
     "synth + arp). Then",
     "FX, shimmer and",
     "reverb. Jog: Presets,",
-    "Pads pages, Mono",
+    "Atmos pages, Melody",
     "pages, then Mix,",
     "Reverb and Play."
    ]
   },
   {
-   "title": "Pads",
+   "title": "Atmos",
    "lines": [
     "Type: 100 engines.",
     "Strings: Variation",
@@ -32,7 +32,7 @@
    ]
   },
   {
-   "title": "Pads Filter",
+   "title": "Atmos Filter",
    "lines": [
     "LP12 LP24 HP12",
     "BP12 BP24, Dual BP",
@@ -47,7 +47,7 @@
    ]
   },
   {
-   "title": "Pads Drive",
+   "title": "Atmos Drive",
    "lines": [
     "Drive + Position:",
     "Pre filter, Post",
@@ -58,11 +58,13 @@
     "Detune: each chord",
     "note drifts apart.",
     "Bloom: how long",
-    "the drift takes."
+    "the drift takes.",
+    "Latch holds chords",
+    "after release."
    ]
   },
   {
-   "title": "Pads Motion",
+   "title": "Atmos Motion",
    "lines": [
     "Animate: an LFO on",
     "Wave Pos, Pitch,",
@@ -71,8 +73,10 @@
     "moves the first and",
     "LFO 2 the second.",
     "LFO 2 Rate = x the",
-    "main rate; below 0",
-    "it runs backwards."
+    "main rate. LFO Mode:",
+    "Global = one LFO,",
+    "Spread = per voice,",
+    "Retrig = per note."
    ]
   },
   {
@@ -80,17 +84,17 @@
    "lines": [
     "Ensemble type Deep",
     "= wide slow chorus.",
-    "Pads Motion page:",
-    "Pads Latch holds",
-    "chords after",
-    "release; the next",
-    "chord replaces them.",
-    "Try Detune + Bloom",
-    "+ Deep."
+    "Atmos Drive page:",
+    "Latch holds chords",
+    "after release; the",
+    "next chord replaces",
+    "them. Try Detune +",
+    "Bloom + Deep, LFO",
+    "Mode Spread."
    ]
   },
   {
-   "title": "Mono",
+   "title": "Melody",
    "lines": [
     "Shape: Saw, Pulse,",
     "Saw+Pulse, Sync, or",
@@ -116,14 +120,14 @@
     "Schwung/Wavetables.",
     "Reload Quark: they",
     "appear at the end of",
-    "Pads Type and Mono",
+    "Atmos Type and Melody",
     "Shape (16 max)."
    ]
   },
   {
-   "title": "Mono Space",
+   "title": "Melody Space",
    "lines": [
-    "Mono Filter page,",
+    "Melody Filter page,",
     "row 2: Spread < 0:",
     "notes land at",
     "random; > 0: notes",
@@ -135,13 +139,13 @@
    ]
   },
   {
-   "title": "Mono Arp",
+   "title": "Melody Arp",
    "lines": [
-    "Source Pads Chord:",
-    "Mono arpeggiates",
-    "what the pads hold",
+    "Source Atmos Chord:",
+    "Melody arpeggiates",
+    "what Atmos holds",
     "(latched too). Keys:",
-    "keys sent to Mono.",
+    "keys sent to Melody.",
     "Types: Up Down UpDn",
     "DnUp Rnd Order Chord",
     "Leap In/Out Pattern.",
@@ -181,9 +185,10 @@
     "Transpose: +-24",
     "semitones per layer.",
     "Key mode: Stack,",
-    "Split, Pads or Mono",
-    "only. Split point:",
-    "Mono below. Mod",
+    "Melody Low / High",
+    "(split at Split",
+    "Point), Atmos or",
+    "Melody only. Mod",
     "wheel target.",
     "Vibrato + rate act",
     "on both layers."

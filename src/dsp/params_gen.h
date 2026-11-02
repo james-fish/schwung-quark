@@ -49,7 +49,6 @@ enum {
     P_TX_DETUNE,
     P_TX_BLOOM,
     P_TX_SPREAD,
-    P_TX_VOICES,
     P_FLT_KEY,
     P_AN_SHAPE,
     P_AN_RATE,
@@ -98,6 +97,7 @@ enum {
     P_LN_MODE,
     P_TX_LATCH,
     P_AN_LFO2,
+    P_AN_MODE,
     P_COUNT
 };
 

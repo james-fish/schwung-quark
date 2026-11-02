@@ -184,6 +184,58 @@ int main(int argc, char **argv) {
         api->get_param(in, "tx_tr", tv, sizeof tv);
         api->get_param(in, "ln_tr", lv, sizeof lv);
         CHECK(atoi(tv) == -12 && atoi(lv) == 24, "old octave state -> semitones (got %s, %s)", tv, lv);
+        /* v1 states: Key Mode Pads 2 / Mono 3 move to 3 / 4, Mono Detune 0..1 becomes cents */
+        char km[32], dt[32];
+        api->set_param(in, "state", "{\"v\":1,\"preset\":0,\"p\":{\"key_mode\":3,\"ln_det\":0.3}}");
+        api->get_param(in, "key_mode", km, sizeof km);
+        api->get_param(in, "ln_det", dt, sizeof dt);
+        CHECK(atoi(km) == 4 && atoi(dt) == 15, "v1 state: Key Mode + Mono Detune migrate (got %s, %s)", km, dt);
+        api->set_param(in, "state", "{\"v\":1,\"preset\":0,\"p\":{\"key_mode\":1}}");
+        api->get_param(in, "key_mode", km, sizeof km);
+        CHECK(atoi(km) == 1, "v1 state: Split stays Mono Low (got %s)", km);
+    }
+
+    /* enums by option name: names that read as numbers must not be taken as the index */
+    {
+        const char *nm[][3] = {{"arp_oct", "-1", "4"}, {"arp_oct", "+2", "2"}, {"arp_oct", "-1..+1", "7"}, {"arp_oct", "0", "0"},
+                               {"arp_rate", "1/8", "2"}, {"sh_pitch", "+12", "5"}, {"ln_dtime", "1/4", "8"}, {"arp_oct", "6", "6"}};
+        int ok = 1;
+        char vb[32];
+        for (size_t k = 0; k < sizeof nm / sizeof nm[0]; k++) {
+            api->set_param(in, nm[k][0], nm[k][1]);
+            api->get_param(in, nm[k][0], vb, sizeof vb);
+            if (strcmp(vb, nm[k][2])) { ok = 0; printf("enum by name: %s = %s -> %s (want %s)\n", nm[k][0], nm[k][1], vb, nm[k][2]); }
+        }
+        CHECK(ok, "enums accept option names that look like numbers");
+        api->set_param(in, "arp_oct", "0");
+    }
+
+    /* Key Mode Mono High: keys from the split up play Mono, below it the Pads */
+    {
+        static int16_t kb[256];
+        const char *ks[][2] = {{"preset", "0"}, {"key_mode", "2"}, {"split", "60"}, {"ln_vol", "0.8"}, {"tx_vol", "0.8"},
+                               {"arp_mode", "0"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"}};
+        char vb[32];
+        int ok = 1;
+        for (int side = 0; side < 2; side++) {
+            for (size_t k = 0; k < sizeof ks / sizeof ks[0]; k++) api->set_param(in, ks[k][0], ks[k][1]);
+            /* Mono only: the note sounds only if Mono plays that side */
+            api->set_param(in, "tx_vol", "0");
+            api->set_param(in, "all_notes_off", "1");
+            for (int i = 0; i < 3000; i++) api->render_block(in, kb, 128);   /* earlier tails die away */
+            int key = side ? 72 : 48;
+            midi(api, in, 0x90, key, 100);
+            double e = 0;
+            for (int i = 0; i < 100; i++) { api->render_block(in, kb, 128); for (int j = 0; j < 256; j++) e += (double)kb[j] * kb[j]; }
+            midi(api, in, 0x80, key, 0);
+            api->set_param(in, "all_notes_off", "1");
+            for (int i = 0; i < 400; i++) api->render_block(in, kb, 128);
+            printf("mono high: key %d energy %.3g\n", key, e);
+            if ((e > 1e6) != side) ok = 0;
+        }
+        api->get_param(in, "key_mode", vb, sizeof vb);
+        CHECK(ok, "Key Mode Mono High: Mono plays above the split only");
+        api->set_param(in, "key_mode", "0");
     }
 
     /* Pads Transpose +7 moves A2 (110 Hz) to E3 (164.8 Hz) */
@@ -231,7 +283,7 @@ int main(int argc, char **argv) {
             api->set_param(in, "arp_mode", "0");
             snprintf(v, sizeof v, "%d", t);
             if (pass) {
-                api->set_param(in, "key_mode", "3");
+                api->set_param(in, "key_mode", "4");
                 api->set_param(in, "ln_vol", "0.8");
                 api->set_param(in, "ln_shape", v);
                 api->set_param(in, "ln_var", "0.5");
@@ -269,7 +321,6 @@ int main(int argc, char **argv) {
         char v[8];
         api->set_param(in, "all_notes_off", "1");
         api->set_param(in, "preset", "8");
-        api->set_param(in, "tx_voices", "12");
         api->set_param(in, "tx_drive", "1");
         snprintf(v, sizeof v, "%d", dp);
         api->set_param(in, "tx_drvpos", v);
@@ -368,7 +419,7 @@ int main(int argc, char **argv) {
         static int16_t cb[256];
         midi(api, in, 0xB0, 120, 0);
         api->set_param(in, "preset", "0");
-        const char *cset[][2] = {{"key_mode", "2"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"}, {"ens_amt", "0"},
+        const char *cset[][2] = {{"key_mode", "3"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"}, {"ens_amt", "0"},
                                  {"tx_a", "0"}, {"tx_s", "1"}, {"flt_type", "0"}, {"vintage", "0"}, {"tx_anim", "0"},
                                  {"tx_spread", "0"}, {"tx_detune", "0"}, {"vib", "0"}, {"tx_depth", "0"}, {"tx_drive", "0"}};
         for (size_t k = 0; k < sizeof cset / sizeof cset[0]; k++) api->set_param(in, cset[k][0], cset[k][1]);
@@ -410,7 +461,7 @@ int main(int argc, char **argv) {
         static int16_t fb2[256];
         midi(api, in, 0xB0, 120, 0);
         api->set_param(in, "preset", "0");
-        const char *fset[][2] = {{"key_mode", "2"}, {"tx_type", "0"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"},
+        const char *fset[][2] = {{"key_mode", "3"}, {"tx_type", "0"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"},
                                  {"ens_amt", "0"}, {"tx_a", "0"}, {"tx_s", "1"}, {"flt_env", "0"}, {"vintage", "1"}};
         for (size_t k = 0; k < sizeof fset / sizeof fset[0]; k++) api->set_param(in, fset[k][0], fset[k][1]);
         for (int ft = 0; ft < Q_NUM_FILTER_TYPES; ft++) {
@@ -441,7 +492,7 @@ int main(int argc, char **argv) {
     /* ---- Mono: Wave Env stays in the table, Spread, Delay ---- */
     {
         static int16_t mb[44100 * 2 * 2];
-        const char *setup[][2] = {{"preset", "0"}, {"key_mode", "3"}, {"ln_mode", "0"}, {"ln_vol", "0.8"},
+        const char *setup[][2] = {{"preset", "0"}, {"key_mode", "4"}, {"ln_mode", "0"}, {"ln_vol", "0.8"},
                                   {"ln_fx", "2"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"}, {"ln_sus", "0"},
                                   {"ln_a", "0"}, {"ln_d", "0.15"}, {"ln_cut", "1"}, {"ln_fenv", "0"}};
         midi(api, in, 0xB0, 120, 0);
@@ -629,12 +680,47 @@ int main(int argc, char **argv) {
         }
         CHECK(fails == 0, "every Animate Target moves exactly its destinations");
         api->set_param(in, "an_dest", "0");
+
+        /* ---- LFO Mode, Animate on Pan, a 3-note chord: Global swings the whole chord across the
+         * stereo field; Spread pans each voice on its own phase, so the sum swings much less;
+         * Retrig restarts each voice's LFO on its note, so notes played together pan together ---- */
+        double range[3];
+        for (int lm = 0; lm < 3; lm++) {
+            api->set_param(in, "preset", "0");
+            for (size_t k = 0; k < sizeof ts / sizeof ts[0]; k++) api->set_param(in, ts[k][0], ts[k][1]);
+            api->set_param(in, "an_dest", "3");
+            api->set_param(in, "flt_type", "0");
+            api->set_param(in, "tx_type", "5");
+            char lv[4];
+            snprintf(lv, sizeof lv, "%d", lm);
+            api->set_param(in, "an_mode", lv);
+            for (int k = 0; k < 3; k++) midi(api, in, 0x90, 60 + 4 * k, 100);
+            for (int i = 0; i < 100; i++) api->render_block(in, rb, 128);
+            double bmin = 1, bmax = 0;
+            for (int w = 0; w < 120; w++) {
+                double el = 0, er = 0;
+                for (int i = 0; i < 8; i++) {
+                    api->render_block(in, rb, 128);
+                    for (int j = 0; j < 128; j++) { el += (double)rb[2 * j] * rb[2 * j]; er += (double)rb[2 * j + 1] * rb[2 * j + 1]; }
+                }
+                double b = el / (el + er + 1e-9);
+                if (b < bmin) bmin = b;
+                if (b > bmax) bmax = b;
+            }
+            for (int k = 0; k < 3; k++) midi(api, in, 0x80, 60 + 4 * k, 0);
+            for (int i = 0; i < 400; i++) api->render_block(in, rb, 128);
+            range[lm] = bmax - bmin;
+        }
+        printf("lfo mode pan swing (3 notes): global %.2f spread %.2f retrig %.2f\n", range[0], range[1], range[2]);
+        CHECK(range[1] < 0.5 * range[0] && range[2] > 0.7 * range[0], "LFO Mode Spread scatters voices, Retrig keeps a chord together");
+        api->set_param(in, "an_mode", "0");
+        api->set_param(in, "flt_type", "1");
     }
 
     /* ---- Mono velocity: a fixed 9 dB level range, even with the Velocity knob at 0 ---- */
     {
         api->set_param(in, "preset", "0");
-        const char *ms[][2] = {{"key_mode", "3"}, {"ln_vol", "0.8"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"},
+        const char *ms[][2] = {{"key_mode", "4"}, {"ln_vol", "0.8"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"},
                                {"ln_fenv", "0"}, {"ln_wenv", "0"}, {"vel", "0"}, {"ln_sus", "1"}, {"ln_a", "0"},
                                {"ln_var", "0"}, {"vintage", "0"}, {"ln_cut", "0.8"}, {"ln_dly", "0"}, {"ln_det", "0"}, {"ln_d", "0.1"}};
         for (size_t k = 0; k < sizeof ms / sizeof ms[0]; k++) api->set_param(in, ms[k][0], ms[k][1]);
@@ -695,7 +781,7 @@ int main(int argc, char **argv) {
             api->get_param(u, "chain_params", cp, sizeof cp);
             CHECK(strstr(cp, ",\"single\",\"Test Saw Sine\"]") != 0, "chain_params names the user tables");
             CHECK(strstr(cp, "User 3") == 0 && strstr(cp, "@U") == 0, "no empty user slots in chain_params");
-            const char *us[][2] = {{"key_mode", "2"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"}, {"ens_amt", "0"},
+            const char *us[][2] = {{"key_mode", "3"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"}, {"ens_amt", "0"},
                                    {"tx_a", "0"}, {"tx_s", "1"}, {"flt_type", "0"}, {"vintage", "0"}, {"tx_anim", "0"},
                                    {"tx_spread", "0"}, {"tx_detune", "0"}, {"vib", "0"}, {"tx_depth", "0"}, {"tx_drive", "0"}};
             for (size_t k = 0; k < sizeof us / sizeof us[0]; k++) api->set_param(u, us[k][0], us[k][1]);
@@ -725,7 +811,7 @@ int main(int argc, char **argv) {
             CHECK(g[1][1] > 0.3 * g[1][0] && g[1][1] < 0.7 * g[1][0], "user table last frame is the saw");
             /* Mono plays the single-cycle square */
             snprintf(tv, sizeof tv, "%d", Q_NUM_LINE_BUILTIN);
-            api->set_param(u, "key_mode", "3");
+            api->set_param(u, "key_mode", "4");
             api->set_param(u, "tx_vol", "0");   /* no Pads tail at 220 Hz ending the wait early */
             for (int i = 0; i < 400; i++) api->render_block(u, (int16_t[256]){0}, 128);
             api->set_param(u, "ln_vol", "0.8");

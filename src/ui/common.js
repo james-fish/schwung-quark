@@ -149,7 +149,7 @@ var Q = (function () {
 
   /* reverb pre-delay in seconds, scaled by Reverb Size (mirrors q_reverb) */
   function revPre(size) { return 0.005 + 0.07 * size; }
-  /* where Wave Env takes the Mono table position at full envelope: it scales to the room left, so
+  /* where Wave Env takes the Melody table position at full envelope: it scales to the room left, so
    * any Variation + Wave Env lands inside the table (mirrors lines.c) */
   function wenvTo(pos, we) { return pos + we * (we >= 0 ? 1 - pos : pos); }
 
@@ -176,7 +176,7 @@ var Q = (function () {
       case "an_rate": return (0.03 * Math.pow(333, x)).toFixed(2) + " Hz";
       case "vib_rate": return (3 + 6 * x).toFixed(1) + " Hz";
       case "tx_spread": return "±" + (x * 9).toFixed(1) + " ct";
-      case "ln_det": return (x * 50).toFixed(1) + " ct";
+      case "ln_det": return Math.round(x) + " ct";
       case "ln_glide": return fmtS(1.2 * x * x);
       case "rv_decay": return x > 0.995 ? "Freeze" : fmtS(0.35 * Math.pow(80, x));
       case "rv_tone": return fmtHz(1200 * Math.pow(13, x));
@@ -270,6 +270,11 @@ var Q = (function () {
     var t = Math.round(val(values, "fx_type"));
     return t === 7 ? "Drive" : t >= 8 ? "Time" : "Rate";
   }
+  /* what Effect Control / Control 2 do for effect type t (mirrors fx.c) */
+  function fxCtrlName(key, t) {
+    if (key === "fx_ctrl") return ctrlLabel({ fx_type: t });
+    return t <= 1 ? "Depth" : t === 6 ? "Shape" : t === 7 ? "Tone" : "Feedback";
+  }
 
   /* ---- drawing on a Schwung frame ctx ---- */
   function line(ctx, x0, y0, x1, y1) {
@@ -307,7 +312,7 @@ var Q = (function () {
       if (hi === i) line(ctx, X(pts[i][0]), Y(pts[i][1]) - 1, X(pts[i + 1][0]), Y(pts[i + 1][1]) - 1);
     }
   }
-  /* Magnitude of the Pads filter at f Hz (mirrors tex.c: SVF damping per type, comb loop with its
+  /* Magnitude of the Atmos filter at f Hz (mirrors tex.c: SVF damping per type, comb loop with its
    * damping one-pole and output gain). Types by option name. */
   function filterMag(type, f, fc, res) {
     if (type === "Off") return 1;
@@ -363,7 +368,7 @@ var Q = (function () {
   return {
     M: M, byKey: byKey, byName: byName, val: val, num: num, hz: hz, envTime: envTime, texWave: texWave,
     lineWave: lineWave, lineIsWave: lineIsWave, bankWave: bankWave, driveCurve: driveCurve, detCents: detCents, fmtS: fmtS, envTimeS: envTime, familyName: familyName, lfoShape: lfoShape, variationText: variationText, describe: describe,
-    ctrlLabel: ctrlLabel, line: line, plot: plot, tw: tw, fit: fit, dotted: dotted, envShape: envShape,
+    ctrlLabel: ctrlLabel, fxCtrlName: fxCtrlName, line: line, plot: plot, tw: tw, fit: fit, dotted: dotted, envShape: envShape,
     filterCurve: filterCurve, filterMag: filterMag, noteName: noteName, pct: pct, arpPreview: arpPreview, revPre: revPre, wenvTo: wenvTo
   };
 })();

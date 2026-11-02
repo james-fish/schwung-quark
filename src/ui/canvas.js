@@ -1,17 +1,17 @@
 /* Quark: module-drawn knob-cell widgets (Schwung `drawCell`, docs/MODULES.md "Custom widgets").
  *
- *  custom:qwave  Type + Variation as ONE picture: the actual single cycle the Pads engine plays
+ *  custom:qwave  Type + Variation as ONE picture: the actual single cycle the Atmos engine plays
  *                for that type at that Variation (string registers, wavetable frame, FM index). The
  *                Variation key is `live`, so Animate's motion shows as a moving wave. A tick under the
  *                wave marks Variation; three dots name the family (1 strings, 2 wavetable, 3 FM).
- *  custom:qline  Mono Shape + Variation: the oscillator shape (with the PWM the macro adds) and a
+ *  custom:qline  Melody Shape + Variation: the oscillator shape (with the PWM the macro adds) and a
  *                three-segment meter for Variation's PWM -> tremolo -> vibrato stages; for a wavetable
  *                shape, the wave at that position and a position tick.
- *  custom:qdrive Pads Drive + Position: the transfer curve the drive applies (it bends and flattens
+ *  custom:qdrive Atmos Drive + Position: the transfer curve the drive applies (it bends and flattens
  *                as Drive rises), a sine through it, and PRE / POST / AMP.
- *  custom:qdet   Pads Detune + Bloom: the notes of a chord as lines that start together and fan out
+ *  custom:qdet   Atmos Detune + Bloom: the notes of a chord as lines that start together and fan out
  *                to their detune offsets over the Bloom time.
- *  custom:qflt   Pads Cutoff + Resonance: the response of the selected Filter Type (read from the
+ *  custom:qflt   Atmos Cutoff + Resonance: the response of the selected Filter Type (read from the
  *                page's values), including the combs' teeth, Dual BP's two bands and Morph's blend.
  *
  * (0,0) is the cell box, ctx.width/height its size; values arrive, never read (no getParam).

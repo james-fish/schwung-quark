@@ -2,9 +2,11 @@
  *
  * One drawer serves every carded knob. The header line is the parameter and its value in real units
  * (seconds, Hz, semitones, register names); the body is a small picture of what the knob does.
- * Only knobs whose picture adds something the page does not already show get a card: the pad wave,
- * the Mono shape, the ensemble, the shimmer tail, the detune fan, the arp contours and dice, the
- * split. Plain amounts use the host's own value display. o.raw may be null: then only the name is drawn.
+ * Only knobs whose picture adds something the page does not already show get a card: the Atmos wave
+ * and the Melody shape (on their Variation knobs too), the detune fan, the LFOs, the shimmer tail,
+ * a picture per arp knob, the keyboard split, and the two FX controls, whose meaning depends on the
+ * effect (a one-line card naming it). Plain amounts and enums use the cell itself.
+ * o.raw may be null: then only the name is drawn.
  */
 (function () {
   /* BEGIN GENERATED */
@@ -39,10 +41,19 @@
     values[p.key] = o.raw;
     var key = p.key, W = o.w, H = o.h, top = 12, bh = H - top - 1;
     var label = p.name, text = Q.describe(key, values);
+    if (key === "fx_ctrl" || key === "fx_tone") {
+      /* one line: what this knob is for the selected effect, and its value */
+      var ft = Math.round(Q.val(values, "fx_type"));
+      label = Q.byKey.fx_type.opts[ft] + " " + Q.fxCtrlName(key, ft);
+      text = text.replace(/^(Depth|Fdbk|Shape|Tone) /, "");
+      ctx.print(1, Math.max(0, Math.floor((H - 7) / 2)), Q.fit(ctx, label, W - Q.tw(ctx, text) - 6), 1);
+      ctx.print(W - 1 - Q.tw(ctx, text), Math.max(0, Math.floor((H - 7) / 2)), text, 1);
+      return;
+    }
     header(ctx, o, label, text);
 
     switch (key) {
-      case "tx_type": {
+      case "tx_type": case "tx_var": {
         var type = Q.val(values, "tx_type"), va = Q.val(values, "tx_var");
         var fam = Q.M.texTypes[Math.round(type)].family;
         ctx.print(1, top + 1, Q.familyName(type), 1);
@@ -51,7 +62,7 @@
         bar(ctx, 50, H - 5, W - 52, va, false);
         return;
       }
-      case "ln_shape": {
+      case "ln_shape": case "ln_var": {
         var sh = Q.val(values, "ln_shape"), lv = Q.val(values, "ln_var");
         if (Q.lineIsWave(sh)) {
           var to = Q.wenvTo(lv, Q.val(values, "ln_wenv"));
@@ -75,18 +86,7 @@
         }
         return;
       }
-      case "ens_amt": case "ens_type": {
-        var et = Q.byKey.ens_type.opts[Math.round(Q.val(values, "ens_type"))];
-        ctx.print(1, top + 1, et, 1);
-        var amt = Q.val(values, "ens_amt"), now = (o.nowMs || 0) / 1000;
-        for (var k = 0; k < 3; k++) {
-          var xx = 56 + k * 16, wob = Math.sin(now * 3.6 + k * 2.094) * 5 * amt;
-          ctx.fillRect(Math.round(xx + wob), top + 4 + k * 3, 3, 3, 1);
-        }
-        bar(ctx, 2, H - 5, W - 4, amt, false);
-        return;
-      }
-      case "arp_rhy": case "arp_gate": case "arp_swing": {
+      case "arp_rhy": {
         var rh = Q.M.arpRhythms[Math.round(Q.val(values, "arp_rhy"))];
         var ag = Q.val(values, "arp_gate"), gate = 0.05 + 1.95 * ag * ag, sw = 0.33 * Q.val(values, "arp_swing");
         var cw = (W - 4) / 16;
@@ -99,6 +99,7 @@
         return;
       }
       case "sh_pitch": case "sh_amt": {
+        /* the reverb tail (bars) and the shimmer voice climbing out of it (dots) */
         var dec = Q.val(values, "rv_decay"), sa = Q.val(values, "sh_amt");
         var semis = Q.M.shimSemis[Math.round(Q.val(values, "sh_pitch"))];
         var pre = Q.revPre(Q.val(values, "rv_size"));
@@ -127,8 +128,8 @@
         }
         return;
       }
-      case "arp_oct": case "arp_pat": case "arp_mode": {
-        if (key === "arp_mode" && Math.round(Q.val(values, "arp_mode")) === 0) { ctx.print(1, top + 1, "Arp off: Mono", 1); ctx.print(1, top + 11, "plays its keys", 1); return; }
+      case "arp_pat": case "arp_mode": {
+        if (key === "arp_mode" && Math.round(Q.val(values, "arp_mode")) === 0) { ctx.print(1, top + 1, "Arp off: Melody", 1); ctx.print(1, top + 11, "plays its keys", 1); return; }
         /* the contour the type plays from a 3-note chord: one column per step */
         var pv = Q.arpPreview(values, 16), mn = 99, mx = -99;
         pv.forEach(function (st) { st.forEach(function (x) { mn = Math.min(mn, x); mx = Math.max(mx, x); }); });
@@ -138,38 +139,154 @@
         });
         return;
       }
-      case "arp_drop": case "arp_vrnd": case "arp_grnd": case "arp_ornd": case "arp_nrnd": case "arp_vel": case "arp_loop": {
-        /* 16 steps of the variation, drawn as the dice would fall (illustrative) */
-        var amt = key === "arp_vel" ? (Math.round(Q.val(values, "arp_vel")) || 100) / 127 : key === "arp_loop" ? 0.5 : Q.val(values, key);
-        var lp = Math.round(Q.val(values, "arp_loop")), cw2 = Math.floor((W - 4) / 16);
-        for (var i2 = 0; i2 < 16; i2++) {
-          var st2 = lp > 0 ? i2 % lp : i2, r = ((st2 * 2654435761) >>> 0) % 1000 / 1000;
-          var hgt = bh - 2;
-          if (key === "arp_drop") { if (r < amt) { ctx.fillRect(2 + i2 * cw2, top + bh - 2, cw2 - 1, 1, 1); continue; } }
-          else if (key === "arp_vel") hgt = Math.round((bh - 2) * amt);
-          else hgt = Math.round((bh - 2) * (1 - amt * r));
-          ctx.fillRect(2 + i2 * cw2, top + bh - hgt, Math.max(1, cw2 - 1), Math.max(1, hgt), 1);
-          if (lp > 0 && i2 % lp === 0) ctx.fillRect(2 + i2 * cw2, top, 1, 2, 1);
+      case "arp_src": {
+        /* where the arp's notes come from: the keys you play, or the chord Atmos holds */
+        var src = Math.round(Q.val(values, "arp_src"));
+        if (Math.round(Q.val(values, "arp_mode")) === 0) { ctx.print(1, top + 1, "Arp off: Melody", 1); ctx.print(1, top + 11, "plays its keys", 1); return; }
+        var sx = 4, sy0 = top + 2;
+        if (src) { for (var c3 = 0; c3 < 3; c3++) ctx.fillRect(sx, sy0 + 3 + c3 * 4, 18, 2, 1); }
+        else { for (var kq = 0; kq < 4; kq++) { ctx.fillRect(sx + kq * 5, sy0, 1, 14, 1); if (kq < 3) ctx.fillRect(sx + kq * 5 + 3, sy0, 2, 8, 1); } ctx.fillRect(sx, sy0 + 14, 16, 1, 1); }
+        ctx.print(sx, top + bh - 7, src ? "Atmos" : "Keys", 1);
+        Q.line(ctx, 32, sy0 + 8, W - 40, sy0 + 8);
+        Q.line(ctx, W - 44, sy0 + 5, W - 40, sy0 + 8); Q.line(ctx, W - 44, sy0 + 11, W - 40, sy0 + 8);
+        for (var ns = 0; ns < 4; ns++) ctx.fillRect(W - 34 + ns * 8, sy0 + 12 - ns * 3, 5, 2, 1);
+        ctx.print(W - 2 - Q.tw(ctx, "Melody"), top + bh - 7, "Melody", 1);
+        return;
+      }
+      case "arp_oct": {
+        /* an octave ladder (-3..+3, 0 marked): the octaves the arp climbs, in order, left to right */
+        var seq = Q.M.arpOctSeq[Math.max(0, Math.min(Q.M.arpOctSeq.length - 1, Math.round(Q.val(values, "arp_oct"))))];
+        var rh = Math.max(2, Math.floor(bh / 7)), ox = 14, ow = W - 16, cols = 12, cwo = Math.floor(ow / cols);
+        for (var o = -3; o <= 3; o++) {
+          var yo = top + (3 - o) * rh;
+          for (var xo = ox; xo < ox + ow; xo += o === 0 ? 1 : 3) ctx.fillRect(xo, yo + rh - 1, 1, 1, 1);
+        }
+        ctx.print(1, top + 3 * rh - 2, "0", 1);
+        for (var ci = 0; ci < cols; ci++) {
+          var oc = seq[ci % seq.length];
+          ctx.fillRect(ox + ci * cwo, top + (3 - oc) * rh, Math.max(1, cwo - 2), Math.max(1, rh - 1), 1);
         }
         return;
       }
-      case "arp_src": {
-        var src = Math.round(Q.val(values, "arp_src")), md = Math.round(Q.val(values, "arp_mode"));
-        if (md === 0) { ctx.print(1, top + 1, "Arp off: Mono", 1); ctx.print(1, top + 11, "plays its keys", 1); return; }
-        ctx.print(1, top + 1, src ? "Mono arpeggiates" : "Mono arpeggiates", 1);
-        ctx.print(1, top + 11, src ? "the Pads chord" : "the keys sent", 1);
-        ctx.print(1, top + 21, src ? "(+ Mono keys)" : "to Mono", 1);
+      case "arp_gate": {
+        /* 8 steps on a grid: each note held for the gate length (over 100% ties into the next) */
+        var gt = 0.05 + 1.95 * Math.pow(Q.val(values, "arp_gate"), 2), sw8 = (W - 4) / 8;
+        for (var g8 = 0; g8 <= 8; g8++) ctx.fillRect(Math.round(2 + g8 * sw8), top, 1, 3, 1);
+        for (var n8 = 0; n8 < 8; n8++) {
+          var gx0 = Math.round(2 + n8 * sw8), gl = Math.max(1, Math.round(sw8 * gt) - 1);
+          ctx.fillRect(gx0, top + 6 + (n8 % 2) * 6, Math.min(gl, W - 2 - gx0), 4, 1);
+        }
+        return;
+      }
+      case "arp_swing": {
+        /* straight 16ths (ticks) against the swung notes: every second note pushed late */
+        var swv = 0.33 * Q.val(values, "arp_swing"), s16 = (W - 4) / 8;
+        for (var t16 = 0; t16 < 8; t16++) {
+          var tx0 = Math.round(2 + t16 * s16);
+          for (var yy = top; yy < top + bh; yy += 3) ctx.fillRect(tx0, yy, 1, 1, 1);
+          var nx = Math.round(tx0 + ((t16 & 1) ? swv * s16 * 2 : 0));
+          ctx.fillRect(nx, top + 5, 4, 8, 1);
+          if (t16 & 1 && swv > 0.01) Q.line(ctx, tx0, top + 16, nx, top + 16);
+        }
+        return;
+      }
+      case "arp_drop": {
+        /* 16 steps: the ones Drop skips are crossed out */
+        var amt = Q.val(values, "arp_drop"), cwd = Math.floor((W - 4) / 16);
+        for (var d16 = 0; d16 < 16; d16++) {
+          var dx0 = 2 + d16 * cwd, rr = ((d16 * 2654435761) >>> 0) % 1000 / 1000;
+          if (rr < amt) { Q.line(ctx, dx0, top + 6, dx0 + cwd - 2, top + 14); Q.line(ctx, dx0, top + 14, dx0 + cwd - 2, top + 6); }
+          else ctx.fillRect(dx0, top + 6, cwd - 1, 9, 1);
+        }
+        return;
+      }
+      case "arp_vel": case "arp_vrnd": {
+        /* velocity per step: one level (Velocity), or as played; the random range drawn as a band */
+        var fv = Math.round(Q.val(values, "arp_vel")), base = fv ? fv / 127 : 0.75, vr = Q.val(values, "arp_vrnd");
+        var played = [0.8, 0.6, 0.9, 0.7, 0.75, 0.55, 0.85, 0.65], cwv = Math.floor((W - 4) / 16), hv = bh - 1;
+        var lo = Math.max(0.05, base - 0.5 * vr), hi = Math.min(1, base + 0.5 * vr);
+        if (vr > 0.01) for (var bx2 = 2; bx2 < W - 2; bx2 += 2) { ctx.fillRect(bx2, top + hv - Math.round(hi * hv), 1, 1, 1); ctx.fillRect(bx2, top + hv - Math.round(lo * hv), 1, 1, 1); }
+        for (var v16 = 0; v16 < 16; v16++) {
+          var rv = ((v16 * 2246822519 + 7) >>> 0) % 1000 / 1000 - 0.5;
+          var lv2 = (fv ? base : played[v16 % 8]) + rv * vr;
+          var hh2 = Math.max(1, Math.round(Math.max(0.05, Math.min(1, lv2)) * hv));
+          ctx.fillRect(2 + v16 * cwv + 1, top + hv - hh2, Math.max(1, cwv - 3), hh2, 1);
+        }
+        return;
+      }
+      case "arp_grnd": {
+        /* note lengths on a piano-roll lane: Gate Random stretches and shortens each one */
+        var gr = Q.val(values, "arp_grnd"), gt2 = 0.05 + 1.95 * Math.pow(Q.val(values, "arp_gate"), 2), s8 = (W - 4) / 8;
+        for (var r8 = 0; r8 < 8; r8++) {
+          var rnd = ((r8 * 3266489917 + 3) >>> 0) % 1000 / 1000 - 0.5;
+          var len = Math.max(1, Math.round(s8 * Math.max(0.05, gt2 * (1 + 1.6 * rnd * gr)) - 1));
+          var rx = Math.round(2 + r8 * s8);
+          ctx.fillRect(rx, top + 3 + (r8 % 3) * 6, Math.min(len, W - 2 - rx), 4, 1);
+          ctx.fillRect(rx, top, 1, 2, 1);
+        }
+        return;
+      }
+      case "arp_ornd": {
+        /* three octave lanes: Oct Random throws notes up or down an octave */
+        var orn = Q.val(values, "arp_ornd"), cwo2 = Math.floor((W - 4) / 16), lh = Math.floor(bh / 3);
+        for (var l3 = 0; l3 < 3; l3++) for (var xl = 2; xl < W - 2; xl += l3 === 1 ? 2 : 4) ctx.fillRect(xl, top + l3 * lh + lh - 1, 1, 1, 1);
+        for (var o16 = 0; o16 < 16; o16++) {
+          var ro = ((o16 * 2654435761 + 11) >>> 0) % 1000 / 1000, lane = ro < orn ? (o16 & 1 ? 0 : 2) : 1;
+          ctx.fillRect(2 + o16 * cwo2, top + lane * lh + 1, Math.max(1, cwo2 - 1), Math.max(1, lh - 3), 1);
+        }
+        return;
+      }
+      case "arp_nrnd": {
+        /* the arp's contour; Note Random swaps some steps for another chord note (outlined) */
+        var nrn = Q.val(values, "arp_nrnd"), pvn = Q.arpPreview(values, 16);
+        if (!pvn.length) { ctx.print(1, top + 1, "Arp off", 1); return; }
+        var mnn = 99, mxn = -99;
+        pvn.forEach(function (st) { st.forEach(function (x) { mnn = Math.min(mnn, x); mxn = Math.max(mxn, x); }); });
+        var spn = Math.max(3, mxn - mnn + 1), cwn = Math.floor((W - 4) / 16), chn = Math.max(2, Math.floor(bh / spn));
+        pvn.forEach(function (st, i) {
+          var rn = ((i * 2246822519 + 5) >>> 0) % 1000 / 1000, x0n = 2 + i * cwn;
+          st.forEach(function (x) {
+            if (rn < nrn) {
+              var alt = mnn + ((x - mnn + 1 + (i % (spn - 1))) % spn), yb = top + bh - (alt - mnn + 1) * chn;
+              ctx.fillRect(x0n, yb, cwn - 1, 1, 1); ctx.fillRect(x0n, yb + chn - 2, cwn - 1, 1, 1);
+              ctx.fillRect(x0n, yb, 1, chn - 1, 1); ctx.fillRect(x0n + cwn - 2, yb, 1, chn - 1, 1);
+            } else ctx.fillRect(x0n, top + bh - (x - mnn + 1) * chn, Math.max(1, cwn - 1), Math.max(1, chn - 1), 1);
+          });
+        });
+        return;
+      }
+      case "arp_loop": {
+        /* the random variation repeating every Loop steps (brackets); Free never repeats */
+        var lp = Math.round(Q.val(values, "arp_loop")), cwl = Math.floor((W - 4) / 16);
+        for (var l16 = 0; l16 < 16; l16++) {
+          var stp = lp > 0 ? l16 % lp : l16, rl = ((stp * 2654435761 + 1) >>> 0) % 1000 / 1000;
+          var hl = Math.max(2, Math.round((bh - 6) * (0.3 + 0.7 * rl)));
+          ctx.fillRect(2 + l16 * cwl, top + bh - hl, Math.max(1, cwl - 1), hl, 1);
+          if (lp > 0 && stp === 0) { ctx.fillRect(2 + l16 * cwl, top, 1, 4, 1); ctx.fillRect(2 + l16 * cwl, top, Math.min(lp, 16 - l16) * cwl - 1, 1, 1); }
+        }
         return;
       }
       case "an_shape":
       case "an_dest":
-      case "an_lfo2": {
+      case "an_lfo2":
+      case "an_mode": {
         /* two cycles of the selected shape: the main LFO solid, LFO 2 dotted (pair targets only),
          * each labelled with the destination it moves */
         var shp = Math.round(Q.val(values, "an_shape")), r2 = Q.val(values, "an_lfo2");
         var src = Q.M.anSrc[Math.max(0, Math.min(Q.M.anSrc.length - 1, Math.round(Q.val(values, "an_dest"))))];
         var t1 = src.indexOf(1), t2 = src.indexOf(2);
         var gx2 = 26, gw2 = W - 28, cy2 = top + Math.floor(bh / 2), am2 = bh / 2 - 1, py1 = 0;
+        var lm = Math.round(Q.val(values, "an_mode"));
+        if (lm > 0) {
+          /* per voice: two more voices drawn sparse. Spread: the same LFO at scattered phases;
+           * Retrig: each voice's cycle starts at its note (marked) */
+          for (var vv = 1; vv <= 2; vv++) {
+            var x0v = lm === 2 ? Math.round(gw2 * vv / 3) : 0, offv = lm === 2 ? 0 : (vv * 0.618034) % 1;
+            if (lm === 2) ctx.fillRect(gx2 + x0v, top, 1, 3, 1);
+            for (var xv = x0v; xv < gw2; xv += 3)
+              ctx.fillRect(gx2 + xv, Math.round(cy2 - am2 * Q.lfoShape(shp, 2 * (xv - x0v) / gw2 + offv, 5 + vv)), 1, 1, 1);
+          }
+        }
         ctx.print(1, top + 1, Q.M.anTargets[t1], 1);
         if (t2 >= 0) ctx.print(1, top + bh - 8, Q.M.anTargets[t2], 1);
         for (var xi2 = 0; xi2 < gw2; xi2++) {
@@ -180,17 +297,31 @@
           py1 = y1;
         }
         if (t2 < 0 && key === "an_lfo2") ctx.print(1, top + bh - 8, "Pair targets", 1);
+        else if (t2 < 0 && lm > 0) ctx.print(1, top + bh - 8, "Voice", 1);
         return;
       }
-      case "split": {
-        var sp = Q.val(values, "split");
+      case "split":
+      case "key_mode": {
+        /* the keyboard C1..C7 (C3 in the middle), with the Melody keys filled; the split mark sits
+         * between the two layers */
+        var sp = Math.round(Q.val(values, "split")), km = Math.round(Q.val(values, "key_mode"));
+        var kx = function (n) { return 2 + Math.round((n - 24) / 72 * (W - 5)); };
         for (var kk = 24; kk <= 96; kk++) {
-          var x2 = 2 + Math.round((kk - 24) / 72 * (W - 5));
           var blk = [1, 3, 6, 8, 10].indexOf(kk % 12) >= 0;
-          ctx.fillRect(x2, top + (blk ? 2 : 6), 1, blk ? 4 : 8, kk < sp ? 1 : (kk % 2));
+          var mono = km === 4 || (km === 1 && kk < sp) || (km === 2 && kk >= sp);
+          ctx.fillRect(kx(kk), top + (blk ? 2 : 6), 1, blk ? 4 : 8, mono ? 1 : (kk % 2));
         }
-        ctx.print(2, top + 16, "Mono", 1);
-        ctx.print(W - 2 - Q.tw(ctx, "Pads"), top + 16, "Pads", 1);
+        ctx.fillRect(kx(60), top, 1, 1, 1);
+        var ly = top + 16;
+        if (km === 1 || km === 2) {
+          ctx.fillRect(kx(sp) - 1, top - 1, 1, 16, 1);
+          ctx.print(2, ly, km === 1 ? "Melody" : "Atmos", 1);
+          ctx.print(W - 2 - Q.tw(ctx, km === 1 ? "Atmos" : "Melody"), ly, km === 1 ? "Atmos" : "Melody", 1);
+        } else {
+          var all = km === 0 ? "Atmos + Melody, all keys" : km === 3 ? "Atmos, all keys" : "Melody, all keys";
+          if (Q.tw(ctx, all) > W - 4) all = km === 0 ? "Atmos + Melody" : km === 3 ? "Atmos only" : "Melody only";
+          ctx.print(2, ly, Q.fit(ctx, all, W - 4), 1);
+        }
         return;
       }
     }

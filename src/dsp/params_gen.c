@@ -10,19 +10,20 @@ static const char *const O_tx_drvpos[] = {"Pre Filter", "Post Filter", "Amp"};
 static const char *const O_an_shape[] = {"Sine", "Tri", "Saw", "Square", "S&H", "Random Walk"};
 static const char *const O_an_dest[] = {"Wave Pos", "Pitch", "Filter", "Pan", "Amp", "Wave Pos+Filter", "Wave Pos+Pitch", "Wave Pos+Pan", "Wave Pos+Amp", "Pitch+Filter", "Pitch+Pan", "Pitch+Amp", "Filter+Pan", "Filter+Amp", "Pan+Amp"};
 static const char *const O_ens_type[] = {"Strings", "Chorus", "Both", "Deep"};
-static const char *const O_ln_sus[] = {"Trigger", "Sustain"};
+static const char *const O_ln_sus[] = {"Trig", "Sust"};
 static const char *const O_arp_mode[] = {"Off", "Up", "Down", "Up/Down", "Down/Up", "Random", "Order", "Chord", "Leap In", "Leap Out", "Pattern"};
-static const char *const O_arp_src[] = {"Keys", "Pads Chord"};
+static const char *const O_arp_src[] = {"Keys", "Atmos Chord"};
 static const char *const O_arp_rate[] = {"1/4", "1/8D", "1/8", "1/8T", "1/16", "1/16T", "1/32"};
 static const char *const O_arp_oct[] = {"0", "+1", "+2", "+3", "-1", "-2", "-3", "-1..+1", "-2..+2"};
 static const char *const O_arp_hold[] = {"Off", "On"};
 static const char *const O_tx_fx[] = {"FX+Rev", "Rev", "Dry"};
 static const char *const O_ln_fx[] = {"FX+Rev", "Rev", "Dry"};
 static const char *const O_ln_dtime[] = {"1/32", "1/16T", "1/16", "1/8T", "1/16D", "1/8", "1/4T", "1/8D", "1/4", "1/2T", "1/4D", "1/2"};
-static const char *const O_key_mode[] = {"Stack", "Split", "Pads", "Mono"};
+static const char *const O_key_mode[] = {"Stack", "Melody Low", "Melody High", "Atmos Only", "Melody Only"};
 static const char *const O_wheel[] = {"Vibrato", "Animate", "Cutoff", "Wave Pos"};
 static const char *const O_ln_mode[] = {"Mono", "Legato", "Poly"};
 static const char *const O_tx_latch[] = {"Off", "On"};
+static const char *const O_an_mode[] = {"Global", "Spread", "Retrig"};
 
 const QParam quark_params[P_COUNT] = {
     {"tx_type", 'e', 0.0f, 115.0f, 0.0f, 116, O_tx_type},
@@ -63,7 +64,6 @@ const QParam quark_params[P_COUNT] = {
     {"tx_detune", 'f', 0.0f, 1.0f, 0.0f, 0, 0},
     {"tx_bloom", 'f', 0.0f, 1.0f, 0.0f, 0, 0},
     {"tx_spread", 'f', 0.0f, 1.0f, 0.3f, 0, 0},
-    {"tx_voices", 'i', 2.0f, 12.0f, 8.0f, 0, 0},
     {"flt_key", 'f', 0.0f, 1.0f, 0.5f, 0, 0},
     {"an_shape", 'e', 0.0f, 5.0f, 0.0f, 6, O_an_shape},
     {"an_rate", 'f', 0.0f, 1.0f, 0.35f, 0, 0},
@@ -75,7 +75,7 @@ const QParam quark_params[P_COUNT] = {
     {"ln_res", 'f', 0.0f, 1.0f, 0.15f, 0, 0},
     {"ln_fenv", 'f', -1.0f, 1.0f, 0.3f, 0, 0},
     {"ln_wenv", 'f', -1.0f, 1.0f, 0.0f, 0, 0},
-    {"ln_det", 'f', 0.0f, 1.0f, 0.22f, 0, 0},
+    {"ln_det", 'i', 0.0f, 50.0f, 11.0f, 0, 0},
     {"ln_int", 'i', -24.0f, 24.0f, 0.0f, 0, 0},
     {"ln_glide", 'f', 0.0f, 1.0f, 0.0f, 0, 0},
     {"ln_sus", 'e', 0.0f, 1.0f, 1.0f, 2, O_ln_sus},
@@ -105,11 +105,12 @@ const QParam quark_params[P_COUNT] = {
     {"ln_dtime", 'e', 0.0f, 11.0f, 7.0f, 12, O_ln_dtime},
     {"tx_tr", 'i', -24.0f, 24.0f, 0.0f, 0, 0},
     {"ln_tr", 'i', -24.0f, 24.0f, 0.0f, 0, 0},
-    {"key_mode", 'e', 0.0f, 3.0f, 0.0f, 4, O_key_mode},
+    {"key_mode", 'e', 0.0f, 4.0f, 0.0f, 5, O_key_mode},
     {"split", 'i', 24.0f, 96.0f, 60.0f, 0, 0},
     {"vel", 'f', 0.0f, 1.0f, 0.5f, 0, 0},
     {"wheel", 'e', 0.0f, 3.0f, 0.0f, 4, O_wheel},
     {"ln_mode", 'e', 0.0f, 2.0f, 1.0f, 3, O_ln_mode},
     {"tx_latch", 'e', 0.0f, 1.0f, 0.0f, 2, O_tx_latch},
     {"an_lfo2", 'f', -4.0f, 4.0f, 1.0f, 0, 0},
+    {"an_mode", 'e', 0.0f, 2.0f, 0.0f, 3, O_an_mode},
 };

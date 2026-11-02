@@ -167,7 +167,7 @@
   function labelFor(p) {
     var map = { tx_var: "Variation", tx_anim: "Animate", tx_depth: "Wave Env", tx_a: "Attack", tx_d: "Decay", tx_s: "Sustain", tx_r: "Release",
       ln_var: "Variation", ln_a: "Attack", ln_d: "Decay", ens_amt: "Amount", tx_vol: "Volume", ln_vol: "Volume", ln_spread: "Spread", ln_dly: "Delay", ln_dtime: "Time",
-      tx_drive: "Drive", tx_drvpos: "Position", tx_detune: "Detune", tx_bloom: "Bloom", tx_latch: "Pads Latch", ln_wenv: "Wave Env",
+      tx_drive: "Drive", tx_drvpos: "Position", tx_detune: "Detune", tx_bloom: "Bloom", tx_latch: "Atmos Latch", ln_wenv: "Wave Env",
       arp_mode: "Arp Type", arp_src: "Source", arp_hold: "Arp Latch", arp_oct: "Octaves",
       fx_ctrl: "Control", fx_amt: "Amount", sh_amt: "Amount", rv_decay: "Decay", rv_amt: "Amount", vol: "Volume", vintage: "Vintage",
       tx_type: "Type", ln_shape: "Shape", fx_type: "Type", sh_pitch: "Pitch", ens_type: "Type", ln_sus: "Envelope" };
@@ -726,7 +726,7 @@
     document.getElementById("peak").style.width = Math.min(100, d.peak * 100) + "%";
   }
   /* Benchmark: a private engine instance renders 3 s of the CURRENT patch with an 8-note chord on the
-   * Pads and a Mono line (the "1 of 8 tracks" budget), timed on this thread. */
+   * Atmos and a Melody line (the "1 of 8 tracks" budget), timed on this thread. */
   function measureCpu() {
     var el = document.getElementById("load");
     el.textContent = "…";
@@ -739,7 +739,7 @@
       set("state", stateJson());
       if (vals.ln_vol < 0.05) set("ln_vol", 0.6);
       if (vals.tx_vol < 0.05) set("tx_vol", 0.8);
-      set("key_mode", 0); set("ln_mode", 1); set("tx_voices", Math.max(8, vals.tx_voices));
+      set("key_mode", 0); set("ln_mode", 1);
       [48, 55, 60, 64, 67, 71, 74, 79].forEach(function (n) { x.wa_midi(0x90, n, 100); });
       for (var w = 0; w < 100; w++) x.wa_render(128);
       var blocks = Math.round(3 * 44100 / 128), t0 = performance.now();
@@ -749,7 +749,7 @@
       }
       var ms = performance.now() - t0, pct = ms / 3000 * 100;
       el.textContent = pct.toFixed(2) + "% here";
-      el.title = "8 pad voices + a Mono line + all FX of this patch, single-threaded WebAssembly on this computer. " +
+      el.title = "8 Atmos voices + a Melody line + all FX of this patch, single-threaded WebAssembly on this computer. " +
         "A Move (Cortex-A72 @1.5 GHz, native code) is very roughly 4-6x slower than a recent laptop core: ~" +
         (pct * 4).toFixed(0) + "-" + (pct * 6).toFixed(0) + "% estimated. Measure on the device with the profile build for the real number.";
     }, 30);
@@ -780,7 +780,7 @@
     }
     if (engine && frame % 15 === 0) engine.get("voices").then(function (v) { if (v) document.getElementById("voices").textContent = v.replace(",", " pads · ") + " mono"; });
     if (engine && frame % 10 === 0) engine.get("arp_notes").then(function (v) {
-      var t = vals.arp_mode < 0.5 ? "" : v ? "ARP ▸ " + v.split(",").map(function (x) { return Q.noteName(+x); }).join(" ") : "ARP ▸ waiting for " + (vals.arp_src >= 0.5 ? "a pad chord" : "Mono keys");
+      var t = vals.arp_mode < 0.5 ? "" : v ? "ARP ▸ " + v.split(",").map(function (x) { return Q.noteName(+x); }).join(" ") : "ARP ▸ waiting for " + (vals.arp_src >= 0.5 ? "a pad chord" : "Melody keys");
       document.getElementById("arpnotes").textContent = t;
     });
     tickMove();

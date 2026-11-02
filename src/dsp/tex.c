@@ -336,6 +336,20 @@ static void voice_start(QInstance *q, QTexVoice *v, int key, int note, float vel
     v->tine = 1.0f;
     v->idx1 = -1.0f;
     v->bloom = 0.0f;
+    /* per-voice LFOs (LFO Mode Spread / Retrig). Spread keeps a fixed offset from the shared
+     * LFO, a golden-ratio step per voice slot so any few held notes sit far apart; Retrig starts
+     * the cycle at the note. Set on every note so switching modes mid-note never reads junk. */
+    {
+        int slot = (int)(v - q->tv), mode = q_clampi((int)(q->ps[P_AN_MODE] + 0.5f), 0, 2);
+        float off = (float)slot * 0.618034f;
+        off -= floorf(off);
+        v->lph = mode == 2 ? 0.0f : q->an_ph + off;
+        v->lph -= floorf(v->lph);
+        v->lph2 = mode == 2 ? 0.0f : q->an2_ph + off;
+        v->lph2 -= floorf(v->lph2);
+        v->lprev = q_randb(&q->rng); v->lnext = q_randb(&q->rng);
+        v->lprev2 = q_randb(&q->rng); v->lnext2 = q_randb(&q->rng);
+    }
     if (fresh) {
         v->amp = 0.0f;
         v->mod = 0.0f;
@@ -365,7 +379,7 @@ static void voice_start(QInstance *q, QTexVoice *v, int key, int note, float vel
 }
 
 void q_tex_note_on(QInstance *q, int key, int note, float vel) {
-    int nv = q_clampi((int)(q->pv[P_TX_VOICES] + 0.5f), 2, Q_MAX_TEX);
+    int nv = Q_MAX_TEX;
     QTexVoice *best = 0;
     /* same key retrigger */
     for (int i = 0; i < nv; i++)
@@ -473,6 +487,9 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
         if (q->vib_ph >= 1.0f) q->vib_ph -= 1.0f;
         vib_t[t] = sin_cyc(q->vib_ph);
     }
+    int an_mode = q_clampi((int)(P[P_AN_MODE] + 0.5f), 0, 2);
+    float an_inc = an_hz * (float)Q_CTRL / sr, an2_inc = P[P_AN_LFO2] * an_inc;
+    int first = 1;   /* the first sounding voice stands in for the display values */
     float anim = P[P_TX_ANIM] + (wheel_dst == 1 ? q->wheel : 0.0f);
     float vib_amt = P[P_VIB] * 0.5f + q->at * 0.4f + (wheel_dst == 0 ? q->wheel * 0.6f : 0.0f);
     float var_base = P[P_TX_VAR] + (wheel_dst == 3 ? q->wheel * 0.6f : 0.0f);
@@ -507,11 +524,30 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
     for (int vi = 0; vi < Q_MAX_TEX; vi++) {
         QTexVoice *v = &q->tv[vi];
         if (!v->active) continue;
+        int shows = first;
+        first = 0;
         float pat = SPREAD_PAT[vi];
         for (int t = 0; t < ticks; t++) {
             int i0 = t * Q_CTRL;
             int m = n - i0 < Q_CTRL ? n - i0 : Q_CTRL;
             float an = an_t[t], an2 = an2_t[t];
+            if (an_mode) {
+                /* this voice's own LFOs: same rate, shape and ratio, its own phase and dice */
+                v->lph += an_inc;
+                if (v->lph >= 1.0f) { v->lph -= 1.0f; v->lprev = v->lnext; v->lnext = q_randb(&q->rng); }
+                v->lph2 += an2_inc;
+                if (v->lph2 >= 1.0f || v->lph2 < 0.0f) {
+                    v->lph2 -= floorf(v->lph2);
+                    v->lprev2 = v->lnext2;
+                    v->lnext2 = q_randb(&q->rng);
+                }
+                an = lfo_shape(shape, v->lph, v->lnext, v->lprev);
+                an2 = lfo_shape(shape, v->lph2, v->lnext2, v->lprev2);
+                if (shows && t == 0) {
+                    q->var_eff = q_clamp(var_base + anim * 0.5f * an_pick(src_w, an, an2), 0.0f, 1.0f);
+                    q->cut_eff = cut_base + anim * 36.0f * an_pick(src_f, an, an2);
+                }
+            }
             float m_w = an_pick(src_w, an, an2), m_p = an_pick(src_p, an, an2), m_f = an_pick(src_f, an, an2);
             float m_n = an_pick(src_n, an, an2), m_a = an_pick(src_a, an, an2);
             /* ---- control: pitch ---- */

@@ -156,7 +156,7 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
     float pwm_d = q_clamp(macro * 3.0f, 0.0f, 1.0f);
     float trem_d = q_clamp(macro * 3.0f - 1.0f, 0.0f, 1.0f);
     float vib_d = q_clamp(macro * 3.0f - 2.0f, 0.0f, 1.0f);
-    float det = P[P_LN_DET] * 50.0f;
+    float det = P[P_LN_DET];   /* cents */
     float intv = (float)lroundf(P[P_LN_INT]);
     float oct = (float)q_clampi((int)lroundf(P[P_LN_TR]), -24, 24);
     float res = P[P_LN_RES];

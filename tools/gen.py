@@ -322,8 +322,8 @@ LINE_SHAPES = _VA + [w[0] + " WT" if w[0] in _VA else w[0] for w in ALL_WT]
 LINE_SHAPES_S = _VA_S + [w[0][0] + w[0][-1] + "WT" if w[0] in _VA else w[1] for w in ALL_WT]
 assert len(set(LINE_SHAPES)) == len(LINE_SHAPES) and len(set(LINE_SHAPES_S)) == len(LINE_SHAPES_S)
 LINE_VA = 4
-ENV_MODES = ["Trigger", "Sustain"]
-ENV_MODES_S = ["Trig", "Sus"]
+ENV_MODES = ["Trig", "Sust"]
+ENV_MODES_S = None
 LINE_MODES = ["Mono", "Legato", "Poly"]
 LINE_MODES_S = ["Mono", "Leg", "Poly"]
 # Pads filter. Morph: Resonance becomes the morph (LP > BP > HP) at a fixed mild resonance.
@@ -373,12 +373,17 @@ def parse_pattern(t):
         steps.append(sum(1 << (i - 1) for i in idx))
     assert 1 <= len(steps) <= 8, t
     return steps
-ARP_SOURCES = ["Keys", "Pads Chord"]
+ARP_SOURCES = ["Keys", "Atmos Chord"]
 ARP_SOURCES_S = ["Keys", "Chrd"]
 ARP_RATES = ["1/4", "1/8D", "1/8", "1/8T", "1/16", "1/16T", "1/32"]
 ARP_RATE_BEATS = [1.0, 0.75, 0.5, 1.0 / 3.0, 0.25, 1.0 / 6.0, 0.125]
-KEY_MODES = ["Stack", "Split", "Pads", "Mono"]
-KEY_MODES_S = ["Stk", "Splt", "Pads", "Mono"]
+# Melody Low / High: the keyboard splits at Split Point and Melody takes the lower / upper side
+KEY_MODES = ["Stack", "Melody Low", "Melody High", "Atmos Only", "Melody Only"]
+KEY_MODES_S = ["Stk", "MelL", "MelH", "Atmo", "Melo"]
+# LFO Mode: Global = one LFO for the whole chord; Spread = every voice its own, phases scattered;
+# Retrig = every voice its own, restarted by its note
+AN_MODES = ["Global", "Spread", "Retrig"]
+AN_MODES_S = ["Glob", "Sprd", "Rtrg"]
 WHEEL = ["Vibrato", "Animate", "Cutoff", "Wave Pos"]
 WHEEL_S = ["Vib", "Anim", "Cut", "Wave"]
 ONOFF = ["Off", "On"]
@@ -412,27 +417,28 @@ CARD = "cards.js#quark_card"
 ENV = lambda g, r: {"group": g, "role": r, "kind": "envelope"}
 
 # Pads (the left panel)
-E("tx_type", "Pads Type", "Type", 0, [t[0] for t in TEX_TYPES], [t[1] for t in TEX_TYPES],
+E("tx_type", "Atmos Type", "Type", 0, [t[0] for t in TEX_TYPES], [t[1] for t in TEX_TYPES],
   viz={"group": "txw", "role": "type", "kind": "custom:qwave"}, card=CARD)
-F("tx_var", "Variation", "Var", 0.3, viz={"group": "txw", "role": "variation", "kind": "custom:qwave"}, live=True)
+F("tx_var", "Variation", "Var", 0.3, viz={"group": "txw", "role": "variation", "kind": "custom:qwave"}, live=True,
+  card=CARD)
 F("tx_anim", "Animate", "Anim", 0.25)
 F("tx_depth", "Wave Env", "WvEnv", 0.0, -1.0, 1.0)
-F("tx_a", "Pads Attack", "Atk", 0.32, viz=ENV("tx", "attack"))
-F("tx_d", "Pads Decay", "Dec", 0.5, viz=ENV("tx", "decay"))
-F("tx_s", "Pads Sustain", "Sus", 0.85, viz=ENV("tx", "sustain"))
-F("tx_r", "Pads Release", "Rel", 0.5, viz=ENV("tx", "release"))
+F("tx_a", "Atmos Attack", "Atk", 0.32, viz=ENV("tx", "attack"))
+F("tx_d", "Atmos Decay", "Dec", 0.5, viz=ENV("tx", "decay"))
+F("tx_s", "Atmos Sustain", "Sus", 0.85, viz=ENV("tx", "sustain"))
+F("tx_r", "Atmos Release", "Rel", 0.5, viz=ENV("tx", "release"))
 # Mono (the middle panel) and the mix
-E("ln_shape", "Mono Shape", "Shape", 0, LINE_SHAPES, LINE_SHAPES_S,
+E("ln_shape", "Melody Shape", "Shape", 0, LINE_SHAPES, LINE_SHAPES_S,
   viz={"group": "lnw", "role": "shape", "kind": "custom:qline"}, card=CARD)
-F("ln_var", "Mono Variation", "Var", 0.15, viz={"group": "lnw", "role": "variation", "kind": "custom:qline"})
-F("ln_a", "Mono Attack", "Atk", 0.04, viz=ENV("ln", "attack"))
-F("ln_d", "Mono Decay", "Dec", 0.42, viz=ENV("ln", "decay"))
-F("ens_amt", "Pads Ensemble", "Ens", 0.65, card=CARD)
-F("tx_vol", "Pads Volume", "PdVol", 0.8, viz={"kind": "fader"})
-F("ln_vol", "Mono Volume", "MnVol", 0.0, viz={"kind": "fader"})
+F("ln_var", "Melody Variation", "Var", 0.15, viz={"group": "lnw", "role": "variation", "kind": "custom:qline"}, card=CARD)
+F("ln_a", "Melody Attack", "Atk", 0.04, viz=ENV("ln", "attack"))
+F("ln_d", "Melody Decay", "Dec", 0.42, viz=ENV("ln", "decay"))
+F("ens_amt", "Atmos Ensemble", "Ens", 0.65)
+F("tx_vol", "Atmos Volume", "AtVol", 0.8, viz={"kind": "fader"})
+F("ln_vol", "Melody Volume", "MlVol", 0.0, viz={"kind": "fader"})
 F("vintage", "Vintage", "Vint", 0.25)
 # Effects (the right panel)
-F("fx_ctrl", "Effect Control", "Ctrl", 0.3)
+F("fx_ctrl", "Effect Control", "Ctrl", 0.3, card=CARD, card_w=110, card_h=17)
 F("fx_amt", "Effect Amount", "FxAmt", 0.0)
 E("sh_pitch", "Shimmer Pitch", "Pitch", 5, SHIM_PITCH, card=CARD)
 F("sh_amt", "Shimmer Amount", "Shim", 0.0, card=CARD)
@@ -450,14 +456,13 @@ F("me_d", "Mod Env Decay", "Dec", 0.5, viz=ENV("me", "decay"))
 F("me_s", "Mod Env Sustain", "Sus", 0.0, viz=ENV("me", "sustain"))
 F("me_r", "Mod Env Release", "Rel", 0.4, viz=ENV("me", "release"))
 # Pads drive + detune (thickness)
-F("tx_drive", "Pads Drive", "Drive", 0.0, viz={"group": "drv", "role": "drive", "kind": "custom:qdrive"})
+F("tx_drive", "Atmos Drive", "Drive", 0.0, viz={"group": "drv", "role": "drive", "kind": "custom:qdrive"})
 E("tx_drvpos", "Drive Position", "DrvPs", 0, DRIVE_POS, DRIVE_POS_S,
   viz={"group": "drv", "role": "position", "kind": "custom:qdrive"})
 F("tx_dtone", "Drive Tone", "DTone", 0.7)
-F("tx_detune", "Pads Detune", "Detun", 0.0, viz={"group": "det", "role": "detune", "kind": "custom:qdet"}, card=CARD)
+F("tx_detune", "Atmos Detune", "Detun", 0.0, viz={"group": "det", "role": "detune", "kind": "custom:qdet"}, card=CARD)
 F("tx_bloom", "Detune Bloom", "Bloom", 0.0, viz={"group": "det", "role": "bloom", "kind": "custom:qdet"}, card=CARD)
 F("tx_spread", "Spread", "Sprd", 0.3)
-I("tx_voices", "Pads Voices", "Voics", 8, 2, 12)
 F("flt_key", "Filter Keytrack", "KeyTk", 0.5)
 # Motion
 E("an_shape", "Animate Shape", "Shape", 0, LFO_SHAPES, LFO_SHAPES_S, viz={"group": "an", "role": "shape", "kind": "lfo"},
@@ -466,20 +471,20 @@ F("an_rate", "Animate Rate", "Rate", 0.35, viz={"group": "an", "role": "rate", "
 E("an_dest", "Animate Target", "Dest", 0, ANIM_DEST, ANIM_DEST_S, card=CARD)
 F("vib", "Vibrato", "Vib", 0.0)
 F("vib_rate", "Vibrato Rate", "VRate", 0.45)
-E("ens_type", "Ensemble Type", "EnsTp", 0, ENS_TYPES, ENS_TYPES_S, card=CARD)
+E("ens_type", "Ensemble Type", "EnsTp", 0, ENS_TYPES, ENS_TYPES_S)
 # Mono tone
-F("ln_cut", "Mono Cutoff", "Cut", 0.75, viz={"group": "lf", "role": "cutoff", "kind": "filter"})
-F("ln_res", "Mono Resonance", "Res", 0.15, viz={"group": "lf", "role": "resonance", "kind": "filter"})
-F("ln_fenv", "Mono Filter Env", "FEnv", 0.3, -1.0, 1.0)
-F("ln_wenv", "Mono Wave Env", "WvEnv", 0.0, -1.0, 1.0)
-F("ln_det", "Mono Detune", "Detun", 0.22)
-I("ln_int", "Mono Interval", "Intvl", 0, -24, 24, unit="st")
-F("ln_glide", "Mono Glide", "Glide", 0.0)
-E("ln_sus", "Mono Envelope", "EnvMd", 1, ENV_MODES, ENV_MODES_S, viz={"kind": "switch"})
+F("ln_cut", "Melody Cutoff", "Cut", 0.75, viz={"group": "lf", "role": "cutoff", "kind": "filter"})
+F("ln_res", "Melody Resonance", "Res", 0.15, viz={"group": "lf", "role": "resonance", "kind": "filter"})
+F("ln_fenv", "Melody Filter Env", "FEnv", 0.3, -1.0, 1.0)
+F("ln_wenv", "Melody Wave Env", "WvEnv", 0.0, -1.0, 1.0)
+I("ln_det", "Melody Detune", "Detun", 11, 0, 50, unit="ct")
+I("ln_int", "Melody Interval", "Intvl", 0, -24, 24, unit="st")
+F("ln_glide", "Melody Glide", "Glide", 0.0)
+E("ln_sus", "Melody Envelope", "EnvMd", 1, ENV_MODES, ENV_MODES_S, access="readwrite")
 # Mono arp
 E("arp_mode", "Arp Type", "Type", 0, ARP_MODES, ARP_MODES_S, card=CARD)
 E("arp_src", "Arp Source", "Src", 1, ARP_SOURCES, ARP_SOURCES_S, card=CARD)
-E("arp_rate", "Arp Rate", "Rate", 4, ARP_RATES)
+E("arp_rate", "Arp Rate", "Rate", 4, ARP_RATES, [r.replace("1/", "") for r in ARP_RATES])
 E("arp_oct", "Arp Octaves", "Oct", 0, ARP_OCTS, ARP_OCTS_S, card=CARD)
 F("arp_gate", "Arp Gate", "Gate", 0.55, card=CARD)
 F("arp_swing", "Arp Swing", "Swing", 0.0, card=CARD)
@@ -495,26 +500,27 @@ F("arp_ornd", "Arp Oct Random", "ORnd", 0.0, card=CARD)
 F("arp_nrnd", "Arp Note Random", "NRnd", 0.0, card=CARD)
 I("arp_loop", "Arp Var Loop", "Loop", 0, 0, 32, card=CARD)
 # Space detail
-F("fx_tone", "Effect Control 2", "Ctrl2", 0.4)
+F("fx_tone", "Effect Control 2", "Ctrl2", 0.4, card=CARD, card_w=110, card_h=17)
 F("rv_size", "Reverb Size", "Size", 0.6)
 F("rv_tone", "Reverb Tone", "Tone", 0.55)
-E("tx_fx", "Pads FX Route", "PdFX", 0, ROUTES, ROUTES_S)
-E("ln_fx", "Mono FX Route", "MnFX", 0, ROUTES, ROUTES_S)
+E("tx_fx", "Atmos FX Route", "AtFX", 0, ROUTES, ROUTES_S)
+E("ln_fx", "Melody FX Route", "MlFX", 0, ROUTES, ROUTES_S)
 # Mono space: < 0 random place per note, > 0 fixed slots stepped per note (Poly: per voice)
-F("ln_spread", "Mono Spread", "Wide", 0.0, -1.0, 1.0)
-F("ln_dly", "Mono Delay", "Delay", 0.0)
-E("ln_dtime", "Mono Delay Time", "Time", 7, DELAY_DIVS, [d.replace("1/", "") for d in DELAY_DIVS])
+F("ln_spread", "Melody Spread", "Wide", 0.0, -1.0, 1.0)
+F("ln_dly", "Melody Delay", "Delay", 0.0)
+E("ln_dtime", "Melody Delay Time", "Time", 7, DELAY_DIVS, [d.replace("1/", "") for d in DELAY_DIVS])
 # Play
-I("tx_tr", "Pads Transpose", "PdTr", 0, -24, 24, unit="st")
-I("ln_tr", "Mono Transpose", "MnTr", 0, -24, 24, unit="st")
-E("key_mode", "Key Mode", "Keys", 0, KEY_MODES, KEY_MODES_S)
+I("tx_tr", "Atmos Transpose", "AtTr", 0, -24, 24, unit="st")
+I("ln_tr", "Melody Transpose", "MlTr", 0, -24, 24, unit="st")
+E("key_mode", "Key Mode", "Keys", 0, KEY_MODES, KEY_MODES_S, card=CARD)
 I("split", "Split Point", "Split", 60, 24, 96, card=CARD)
 F("vel", "Velocity", "Vel", 0.5)
 E("wheel", "Mod Wheel", "Wheel", 0, WHEEL, WHEEL_S)
-E("ln_mode", "Mono Mode", "Mode", 1, LINE_MODES, LINE_MODES_S)
-E("tx_latch", "Pads Latch", "Latch", 0, ONOFF, viz={"kind": "switch"})
+E("ln_mode", "Melody Mode", "Mode", 1, LINE_MODES, LINE_MODES_S)
+E("tx_latch", "Atmos Latch", "Latch", 0, ONOFF, viz={"kind": "switch"})
 # LFO 2 (pair Animate Targets): rate as a multiple of Animate Rate; below 0 it runs backwards
 F("an_lfo2", "LFO 2 Rate", "LFO2", 1.0, -4.0, 4.0, card=CARD)
+E("an_mode", "LFO Mode", "LFOMd", 0, AN_MODES, AN_MODES_S, card=CARD)
 
 KEYS = [p["key"] for p in P]
 assert len(KEYS) == len(set(KEYS)), "duplicate key"
@@ -533,13 +539,13 @@ for p in P:
 # page, every Mono page, and the shared mix / effects / play pages last. Cutoff and Resonance sit on
 # knobs 1-2 on both filter pages, Filter Env on 4. None leaves a knob empty (keeps a row together).
 PAGES = [
-    ("root", "Pads", ["tx_type", "tx_var", "tx_anim", "tx_depth", "tx_a", "tx_d", "tx_s", "tx_r"]),
-    ("ptone", "Pads Filter", ["flt_cut", "flt_res", "flt_type", "flt_env", "me_a", "me_d", "me_s", "me_r"]),
-    ("pdrive", "Pads Drive", ["tx_drive", "tx_drvpos", "tx_dtone", "tx_spread", "tx_detune", "tx_bloom", "tx_voices", "flt_key"]),
-    ("pmotion", "Pads Motion", ["an_shape", "an_rate", "tx_anim", "an_dest", "ens_amt", "ens_type", "an_lfo2", "tx_latch"]),
-    ("mono", "Mono", ["ln_shape", "ln_var", "ln_det", "ln_int", "ln_a", "ln_d", "ln_sus", "ln_mode"]),
-    ("mtone", "Mono Filter", ["ln_cut", "ln_res", "ln_wenv", "ln_fenv", "ln_glide", "ln_spread", "ln_dly", "ln_dtime"]),
-    ("arp", "Mono Arp", ["arp_mode", "arp_src", "arp_rate", "arp_oct", "arp_gate", "arp_swing", "arp_hold", "arp_rhy"]),
+    ("root", "Atmos", ["tx_type", "tx_var", "tx_anim", "tx_depth", "tx_a", "tx_d", "tx_s", "tx_r"]),
+    ("ptone", "Atmos Filter", ["flt_cut", "flt_res", "flt_type", "flt_env", "me_a", "me_d", "me_s", "me_r"]),
+    ("pdrive", "Atmos Drive", ["tx_drive", "tx_drvpos", "tx_dtone", "tx_spread", "tx_detune", "tx_bloom", "tx_latch", "flt_key"]),
+    ("pmotion", "Atmos Motion", ["an_shape", "an_rate", "tx_anim", "an_dest", "an_lfo2", "an_mode", "ens_amt", "ens_type"]),
+    ("mono", "Melody", ["ln_shape", "ln_var", "ln_det", "ln_int", "ln_a", "ln_d", "ln_sus", "ln_mode"]),
+    ("mtone", "Melody Filter", ["ln_cut", "ln_res", "ln_wenv", "ln_fenv", "ln_glide", "ln_spread", "ln_dly", "ln_dtime"]),
+    ("arp", "Melody Arp", ["arp_mode", "arp_src", "arp_rate", "arp_oct", "arp_gate", "arp_swing", "arp_hold", "arp_rhy"]),
     ("arp2", "Arp Variation", ["arp_pat", "arp_drop", "arp_vel", "arp_vrnd", "arp_grnd", "arp_ornd", "arp_nrnd", "arp_loop"]),
     ("mix", "Mix & Effect", ["tx_vol", "ln_vol", "tx_fx", "ln_fx", "fx_type", "fx_ctrl", "fx_tone", "fx_amt"]),
     ("space", "Reverb", ["rv_decay", "rv_size", "rv_tone", "rv_amt", "sh_pitch", "sh_amt", "vintage", "vol"]),
@@ -600,15 +606,15 @@ PRESETS = [
     ("Strings + Bass", dict(tx_type=T["Strings"], tx_var=0.2, ens_amt=0.85, tx_a=0.38, tx_r=0.5, ln_vol=0.7,
                             ln_shape=0, ln_var=0.0, ln_tr=-12, key_mode=1, split=55, ln_cut=0.5, ln_res=0.25,
                             ln_fenv=0.35, ln_a=0.0, ln_d=0.35, ln_sus=0, ln_mode=1, rv_amt=0.25)),
-    ("Mono Lead", dict(tx_vol=0.0, ln_vol=0.8, ln_shape=2, ln_var=0.7, ln_det=0.3, ln_cut=0.7, ln_res=0.2,
-                        ln_fenv=0.2, ln_a=0.08, ln_d=0.5, ln_glide=0.25, ln_mode=1, key_mode=3,
+    ("Mono Lead", dict(tx_vol=0.0, ln_vol=0.8, ln_shape=2, ln_var=0.7, ln_det=15, ln_cut=0.7, ln_res=0.2,
+                        ln_fenv=0.2, ln_a=0.08, ln_d=0.5, ln_glide=0.25, ln_mode=1, key_mode=4,
                         fx_type=FX["Delay"], fx_amt=0.3, fx_ctrl=0.6, rv_amt=0.3)),
     ("Sync Arp", dict(tx_type=T["Vintage"], tx_var=0.3, tx_vol=0.5, ens_amt=0.8, tx_a=0.4, tx_r=0.5, ln_vol=0.65,
                       ln_shape=3, ln_var=0.0, ln_int=12, ln_cut=0.65, ln_res=0.3, ln_fenv=0.4, ln_a=0.0,
                       ln_d=0.3, ln_sus=0, ln_mode=2, arp_mode=1, arp_oct=1, arp_rate=4,
                       fx_type=FX["Ping Pong"], fx_amt=0.25, fx_ctrl=0.55, rv_amt=0.3)),
     ("Pulse Bass", dict(tx_vol=0.0, ln_vol=0.85, ln_shape=1, ln_var=0.2, ln_tr=-12, ln_cut=0.45, ln_res=0.3,
-                        ln_fenv=0.45, ln_a=0.0, ln_d=0.3, ln_sus=1, ln_mode=1, key_mode=3, rv_amt=0.1,
+                        ln_fenv=0.45, ln_a=0.0, ln_d=0.3, ln_sus=1, ln_mode=1, key_mode=4, rv_amt=0.1,
                         ln_fx=1)),
     ("Layered Dream", dict(tx_type=T["Strings"], tx_var=0.65, tx_anim=0.2, ens_amt=0.8, ens_type=2, tx_a=0.4,
                           tx_r=0.55, ln_vol=0.45, ln_shape=1, ln_var=0.55, ln_int=12, ln_a=0.25, ln_d=0.55,
@@ -622,8 +628,8 @@ PRESETS += [
     ("Fuzz Strings", dict(tx_type=T["Strings"], tx_var=0.3, tx_drive=0.45, tx_drvpos=0, tx_dtone=0.6, flt_type=2,
                           flt_cut=0.62, flt_res=0.25, tx_detune=0.25, ens_amt=0.75, tx_a=0.3, tx_r=0.45, rv_amt=0.3)),
     ("Chord Pluck Arp", dict(tx_type=T["Vintage"], tx_var=0.35, tx_vol=0.55, ens_amt=0.8, tx_a=0.45, tx_r=0.6,
-                             ln_vol=0.6, ln_shape=LS["Pluck"], ln_var=0.15, ln_wenv=0.71, ln_det=0.08, ln_cut=0.72,
-                             ln_res=0.2, ln_fenv=0.35, ln_a=0.0, ln_d=0.32, ln_sus=0, ln_mode=2, ln_tr=12, key_mode=2,
+                             ln_vol=0.6, ln_shape=LS["Pluck"], ln_var=0.15, ln_wenv=0.71, ln_det=4, ln_cut=0.72,
+                             ln_res=0.2, ln_fenv=0.35, ln_a=0.0, ln_d=0.32, ln_sus=0, ln_mode=2, ln_tr=12, key_mode=3,
                              arp_mode=3, arp_src=1, arp_oct=1, arp_rate=4, arp_drop=0.15, arp_vrnd=0.3, fx_type=FX["Ping Pong"], fx_amt=0.25,
                              fx_ctrl=0.55, rv_amt=0.35)),
     ("Scanned Glass", dict(tx_type=T["Scanned"], tx_var=0.2, tx_anim=0.45, an_rate=0.18, an_shape=1, tx_spread=0.5,
@@ -636,8 +642,8 @@ PRESETS += [
                          ens_type=3, ens_amt=0.9, tx_a=0.6, tx_r=0.75, tx_latch=1, flt_type=1, flt_cut=0.75,
                          rv_amt=0.5, rv_decay=0.85, sh_amt=0.25, sh_pitch=5)),
     ("Grit Bass", dict(tx_vol=0.0, ln_vol=0.85, ln_shape=LS["Crushed"], ln_var=0.3, ln_wenv=-1.0, ln_tr=-12,
-                       ln_cut=0.5, ln_res=0.3, ln_fenv=0.4, ln_a=0.0, ln_d=0.35, ln_sus=1, ln_mode=1, key_mode=3,
-                       ln_det=0.1, rv_amt=0.1, ln_fx=1)),
+                       ln_cut=0.5, ln_res=0.3, ln_fenv=0.4, ln_a=0.0, ln_d=0.35, ln_sus=1, ln_mode=1, key_mode=4,
+                       ln_det=5, rv_amt=0.1, ln_fx=1)),
     # chord stacks: one key, a whole voicing (Variation picks it)
     ("Rompler Fifths", dict(tx_type=T["Fifths"], tx_var=0.57, tx_anim=0.1, an_dest=2, an_rate=0.15, ens_amt=0.6,
                             tx_a=0.3, tx_r=0.6, flt_type=2, flt_cut=0.72, flt_res=0.15, fx_type=FX["Chorus"],
@@ -706,7 +712,7 @@ PRESETS += [
                              rv_decay=0.75)),
     # Pads + a Mono part: stacked keys play both
     ("Sub Swell Strings", dict(tx_type=T["Strings"], tx_var=0.25, tx_anim=0.15, ens_amt=0.85, tx_a=0.4, tx_r=0.55,
-                               rv_amt=0.3, ln_vol=0.55, ln_shape=LS["Sub"], ln_var=0.1, ln_tr=-12, ln_det=0.0,
+                               rv_amt=0.3, ln_vol=0.55, ln_shape=LS["Sub"], ln_var=0.1, ln_tr=-12, ln_det=0,
                                ln_cut=0.45, ln_res=0.1, ln_fenv=0.15, ln_a=0.3, ln_d=0.6, ln_sus=1, ln_mode=1,
                                ln_fx=1)),
     ("Glass Arp Cascade", dict(tx_type=T["Glass WT"], tx_var=0.4, tx_anim=0.3, an_rate=0.2, tx_a=0.45, tx_r=0.6,
@@ -720,11 +726,11 @@ PRESETS += [
                                ln_var=0.15, ln_tr=-12, ln_cut=0.4, ln_res=0.3, ln_fenv=0.5, ln_a=0.0, ln_d=0.32,
                                ln_sus=1, ln_mode=0, ln_fx=1, rv_amt=0.25)),
     ("Brass Lead Stack", dict(tx_type=T["Brass"], tx_var=0.45, me_a=0.3, me_d=0.5, me_s=0.4, tx_a=0.25, tx_r=0.35,
-                              ens_amt=0.4, tx_vol=0.7, ln_vol=0.45, ln_shape=0, ln_var=0.0, ln_tr=12, ln_det=0.3,
+                              ens_amt=0.4, tx_vol=0.7, ln_vol=0.45, ln_shape=0, ln_var=0.0, ln_tr=12, ln_det=15,
                               ln_cut=0.62, ln_res=0.2, ln_fenv=0.35, ln_a=0.1, ln_d=0.55, ln_sus=1, ln_mode=1,
                               ln_glide=0.2, ln_dly=0.2, fx_type=FX["Chorus"], fx_amt=0.2, rv_amt=0.3)),
     ("Choir Whistle", dict(tx_type=T["Choir"], tx_var=0.5, tx_anim=0.25, an_rate=0.18, ens_amt=0.9, tx_a=0.45,
-                           tx_r=0.6, ln_vol=0.4, ln_shape=LS["Theremin"], ln_var=0.3, ln_tr=12, ln_det=0.05,
+                           tx_r=0.6, ln_vol=0.4, ln_shape=LS["Theremin"], ln_var=0.3, ln_tr=12, ln_det=2,
                            ln_cut=0.7, ln_fenv=0.1, ln_a=0.2, ln_d=0.6, ln_sus=1, ln_mode=1, ln_glide=0.35,
                            ln_spread=0.3, vib=0.2, rv_amt=0.45, rv_decay=0.75)),
     ("Minor 9 Pluck Arp", dict(tx_type=T["Minor 9"], tx_var=0.43, tx_anim=0.2, an_dest=AD["Wave Pos+Filter"],
@@ -945,14 +951,23 @@ def chain_params():
         e["default"] = num(p["default"])
         if p.get("unit"):
             e["unit"] = p["unit"]
+        if p.get("access"):
+            e["access"] = p["access"]
+        if p["kind"] == "e" and any(o[:1] in "+-0123456789" for o in p["opts"]):
+            # options that read as numbers ("-1", "1/8", "+12"): the host must send names, not
+            # guess between a name and an index from what it reads back
+            e["options_as_string"] = True
         if p.get("viz"):
             e["viz"] = p["viz"]
         if p.get("live"):
             e["live"] = True
+        if p["kind"] == "e" and not (p.get("viz") or {}).get("kind") == "switch":
+            # the enum square already shows the value: no full-screen option list on a turn
+            e["peek"] = False
         if p.get("card"):
             e["card_script"] = p["card"]
-            e["card_w"] = 104
-            e["card_h"] = 40
+            e["card_w"] = p.get("card_w", 104)
+            e["card_h"] = p.get("card_h", 40)
         out.append(e)
     out.append({"key": "preset", "name": "Preset", "type": "int", "min": 0, "max": len(PRESETS) - 1, "step": 1})
     return out
@@ -965,7 +980,7 @@ def ui_hierarchy():
         lv = {"label": label, "knobs": list(knobs), "params": [k for k in knobs if k]}
         if level == "root":
             # the preset browser lives on root, so it is the first page the host plans
-            lv.update({"label": "Quark", "subtitle": "Pads", "list_param": "preset", "count_param": "preset_count",
+            lv.update({"label": "Quark", "subtitle": "Atmos", "list_param": "preset", "count_param": "preset_count",
                        "name_param": "preset_name"})
             lv["params"] += root_params
         levels[level] = lv
@@ -1088,7 +1103,7 @@ def gen_amino():
 def gen_meta():
     meta = {
         "params": [{k: v for k, v in p.items() if k in ("key", "name", "short", "kind", "mn", "mx", "default", "opts",
-                                                      "sopts", "unit", "viz", "live", "card")} for p in P],
+                                                      "sopts", "unit", "viz", "live", "card", "card_w", "card_h")} for p in P],
         "pages": [{"level": "presets", "label": "Presets", "knobs": None}] +
                  [{"level": l, "label": lab, "knobs": k} for l, lab, k in PAGES],
         "presets": [{"name": n, "values": preset_values(d)} for n, d in PRESETS],

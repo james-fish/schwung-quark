@@ -64,6 +64,8 @@ typedef struct {
     int mip;
     float pan;
     float bloom;                   /* 0..1: how far the detune has opened since note-on */
+    /* LFO Mode Spread / Retrig: this voice's own Animate LFO and LFO 2 (phase, S&H held values) */
+    float lph, lprev, lnext, lph2, lprev2, lnext2;
     float dx, dF, dlp;             /* drive: ADAA state + tone one-pole */
 } QTexVoice;
 
