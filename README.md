@@ -101,7 +101,7 @@ Everything — parameters, pages, presets and wavetable recipes — lives in `to
 
 Quark is designed to be lightweight:
 
-- ~1% of one core on Apple silicon with 8 Atmos voices, a Melody line and full effects.
+- ~1% of one core on Apple silicon with 8 Atmos voices, a Melody line and full effects (12 Atmos and 8 Melody voices available).
 - Control-rate modulation, mip-mapped wavetables and effects that switch themselves off when unused.
 - Tested on a real Move. ✅
 

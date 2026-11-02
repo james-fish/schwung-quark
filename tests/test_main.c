@@ -717,6 +717,49 @@ int main(int argc, char **argv) {
         api->set_param(in, "flt_type", "1");
     }
 
+    /* ---- Melody Poly: 8 voices; a 9th note steals by fading the oldest out and starting from silence
+     * (its attack intact); a note let go during its attack still releases ---- */
+    {
+        static int16_t pb[256];
+        const char *ps[][2] = {{"preset", "0"}, {"key_mode", "4"}, {"ln_mode", "2"}, {"ln_sus", "1"}, {"ln_vol", "0.8"},
+                               {"arp_mode", "0"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"}, {"ln_dly", "0"},
+                               {"ln_var", "0"}, {"vintage", "0"}, {"ln_cut", "0.9"}, {"ln_a", "0"}, {"ln_d", "0.6"}, {"vel", "0"}};
+        for (size_t k = 0; k < sizeof ps / sizeof ps[0]; k++) api->set_param(in, ps[k][0], ps[k][1]);
+        api->set_param(in, "all_notes_off", "1");
+        for (int i = 0; i < 3000; i++) api->render_block(in, pb, 128);
+        /* the oldest note loud, the other seven quiet, all at full level */
+        static const int keys[9] = {48, 52, 55, 59, 62, 65, 69, 72, 76};
+        for (int k = 0; k < 8; k++) midi(api, in, 0x90, keys[k], k ? 15 : 127);
+        for (int i = 0; i < 200; i++) api->render_block(in, pb, 128);
+        char vb[32];
+        api->get_param(in, "voices", vb, sizeof vb);
+        int lines8 = atoi(strchr(vb, ',') ? strchr(vb, ',') + 1 : vb);
+        double e8 = 0, e9 = 0;
+        for (int i = 0; i < 20; i++) { api->render_block(in, pb, 128); for (int j = 0; j < 256; j++) e8 += (double)pb[j] * pb[j]; }
+        api->set_param(in, "ln_a", "0.8");   /* the 9th note: a slow attack */
+        midi(api, in, 0x90, keys[8], 127);
+        for (int i = 0; i < 2; i++) api->render_block(in, pb, 128);   /* past the ~1.5 ms fade */
+        for (int i = 0; i < 20; i++) { api->render_block(in, pb, 128); for (int j = 0; j < 256; j++) e9 += (double)pb[j] * pb[j]; }
+        printf("melody poly: %d voices held; level after a steal %.2f of before (slow attack)\n", lines8, e9 / (e8 + 1e-9));
+        CHECK(lines8 == 8, "Melody Poly holds 8 voices (got %d)", lines8);
+        CHECK(e9 < 0.6 * e8, "a stolen Melody voice restarts from silence, not at full level");
+        for (int k = 0; k < 9; k++) midi(api, in, 0x80, keys[k], 0);
+        /* tap a note shorter than its attack: it must release, not hold */
+        api->set_param(in, "all_notes_off", "1");
+        for (int i = 0; i < 3000; i++) api->render_block(in, pb, 128);
+        api->set_param(in, "ln_a", "0.5");
+        api->set_param(in, "ln_d", "0.1");
+        midi(api, in, 0x90, 60, 100);
+        for (int i = 0; i < 4; i++) api->render_block(in, pb, 128);
+        midi(api, in, 0x80, 60, 0);
+        for (int i = 0; i < 2000; i++) api->render_block(in, pb, 128);
+        api->get_param(in, "voices", vb, sizeof vb);
+        int left = atoi(strchr(vb, ',') ? strchr(vb, ',') + 1 : vb);
+        CHECK(left == 0, "a Melody note released during its attack ends (%d voices left)", left);
+        api->set_param(in, "all_notes_off", "1");
+        api->set_param(in, "ln_mode", "1");
+    }
+
     /* ---- Mono velocity: a fixed 9 dB level range, even with the Velocity knob at 0 ---- */
     {
         api->set_param(in, "preset", "0");

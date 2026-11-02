@@ -21,7 +21,7 @@
 
 #define Q_MAX_TEX 12
 #define Q_COMB_N 2048             /* comb line per Pads voice: down to ~24 Hz at 48 kHz */
-#define Q_MAX_LINES 4
+#define Q_MAX_LINES 8
 #define Q_BLOCK 128
 #define Q_CTRL 16
 #define Q_NUM_SLOTS 4
@@ -87,6 +87,8 @@ typedef struct {
     float cdrift, ncut, nenv;      /* vintage: cutoff walk, per-note cutoff / envelope-time tolerance */
     float gl, gr;                  /* output gains, ramped per sample */
     float t_on;                    /* seconds since note-on, for the vibrato onset */
+    int kill, pend_key, pend_gate; /* Poly steal: fade out (~1.5 ms), then start the pending note */
+    float pend_vel;
     float inc1, inc2, cg, ck;      /* control-rate */
     float pw;
 } QLineVoice;

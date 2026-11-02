@@ -11,7 +11,8 @@
  * Filter Env and Wave Env follow their own mod envelope: the amp attack, then 66% of the amp decay
  * (Sustain mode: down to half while held), so the tone closes before the note fades. Velocity scales
  * both env amounts (depth: the Velocity knob) and the level (a fixed 9 dB range).
- * Mono and Legato use a last-note stack with glide; Poly runs up to four voices.
+ * Mono and Legato use a last-note stack with glide; Poly runs up to eight voices. A stolen voice
+ * fades out over ~1.5 ms and then starts the new note from silence, so its attack is intact.
  * Mono Spread places notes in the stereo field: below centre each note lands somewhere at random,
  * above centre notes step through fixed slots (Poly: each voice keeps its own), so arps walk around.
  */
@@ -62,6 +63,7 @@ static void start(QInstance *q, QLineVoice *v, int key, float vel, int retrig, i
     v->gate = 1;
     v->sustained = 0;
     v->age = ++q->age;
+    v->kill = 0;
     if (!v->active) {
         v->env = 0.0f;
         v->menv = 0.0f;
@@ -87,17 +89,32 @@ void q_lines_note_on(QInstance *q, int key, float vel) {
     int glide = q->pv[P_LN_GLIDE] > 0.001f;
     if (mode == 2) {
         QLineVoice *best = 0;
+        /* the same key retriggers its own voice; then a free voice; then the quietest released one
+         * (a decaying tail); then the oldest held note */
         for (int i = 0; i < Q_MAX_LINES; i++)
-            if (q->lv[i].active && q->lv[i].key == key) { best = &q->lv[i]; break; }
+            if (q->lv[i].active && !q->lv[i].kill && q->lv[i].key == key) { best = &q->lv[i]; break; }
         if (!best)
             for (int i = 0; i < Q_MAX_LINES; i++)
                 if (!q->lv[i].active) { best = &q->lv[i]; break; }
+        if (best) { start(q, best, key, vel, 1, 0); return; }
+        float quiet = 2.0f;
+        for (int i = 0; i < Q_MAX_LINES; i++) {
+            QLineVoice *c = &q->lv[i];
+            if (!c->gate && !c->kill && c->env < quiet) { quiet = c->env; best = c; }
+        }
         if (!best) {
             uint32_t oldest = 0xFFFFFFFFu;
             for (int i = 0; i < Q_MAX_LINES; i++)
-                if (q->lv[i].age < oldest) { oldest = q->lv[i].age; best = &q->lv[i]; }
+                if (!q->lv[i].kill && q->lv[i].age < oldest) { oldest = q->lv[i].age; best = &q->lv[i]; }
         }
-        start(q, best, key, vel, 1, 0);
+        if (!best) best = &q->lv[0];
+        /* fade the stolen note out first: restarting from its current level would skip the attack */
+        best->kill = 1;
+        best->pend_key = key;
+        best->pend_vel = vel;
+        best->pend_gate = 1;
+        best->gate = 0;
+        best->age = ++q->age;
         return;
     }
     int had = q->stack_n > 0 && q->lv[0].gate;
@@ -111,6 +128,7 @@ void q_lines_note_off(QInstance *q, int key) {
     if (mode == 2) {
         for (int i = 0; i < Q_MAX_LINES; i++) {
             QLineVoice *v = &q->lv[i];
+            if (v->kill && v->pend_key == key) { v->pend_gate = 0; continue; }   /* released before it began */
             if (!v->active || !v->gate || v->key != key) continue;
             if (q->sustain) { v->sustained = 1; continue; }
             v->gate = 0;
@@ -180,6 +198,7 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
     float vib_hz = 3.0f + 6.0f * P[P_VIB_RATE];   /* shared with the Pads (default ~5.7 Hz) */
     float ext_vib = P[P_VIB] * 0.5f + q->at * 0.4f + (wheel_vib ? q->wheel * 0.6f : 0.0f);
     float dt_tick = (float)Q_CTRL / sr;
+    float kill_c = 1.0f - expf(-1.0f / (0.0015f * sr));
 
     for (int vi = 0; vi < Q_MAX_LINES; vi++) {
         QLineVoice *v = &q->lv[vi];
@@ -201,6 +220,8 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
             vib_ph += vib_hz * dt_tick; vib_ph -= floorf(vib_ph);
             float s_pwm = sinf(Q_TAU * pwm_ph), s_trem = sinf(Q_TAU * trem_ph), s_vib = sinf(Q_TAU * vib_ph);
             v->t_on += dt_tick;
+            /* a key let go during the attack (or the pedal lifted) still releases */
+            if (v->st == 2 && !v->gate) v->st = 3;
             if (v->mst == 1) {
                 v->menv += (1.25f - v->menv) * mac;
                 if (v->menv >= 1.0f) { v->menv = 1.0f; v->mst = 2; }
@@ -250,7 +271,7 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
 
             float p1 = v->p1, p2 = v->p2, env = v->env, g = v->cg, w = v->pw;
             float y0 = v->y[0], y1 = v->y[1], y2 = v->y[2], y3 = v->y[3];
-            int st = v->st;
+            int st = v->st, kill = v->kill;
             float d1 = v->inc1, d2 = v->inc2, wp = v->wpos;
             for (int i = 0; i < m; i++) {
                 float x;
@@ -282,9 +303,11 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
                     x = 0.55f * (a + b);
                 }
                 /* envelope */
-                if (st == 1) {
+                if (kill) {
+                    env -= env * kill_c;
+                } else if (st == 1) {
                     env += (1.25f - env) * ac;
-                    if (env >= 1.0f) { env = 1.0f; st = sus_mode ? 2 : 3; }
+                    if (env >= 1.0f) { env = 1.0f; st = sus_mode && v->gate ? 2 : 3; }
                 } else if (st == 3) {
                     env -= env * dc;
                 } else if (st == 2 && !sus_mode) {
@@ -305,6 +328,13 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
             v->p1 = p1; v->p2 = p2; v->env = env; v->st = st; v->gl = gl; v->gr = gr;
             if (wt >= 0) v->wpos = wp;
             v->y[0] = y0; v->y[1] = y1; v->y[2] = y2; v->y[3] = y3;
+            if (kill && env < 0.001f) {
+                /* the stolen note has faded: start the pending one from silence */
+                v->active = 0;
+                start(q, v, v->pend_key, v->pend_vel, 1, 0);
+                if (!v->pend_gate) v->gate = 0;
+                break;
+            }
             if (st == 3 && env < 0.0002f) {
                 v->active = 0;
                 v->gate = 0;

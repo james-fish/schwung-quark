@@ -505,7 +505,7 @@ void q_release_all(QInstance *q, int hard) {
     for (int i = 0; i < Q_MAX_LINES; i++) {
         QLineVoice *v = &q->lv[i];
         if (hard) { v->active = 0; continue; }
-        if (v->active) { v->gate = 0; v->st = 3; }
+        if (v->active) { v->gate = 0; v->st = 3; v->kill = 0; }   /* a pending stolen note is dropped */
     }
 }
 
@@ -611,7 +611,7 @@ static void q_set_param(void *inst, const char *key, const char *val) {
         arp_reset(q);
         /* Mono notes played directly before the arp took over (or vice versa) end here */
         for (int k = 0; k < Q_MAX_LINES; k++)
-            if (q->lv[k].active) { q->lv[k].gate = 0; q->lv[k].st = 3; }
+            if (q->lv[k].active) { q->lv[k].gate = 0; q->lv[k].st = 3; q->lv[k].kill = 0; }
         q->stack_n = 0;
     }
     if (i == P_TX_LATCH && was_latch && q->pv[P_TX_LATCH] < 0.5f) pad_release_latched(q);
