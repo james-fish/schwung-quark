@@ -2,7 +2,7 @@
  *
  *  custom:qwave  Type + Variation as ONE picture: the actual single cycle the Atmos engine plays
  *                for that type at that Variation (string registers, wavetable frame, FM index). The
- *                Variation key is `live`, so Animate's motion shows as a moving wave. A tick under the
+ *                Variation key is `live`, so Motion shows as a moving wave. A tick under the
  *                wave marks Variation; three dots name the family (1 strings, 2 wavetable, 3 FM).
  *  custom:qline  Melody Shape + Variation: the oscillator shape (with the PWM the macro adds) and a
  *                three-segment meter for Variation's PWM -> tremolo -> vibrato stages; for a wavetable

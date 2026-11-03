@@ -6,9 +6,10 @@
  * the first third fades in PWM (pulse) / detune shimmer (saw), the second stereo tremolo, the last
  * delayed vibrato - so the knob sweeps from static to fully animated.
  * Shapes past the four analog ones are wavetables (the whole wave bank, Pads' and Amino's): both
- * oscillators read the table, Variation is the table position and Wave Env moves it with the
- * envelope (plucks that open and close), and the PWM / tremolo / vibrato macro is off.
- * Filter Env and Wave Env follow their own mod envelope: the amp attack, then 66% of the amp decay
+ * oscillators read the table, Variation is the table position, and the PWM / tremolo / vibrato macro
+ * is off. Var Env moves Variation with the envelope on every shape: the table position (plucks that
+ * open and close) or the macro.
+ * Filter Env and Var Env follow their own mod envelope: the amp attack, then 66% of the amp decay
  * (Sustain mode: down to half while held), so the tone closes before the note fades. Velocity scales
  * both env amounts (depth: the Velocity knob) and the level (a fixed 9 dB range).
  * Mono and Legato use a last-note stack with glide; Poly runs up to eight voices. A stolen voice
@@ -170,10 +171,6 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
     }
     int sus_mode = P[P_LN_SUS] >= 0.5f;
     float var = P[P_LN_VAR], wenv = P[P_LN_WENV];
-    float macro = wt < 0 ? var : 0.0f;
-    float pwm_d = q_clamp(macro * 3.0f, 0.0f, 1.0f);
-    float trem_d = q_clamp(macro * 3.0f - 1.0f, 0.0f, 1.0f);
-    float vib_d = q_clamp(macro * 3.0f - 2.0f, 0.0f, 1.0f);
     float det = P[P_LN_DET];   /* cents */
     float intv = (float)lroundf(P[P_LN_INT]);
     float oct = (float)q_clampi((int)lroundf(P[P_LN_TR]), -24, 24);
@@ -235,6 +232,15 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
             v->drift = q_clamp(v->drift, -1.0f, 1.0f);
             v->cdrift += q_randb(&q->rng) * 0.05f - v->cdrift * 0.002f;
             v->cdrift = q_clamp(v->cdrift, -1.0f, 1.0f);
+            /* Var Env moves Variation with this note's mod env, scaled to the room left so it never
+             * runs past either end: the table position on wavetables, the movement macro (PWM >
+             * tremolo > vibrato) on the analog shapes */
+            float we = wenv * vs * (v->menv < 1.0f ? v->menv : 1.0f);
+            float vpos = q_clamp(var + we * (we >= 0.0f ? 1.0f - var : var), 0.0f, 1.0f);
+            float macro = wt < 0 ? vpos : 0.0f;
+            float pwm_d = q_clamp(macro * 3.0f, 0.0f, 1.0f);
+            float trem_d = q_clamp(macro * 3.0f - 1.0f, 0.0f, 1.0f);
+            float vib_d = q_clamp(macro * 3.0f - 2.0f, 0.0f, 1.0f);
             float onset = q_clamp(v->t_on * 3.0f - 0.4f, 0.0f, 1.0f);
             float pitch = v->pitch + oct + q->bend * 2.0f + flav * 0.06f * v->drift +
                           (vib_d * 0.32f * onset + ext_vib) * s_vib;
@@ -253,12 +259,10 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
             int m1 = 0, m2 = 0;
             float dwp = 0.0f;
             if (wt >= 0 && have) {
-                /* Wave Env scales to the room left in the table, so Variation + Wave Env never
-                 * runs past either end (full Wave Env reaches exactly the last / first wave) */
-                float we = wenv * vs * (v->menv < 1.0f ? v->menv : 1.0f);
-                float pos = q_clamp(var + we * (we >= 0.0f ? 1.0f - var : var), 0.0f, 1.0f);
-                if (v->wpos < 0.0f) v->wpos = pos;
-                dwp = (pos - v->wpos) / (float)m;
+                /* (vpos above: Var Env scales to the room left, so Variation + Var Env never
+                 * runs past either end; full Var Env reaches exactly the last / first wave) */
+                if (v->wpos < 0.0f) v->wpos = vpos;
+                dwp = (vpos - v->wpos) / (float)m;
                 m1 = q_wave_mip(&wv, hz1, sr);
                 m2 = q_wave_mip(&wv, hz2, sr);
             }

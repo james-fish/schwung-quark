@@ -790,6 +790,42 @@ int main(int argc, char **argv) {
         api->set_param(in, "ln_mode", "1");
     }
 
+    /* ---- Melody Var Env on an analog shape: the envelope pushes the movement macro (here into the
+     * stereo tremolo), which it used to leave alone ---- */
+    {
+        static int16_t vb2[256];
+        double rng[2];
+        for (int on = 0; on < 2; on++) {
+            const char *vs[][2] = {{"preset", "0"}, {"key_mode", "4"}, {"ln_mode", "1"}, {"ln_sus", "1"}, {"ln_vol", "0.8"},
+                                   {"arp_mode", "0"}, {"arp_hold", "0"}, {"ln_shape", "0"}, {"ln_var", "0"}, {"ln_spread", "0"},
+                                   {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"}, {"ln_dly", "0"}, {"vintage", "0"},
+                                   {"ln_a", "0"}, {"ln_d", "0.7"}, {"vel", "0"}};
+            for (size_t k = 0; k < sizeof vs / sizeof vs[0]; k++) api->set_param(in, vs[k][0], vs[k][1]);
+            api->set_param(in, "ln_wenv", on ? "1" : "0");
+            api->set_param(in, "all_notes_off", "1");
+            for (int i = 0; i < 3000; i++) api->render_block(in, vb2, 128);
+            midi(api, in, 0x90, 57, 100);
+            for (int i = 0; i < 20; i++) api->render_block(in, vb2, 128);
+            double bmin = 1, bmax = 0;
+            for (int w = 0; w < 60; w++) {
+                double el = 0, er = 0;
+                for (int i = 0; i < 4; i++) {
+                    api->render_block(in, vb2, 128);
+                    for (int j = 0; j < 128; j++) { el += (double)vb2[2 * j] * vb2[2 * j]; er += (double)vb2[2 * j + 1] * vb2[2 * j + 1]; }
+                }
+                double b = el / (el + er + 1e-9);
+                if (b < bmin) bmin = b;
+                if (b > bmax) bmax = b;
+            }
+            midi(api, in, 0x80, 57, 0);
+            rng[on] = bmax - bmin;
+        }
+        printf("melody var env on Saw: tremolo swing off %.3f on %.3f\n", rng[0], rng[1]);
+        CHECK(rng[0] < 0.02 && rng[1] > 0.1, "Melody Var Env moves the movement macro on analog shapes");
+        api->set_param(in, "all_notes_off", "1");
+        api->set_param(in, "ln_wenv", "0");
+    }
+
     /* ---- Mono velocity: a fixed 9 dB level range, even with the Velocity knob at 0 ---- */
     {
         api->set_param(in, "preset", "0");

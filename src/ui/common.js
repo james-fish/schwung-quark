@@ -112,7 +112,7 @@ var Q = (function () {
     var s2 = (t * 2.6) % 1;
     return 2 * s2 - 1;
   }
-  /* the Animate LFO shapes (mirrors lfo_shape in tex.c); S&H / Random Walk use fixed dice per cycle,
+  /* the Motion LFO shapes (mirrors lfo_shape in tex.c); S&H / Random Walk use fixed dice per cycle,
    * `seed` offsets them so LFO 2 draws its own values */
   var DICE = [0.6, -0.8, 0.2, 0.9, -0.4, -0.1, 0.7, -0.6];
   function lfoShape(shape, ph, seed) {
@@ -149,8 +149,8 @@ var Q = (function () {
 
   /* reverb pre-delay in seconds, scaled by Reverb Size (mirrors q_reverb) */
   function revPre(size) { return 0.005 + 0.07 * size; }
-  /* where Wave Env takes the Melody table position at full envelope: it scales to the room left, so
-   * any Variation + Wave Env lands inside the table (mirrors lines.c) */
+  /* where Var Env takes Melody Variation at full envelope: it scales to the room left, so
+   * any Variation + Var Env lands inside the range (mirrors lines.c) */
   function wenvTo(pos, we) { return pos + we * (we >= 0 ? 1 - pos : pos); }
 
   /* ---- value text in real units (mirrors the DSP) ---- */

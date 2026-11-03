@@ -16,7 +16,7 @@ Whether you're after classic string-machine swells, 90s rompler chord stabs, gla
 - 🎚️ **11 filter types** — LP12/24, HP, BP, Dual BP, Notch, two Combs and a Morph filter.
 - 🔥 **Drive, Detune & Bloom** — saturate pre/post filter or across the whole chord, and let chords drift gently out of tune over time.
 - 🌀 **Ensemble** — Strings, Chorus, Both and a **Deep** mode for drones.
-- 🌀 **Dual-target motion** — point Animate at Wave Pos, Pitch, Filter, Pan or Amp, or any pair of them: the main LFO moves the first while **LFO 2** moves the second at any speed ratio from −4× to +4×. **LFO Mode** gives every voice its own LFOs, scattered (Spread) or restarted by each note (Retrig).
+- 🌀 **Dual-target motion** — point Motion at Variation, Pitch, Filter, Pan or Amp, or any pair of them: the main LFO moves the first while **LFO 2** moves the second at any speed ratio from −4× to +4×. **LFO Mode** gives every voice its own LFOs, scattered (Spread) or restarted by each note (Retrig).
 - 🎸 **Melody layer** — saw, pulse, sync or any wavetable, a 4-pole ladder filter, glide, stereo spread and a synced delay. Filter and Wave envelopes decay faster than the amp for snappy plucks, and velocity shapes level, filter and wave.
 - 🎼 **Chord-following arp** — Melody can arpeggiate whatever the Atmos are holding, with 10 types, 40 patterns, 40 rhythms and smart randomisation.
 - 🌌 **FX** — chorus, flanger, phaser, tremolo, drive, delays and tape echo, plus a shimmer reverb that can freeze.
@@ -32,12 +32,12 @@ Pages are laid out so you always know where you are: **Presets** first, then all
 | # | Page | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | **Presets** | browser | | | | | | | |
-| 2 | **Atmos** | Type | Variation | Animate | Wave Env | Attack | Decay | Sustain | Release |
+| 2 | **Atmos** | Type | Variation | Motion | Var Env | Attack | Decay | Sustain | Release |
 | 3 | Atmos Filter | Cutoff | Resonance | Filter Type | Filter Env | Mod A | Mod D | Mod S | Mod R |
 | 4 | Atmos Drive | Drive | Position | Tone | Spread | Detune | Bloom | Atmos Latch | Keytrack |
-| 5 | Atmos Motion | Anim Shape | Anim Rate | Animate | Anim Target | LFO 2 Rate | LFO Mode | Ensemble | Ens Type |
+| 5 | Atmos Motion | Shape | Rate | Motion | Target | LFO 2 Rate | LFO Mode | Ensemble | Ens Type |
 | 6 | **Melody** | Shape | Variation | Detune | Interval | Attack | Decay | Env Mode | Melody Mode |
-| 7 | Melody Filter | Cutoff | Resonance | Wave Env | Filter Env | Glide | Spread | Delay | Delay Time |
+| 7 | Melody Filter | Cutoff | Resonance | Var Env | Filter Env | Glide | Spread | Delay | Delay Time |
 | 8 | Melody Arp | Type | Source | Rate | Octaves | Gate | Swing | Latch | Rhythm |
 | 9 | Arp Variation | Pattern | Drop | Velocity | Vel Rand | Gate Rand | Oct Rand | Note Rand | Loop |
 | 10 | **Mix & Effect** | Atmos Vol | Melody Vol | Atmos Route | Melody Route | FX Type | FX Ctrl | FX Ctrl 2 | FX Amount |

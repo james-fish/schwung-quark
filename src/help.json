@@ -28,7 +28,10 @@
     "(Fifths, Minor 9,",
     "Major 9, Dom 11,",
     "Fourths): Variation",
-    "stacks intervals."
+    "stacks intervals.",
+    "FM: brightness.",
+    "Var Env: the mod",
+    "env moves Variation."
    ]
   },
   {
@@ -66,12 +69,13 @@
   {
    "title": "Atmos Motion",
    "lines": [
-    "Animate: an LFO on",
-    "Wave Pos, Pitch,",
+    "Motion: an LFO on",
+    "Variation, Pitch,",
     "Filter, Pan or Amp,",
     "or a pair: the LFO",
     "moves the first and",
     "LFO 2 the second.",
+    "Motion = depth.",
     "LFO 2 Rate = x the",
     "main rate. LFO Mode:",
     "Global = one LFO,",
@@ -100,8 +104,9 @@
     "Saw+Pulse, Sync, or",
     "any wavetable. WT:",
     "Variation = Wave Pos",
-    "and Wave Env moves",
-    "it. Filter and Wave",
+    "(analog: PWM > trem",
+    "> vib). Var Env moves",
+    "it. Filter and Var",
     "Env decay faster",
     "than the amp: plucks.",
     "Velocity knob sets",

@@ -316,7 +316,7 @@ ALL_WT = [(t[0], t[1], t[3]) for t in TEX_TYPES if t[2] == 1]
 # ------------------------------------------------------------------------------------------------
 # Option lists
 # ------------------------------------------------------------------------------------------------
-# Mono shapes: the four analog shapes, then every wavetable (Variation scans it, Wave Env moves it)
+# Mono shapes: the four analog shapes, then every wavetable (Variation scans it, Var Env moves it)
 _VA, _VA_S = ["Saw", "Pulse", "Saw+Pulse", "Sync"], ["Saw", "Puls", "S+P", "Sync"]
 LINE_SHAPES = _VA + [w[0] + " WT" if w[0] in _VA else w[0] for w in ALL_WT]
 LINE_SHAPES_S = _VA_S + [w[0][0] + w[0][-1] + "WT" if w[0] in _VA else w[1] for w in ALL_WT]
@@ -342,16 +342,17 @@ DRIVE_POS_S = ["Pre", "Post", "Amp"]
 # "Random Walk" (not "Random"): the host's LFO picture draws "Random" as noise, but this one glides
 LFO_SHAPES = ["Sine", "Tri", "Saw", "Square", "S&H", "Random Walk"]
 LFO_SHAPES_S = ["Sine", "Tri", "Saw", "Sqr", "S&H", "Rnd"]
-# Animate Target: every destination alone (main LFO), then every pair: the main LFO moves the first,
-# LFO 2 (its rate a multiple of the main one) the second. Wave Pos is Variation (the wavetable frame,
-# string registers or FM index). Wave Pos+Filter stays at 5, where 0.4 betas saved Filter+Wave.
-AN_TARGETS = [("Wave Pos", "Wave", "W"), ("Pitch", "Ptch", "P"), ("Filter", "Filt", "F"), ("Pan", "Pan", "Pn"),
-              ("Amp", "Amp", "A")]
+# Motion Target: every destination alone (main LFO), then every pair: the main LFO moves the first,
+# LFO 2 (its rate a multiple of the main one) the second. Variation is whatever the engine's
+# Variation is (wavetable frame, string registration, FM brightness). Var+Filter stays at 5, where
+# 0.4 betas saved Filter+Wave. (name, short, pair name, pair short)
+AN_TARGETS = [("Variation", "Var", "Var", "V"), ("Pitch", "Ptch", "Pitch", "P"), ("Filter", "Filt", "Filter", "F"),
+              ("Pan", "Pan", "Pan", "Pn"), ("Amp", "Amp", "Amp", "A")]
 AN_PAIRS = [(0, 2), (0, 1), (0, 3), (0, 4), (1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
 AN_SRC = [[1 if j == i else 0 for j in range(5)] for i in range(5)] + \
          [[1 if j == a else 2 if j == b else 0 for j in range(5)] for a, b in AN_PAIRS]
-ANIM_DEST = [t[0] for t in AN_TARGETS] + ["%s+%s" % (AN_TARGETS[a][0], AN_TARGETS[b][0]) for a, b in AN_PAIRS]
-ANIM_DEST_S = [t[1] for t in AN_TARGETS] + ["%s+%s" % (AN_TARGETS[a][2], AN_TARGETS[b][2]) for a, b in AN_PAIRS]
+ANIM_DEST = [t[0] for t in AN_TARGETS] + ["%s+%s" % (AN_TARGETS[a][2], AN_TARGETS[b][2]) for a, b in AN_PAIRS]
+ANIM_DEST_S = [t[1] for t in AN_TARGETS] + ["%s+%s" % (AN_TARGETS[a][3], AN_TARGETS[b][3]) for a, b in AN_PAIRS]
 ROUTES = ["FX+Rev", "Rev", "Dry"]
 ROUTES_S = ["All", "Rev", "Dry"]
 # Arp types. Leap In / Leap Out, Pattern, the octave-range set, the 40 progression patterns, the 40
@@ -384,8 +385,8 @@ KEY_MODES_S = ["Stk", "MelL", "MelH", "Atmo", "Melo"]
 # Retrig = every voice its own, restarted by its note
 AN_MODES = ["Global", "Spread", "Retrig"]
 AN_MODES_S = ["Glob", "Sprd", "Rtrg"]
-WHEEL = ["Vibrato", "Animate", "Cutoff", "Wave Pos"]
-WHEEL_S = ["Vib", "Anim", "Cut", "Wave"]
+WHEEL = ["Vibrato", "Motion", "Cutoff", "Variation"]
+WHEEL_S = ["Vib", "Mot", "Cut", "Var"]
 ONOFF = ["Off", "On"]
 # 16 arp rhythm patterns: (bit mask, length in steps); bit i set = step i plays.
 # rhythms: "0" = play the step, "x" = rest; one character per step
@@ -421,8 +422,8 @@ E("tx_type", "Atmos Type", "Type", 0, [t[0] for t in TEX_TYPES], [t[1] for t in 
   viz={"group": "txw", "role": "type", "kind": "custom:qwave"}, card=CARD)
 F("tx_var", "Variation", "Var", 0.3, viz={"group": "txw", "role": "variation", "kind": "custom:qwave"}, live=True,
   card=CARD)
-F("tx_anim", "Animate", "Anim", 0.25)
-F("tx_depth", "Wave Env", "WvEnv", 0.0, -1.0, 1.0)
+F("tx_anim", "Motion", "Mot", 0.25)
+F("tx_depth", "Var Env", "VrEnv", 0.0, -1.0, 1.0)
 F("tx_a", "Atmos Attack", "Atk", 0.32, viz=ENV("tx", "attack"))
 F("tx_d", "Atmos Decay", "Dec", 0.5, viz=ENV("tx", "decay"))
 F("tx_s", "Atmos Sustain", "Sus", 0.85, viz=ENV("tx", "sustain"))
@@ -465,10 +466,10 @@ F("tx_bloom", "Detune Bloom", "Bloom", 0.0, viz={"group": "det", "role": "bloom"
 F("tx_spread", "Spread", "Sprd", 0.3)
 F("flt_key", "Filter Keytrack", "KeyTk", 0.5)
 # Motion
-E("an_shape", "Animate Shape", "Shape", 0, LFO_SHAPES, LFO_SHAPES_S, viz={"group": "an", "role": "shape", "kind": "lfo"},
+E("an_shape", "Motion Shape", "Shape", 0, LFO_SHAPES, LFO_SHAPES_S, viz={"group": "an", "role": "shape", "kind": "lfo"},
   card=CARD)
-F("an_rate", "Animate Rate", "Rate", 0.35, viz={"group": "an", "role": "rate", "kind": "lfo"})
-E("an_dest", "Animate Target", "Dest", 0, ANIM_DEST, ANIM_DEST_S, card=CARD)
+F("an_rate", "Motion Rate", "Rate", 0.35, viz={"group": "an", "role": "rate", "kind": "lfo"})
+E("an_dest", "Motion Target", "Dest", 0, ANIM_DEST, ANIM_DEST_S, card=CARD)
 F("vib", "Vibrato", "Vib", 0.0)
 F("vib_rate", "Vibrato Rate", "VRate", 0.45)
 E("ens_type", "Ensemble Type", "EnsTp", 0, ENS_TYPES, ENS_TYPES_S)
@@ -476,7 +477,7 @@ E("ens_type", "Ensemble Type", "EnsTp", 0, ENS_TYPES, ENS_TYPES_S)
 F("ln_cut", "Melody Cutoff", "Cut", 0.75, viz={"group": "lf", "role": "cutoff", "kind": "filter"})
 F("ln_res", "Melody Resonance", "Res", 0.15, viz={"group": "lf", "role": "resonance", "kind": "filter"})
 F("ln_fenv", "Melody Filter Env", "FEnv", 0.3, -1.0, 1.0)
-F("ln_wenv", "Melody Wave Env", "WvEnv", 0.0, -1.0, 1.0)
+F("ln_wenv", "Melody Var Env", "VrEnv", 0.0, -1.0, 1.0)
 I("ln_det", "Melody Detune", "Detun", 11, 0, 50, unit="ct")
 I("ln_int", "Melody Interval", "Intvl", 0, -24, 24, unit="st")
 F("ln_glide", "Melody Glide", "Glide", 0.0)
@@ -520,7 +521,7 @@ F("vel", "Velocity", "Vel", 0.5)
 E("wheel", "Mod Wheel", "Wheel", 0, WHEEL, WHEEL_S)
 E("ln_mode", "Melody Mode", "Mode", 1, LINE_MODES, LINE_MODES_S)
 E("tx_latch", "Atmos Latch", "Latch", 0, ONOFF, viz={"kind": "switch"})
-# LFO 2 (pair Animate Targets): rate as a multiple of Animate Rate; below 0 it runs backwards
+# LFO 2 (pair Motion Targets): rate as a multiple of Motion Rate; below 0 it runs backwards
 F("an_lfo2", "LFO 2 Rate", "LFO2", 1.0, -4.0, 4.0, card=CARD)
 E("an_mode", "LFO Mode", "LFOMd", 0, AN_MODES, AN_MODES_S, card=CARD)
 
@@ -668,14 +669,14 @@ PRESETS += [
                          an_rate=0.3, tx_a=0.45, tx_r=0.6, flt_type=2, flt_cut=0.55, flt_res=0.25, ens_amt=0.55,
                          ens_type=0, rv_amt=0.4, rv_decay=0.65, sh_amt=0.15, vintage=0.3)),
 ]
-# 0.4: the paired Animate Targets (index = AN_TARGETS then AN_PAIRS: 5 W+F, 6 W+P, 7 W+Pan, 8 W+A,
+# 0.4: the paired Motion Targets (index = AN_TARGETS then AN_PAIRS: 5 W+F, 6 W+P, 7 W+Pan, 8 W+A,
 # 9 P+F, 10 P+Pan, 11 P+A, 12 F+Pan, 13 F+A, 14 Pan+A), and Pads sounds with a Mono part to match
 AD = {n: i for i, n in enumerate(ANIM_DEST)}
 PRESETS += [
-    ("Drift Glass", dict(tx_type=T["Glass WT"], tx_var=0.35, tx_anim=0.45, an_dest=AD["Wave Pos+Pan"], an_rate=0.3,
+    ("Drift Glass", dict(tx_type=T["Glass WT"], tx_var=0.35, tx_anim=0.45, an_dest=AD["Var+Pan"], an_rate=0.3,
                          an_lfo2=0.5, tx_spread=0.4, tx_a=0.4, tx_r=0.65, ens_amt=0.6, ens_type=2, rv_amt=0.45,
                          rv_decay=0.78, sh_amt=0.25)),
-    ("Breathing Choir", dict(tx_type=T["Choir WT"], tx_var=0.4, tx_anim=0.35, an_dest=AD["Wave Pos+Amp"], an_shape=1,
+    ("Breathing Choir", dict(tx_type=T["Choir WT"], tx_var=0.4, tx_anim=0.35, an_dest=AD["Var+Amp"], an_shape=1,
                              an_rate=0.35, an_lfo2=0.5, tx_a=0.45, tx_r=0.6, ens_amt=0.85, rv_amt=0.45, rv_decay=0.7)),
     ("Tape Wobble Keys", dict(tx_type=T["EPiano"], tx_var=0.3, tx_anim=0.25, an_dest=AD["Pitch+Filter"], an_shape=5,
                               an_rate=0.45, an_lfo2=1.5, flt_type=1, flt_cut=0.65, tx_a=0.0, tx_d=0.6, tx_s=0.4,
@@ -694,10 +695,10 @@ PRESETS += [
     ("Vibrato Fourths", dict(tx_type=T["Fourths"], tx_var=0.57, tx_anim=0.15, an_dest=AD["Pitch+Pan"], an_rate=0.55,
                              an_lfo2=0.75, tx_a=0.4, tx_r=0.65, tx_detune=0.2, ens_type=3, ens_amt=0.7,
                              flt_cut=0.75, rv_amt=0.45, rv_decay=0.8, sh_amt=0.15, sh_pitch=5)),
-    ("Saw Shimmer Sweep", dict(tx_type=T["PWM Saw"], tx_var=0.3, tx_anim=0.5, an_dest=AD["Wave Pos+Filter"], an_shape=2,
+    ("Saw Shimmer Sweep", dict(tx_type=T["PWM Saw"], tx_var=0.3, tx_anim=0.5, an_dest=AD["Var+Filter"], an_shape=2,
                                an_rate=0.25, an_lfo2=-0.25, flt_type=2, flt_cut=0.6, flt_res=0.3, tx_spread=0.5,
                                tx_a=0.4, tx_r=0.6, ens_amt=0.7, ens_type=2, sh_amt=0.35, rv_amt=0.45, rv_decay=0.8)),
-    ("Formant Drift", dict(tx_type=T["Formant A"], tx_var=0.5, tx_anim=0.3, an_dest=AD["Wave Pos+Pitch"], an_shape=5,
+    ("Formant Drift", dict(tx_type=T["Formant A"], tx_var=0.5, tx_anim=0.3, an_dest=AD["Var+Pitch"], an_shape=5,
                            an_rate=0.3, an_lfo2=1.3, tx_a=0.35, tx_r=0.55, ens_amt=0.75, ens_type=2, flt_cut=0.8,
                            rv_amt=0.4, rv_decay=0.7)),
     ("Dom 11 Swells", dict(tx_type=T["Dom 11"], tx_var=0.57, tx_anim=0.4, an_dest=AD["Filter+Amp"], an_shape=1,
@@ -706,10 +707,10 @@ PRESETS += [
     ("Comb Spinner", dict(tx_type=T["Metal WT"], tx_var=0.3, tx_anim=0.3, an_dest=AD["Filter+Pan"], an_rate=0.5,
                           an_lfo2=0.5, flt_type=8, flt_cut=0.6, flt_res=0.5, tx_a=0.3, tx_r=0.55, ens_amt=0.5,
                           rv_amt=0.4, rv_decay=0.75)),
-    ("FM Glass Tides", dict(tx_type=T["FM Glass"], tx_var=0.35, tx_anim=0.4, an_dest=AD["Wave Pos+Amp"], an_rate=0.28,
+    ("FM Glass Tides", dict(tx_type=T["FM Glass"], tx_var=0.35, tx_anim=0.4, an_dest=AD["Var+Amp"], an_rate=0.28,
                             an_lfo2=0.5, tx_a=0.3, tx_d=0.6, tx_s=0.6, tx_r=0.6, ens_amt=0.55, rv_amt=0.45,
                             rv_decay=0.8, sh_amt=0.3)),
-    ("Vocal Pan Choir", dict(tx_type=T["Voice"], tx_var=0.4, tx_anim=0.5, an_dest=AD["Wave Pos+Pan"], an_shape=1,
+    ("Vocal Pan Choir", dict(tx_type=T["Voice"], tx_var=0.4, tx_anim=0.5, an_dest=AD["Var+Pan"], an_shape=1,
                              an_rate=0.25, an_lfo2=-0.5, tx_a=0.45, tx_r=0.6, ens_amt=0.8, rv_amt=0.45,
                              rv_decay=0.75)),
     # Pads + a Mono part: stacked keys play both
@@ -735,7 +736,7 @@ PRESETS += [
                            tx_r=0.6, ln_vol=0.4, ln_shape=LS["Theremin"], ln_var=0.3, ln_tr=12, ln_det=2,
                            ln_cut=0.7, ln_fenv=0.1, ln_a=0.2, ln_d=0.6, ln_sus=1, ln_mode=1, ln_glide=0.35,
                            ln_spread=0.3, vib=0.2, rv_amt=0.45, rv_decay=0.75)),
-    ("Minor 9 Pluck Arp", dict(tx_type=T["Minor 9"], tx_var=0.43, tx_anim=0.2, an_dest=AD["Wave Pos+Filter"],
+    ("Minor 9 Pluck Arp", dict(tx_type=T["Minor 9"], tx_var=0.43, tx_anim=0.2, an_dest=AD["Var+Filter"],
                                an_rate=0.2, an_lfo2=0.5, flt_type=2, flt_cut=0.6, tx_a=0.35, tx_r=0.55, tx_vol=0.6,
                                ens_amt=0.75, ens_type=2, ln_vol=0.55, ln_shape=LS["Pluck"], ln_var=0.2, ln_wenv=0.6,
                                ln_cut=0.7, ln_res=0.25, ln_fenv=0.4, ln_a=0.0, ln_d=0.28, ln_sus=0, ln_mode=2,
@@ -868,7 +869,7 @@ def gen_tables():
         h.append("    {%s}," % ", ".join(cfloat(x) for x in v))
     h.append("};")
     # texture types
-    h.append("/* per Animate Target, per destination (Wave Pos, Pitch, Filter, Pan, Amp): 0 off, 1 LFO, 2 LFO 2 */")
+    h.append("/* per Motion Target, per destination (Variation, Pitch, Filter, Pan, Amp): 0 off, 1 LFO, 2 LFO 2 */")
     h.append("static const unsigned char Q_AN_SRC[Q_AN_DEST_N][5] = {%s};" %
              ", ".join("{%s}" % ", ".join(map(str, r)) for r in AN_SRC))
     h.append("static const unsigned char Q_TEX_FAMILY[%d] = {%s};" % (len(TEX_TYPES), ", ".join(str(t[2]) for t in TEX_TYPES)))
