@@ -207,7 +207,7 @@
       on(key, function (v) { btns.forEach(function (b, i) { b.classList.toggle("sel", i === Math.round(v)); }); });
       el.append(seg, name);
     } else if (p.opts.length > 12) {
-      /* long lists (95 pad types, 88 mono shapes): a native picker between two steppers */
+      /* long lists (Atmos types, Melody shapes): a native picker between two steppers */
       var st2 = document.createElement("div"); st2.className = "step";
       var l2 = document.createElement("button"); l2.innerHTML = "&#9664;";
       var sel = document.createElement("select");
@@ -778,7 +778,7 @@
         if (isFinite(x) && Math.abs((effective.tx_var || 0) - x) > 0.002) { effective.tx_var = x; redrawGraphics(); }
       });
     }
-    if (engine && frame % 15 === 0) engine.get("voices").then(function (v) { if (v) document.getElementById("voices").textContent = v.replace(",", " pads · ") + " mono"; });
+    if (engine && frame % 15 === 0) engine.get("voices").then(function (v) { if (v) document.getElementById("voices").textContent = v.replace(",", " atmos · ") + " melody"; });
     if (engine && frame % 10 === 0) engine.get("arp_notes").then(function (v) {
       var t = vals.arp_mode < 0.5 ? "" : v ? "ARP ▸ " + v.split(",").map(function (x) { return Q.noteName(+x); }).join(" ") : "ARP ▸ waiting for " + (vals.arp_src >= 0.5 ? "a pad chord" : "Melody keys");
       document.getElementById("arpnotes").textContent = t;
