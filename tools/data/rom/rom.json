@@ -2,12 +2,12 @@
  "sr": 32000,
  "mips": 3,
  "guard": 3,
- "samples": 5391904,
- "sha256": "0593913f327059e83ca6039a226941e9b340d2cd9a2ba0e8afad686390a0a0a4",
+ "samples": 7666389,
+ "sha256": "ce4d9a45bdf9d197d6b976ce28b3db8d68a4c59c639c11ddc9a7c840e73bc4a8",
  "sets": [
   {
-   "name": "Glass",
-   "short": "Glas",
+   "name": "Wine Glass",
+   "short": "WGls",
    "kind": "sus",
    "chord": false,
    "zones": [
@@ -27,6 +27,11 @@
       70016,
       35008,
       17504
+     ],
+     "web_offsets": [
+      -1,
+      0,
+      35011
      ]
     },
     {
@@ -45,6 +50,11 @@
       68644,
       34322,
       17161
+     ],
+     "web_offsets": [
+      -1,
+      52518,
+      86843
      ]
     },
     {
@@ -63,6 +73,11 @@
       71992,
       35996,
       17998
+     ],
+     "web_offsets": [
+      -1,
+      104007,
+      140006
      ]
     },
     {
@@ -81,6 +96,11 @@
       72184,
       36092,
       18046
+     ],
+     "web_offsets": [
+      -1,
+      158007,
+      194102
      ]
     }
    ],
@@ -161,6 +181,11 @@
       54940,
       27470,
       13735
+     ],
+     "web_offsets": [
+      -1,
+      212151,
+      239624
      ]
     },
     {
@@ -179,6 +204,11 @@
       51684,
       25842,
       12921
+     ],
+     "web_offsets": [
+      -1,
+      253362,
+      279207
      ]
     },
     {
@@ -197,6 +227,11 @@
       51848,
       25924,
       12962
+     ],
+     "web_offsets": [
+      -1,
+      292131,
+      318058
      ]
     },
     {
@@ -215,6 +250,11 @@
       53856,
       26928,
       13464
+     ],
+     "web_offsets": [
+      -1,
+      331023,
+      357954
      ]
     }
    ],
@@ -274,8 +314,8 @@
    ]
   },
   {
-   "name": "Strings",
-   "short": "Str",
+   "name": "Section Strings",
+   "short": "SStr",
    "kind": "sus",
    "chord": false,
    "zones": [
@@ -295,6 +335,11 @@
       42332,
       21166,
       10583
+     ],
+     "web_offsets": [
+      -1,
+      371421,
+      392590
      ]
     },
     {
@@ -313,6 +358,11 @@
       43296,
       21648,
       10824
+     ],
+     "web_offsets": [
+      -1,
+      403176,
+      424827
      ]
     },
     {
@@ -331,6 +381,11 @@
       50576,
       25288,
       12644
+     ],
+     "web_offsets": [
+      -1,
+      435654,
+      460945
      ]
     },
     {
@@ -349,6 +404,11 @@
       49568,
       24784,
       12392
+     ],
+     "web_offsets": [
+      -1,
+      473592,
+      498379
      ]
     },
     {
@@ -367,6 +427,11 @@
       48908,
       24454,
       12227
+     ],
+     "web_offsets": [
+      -1,
+      510774,
+      535231
      ]
     },
     {
@@ -385,6 +450,11 @@
       46652,
       23326,
       11663
+     ],
+     "web_offsets": [
+      -1,
+      547461,
+      570790
      ]
     }
    ],
@@ -465,6 +535,11 @@
       44452,
       22226,
       11113
+     ],
+     "web_offsets": [
+      -1,
+      582456,
+      604685
      ]
     },
     {
@@ -483,6 +558,11 @@
       40744,
       20372,
       10186
+     ],
+     "web_offsets": [
+      -1,
+      615801,
+      636176
      ]
     },
     {
@@ -501,6 +581,11 @@
       47196,
       23598,
       11799
+     ],
+     "web_offsets": [
+      -1,
+      646365,
+      669966
      ]
     },
     {
@@ -519,6 +604,11 @@
       38584,
       19292,
       9646
+     ],
+     "web_offsets": [
+      -1,
+      681768,
+      701063
      ]
     }
    ],
@@ -578,8 +668,8 @@
    ]
   },
   {
-   "name": "Flute",
-   "short": "Flut",
+   "name": "Concert Flute",
+   "short": "CFlt",
    "kind": "sus",
    "chord": false,
    "zones": [
@@ -599,6 +689,11 @@
       40340,
       20170,
       10085
+     ],
+     "web_offsets": [
+      -1,
+      710712,
+      730885
      ]
     },
     {
@@ -617,6 +712,11 @@
       39604,
       19802,
       9901
+     ],
+     "web_offsets": [
+      -1,
+      740973,
+      760778
      ]
     },
     {
@@ -635,6 +735,11 @@
       43488,
       21744,
       10872
+     ],
+     "web_offsets": [
+      -1,
+      770682,
+      792429
      ]
     },
     {
@@ -653,6 +758,11 @@
       44620,
       22310,
       11155
+     ],
+     "web_offsets": [
+      -1,
+      803304,
+      825617
      ]
     }
    ],
@@ -733,6 +843,11 @@
       46412,
       23206,
       11603
+     ],
+     "web_offsets": [
+      -1,
+      836775,
+      859984
      ]
     },
     {
@@ -751,6 +866,11 @@
       39756,
       19878,
       9939
+     ],
+     "web_offsets": [
+      -1,
+      871590,
+      891471
      ]
     },
     {
@@ -769,6 +889,11 @@
       45728,
       22864,
       11432
+     ],
+     "web_offsets": [
+      -1,
+      901413,
+      924280
      ]
     },
     {
@@ -787,6 +912,11 @@
       41252,
       20626,
       10313
+     ],
+     "web_offsets": [
+      -1,
+      935715,
+      956344
      ]
     }
    ],
@@ -846,8 +976,8 @@
    ]
   },
   {
-   "name": "Air",
-   "short": "Air",
+   "name": "Organ Blower",
+   "short": "Blwr",
    "kind": "tex",
    "chord": false,
    "zones": [
@@ -867,6 +997,11 @@
       86864,
       43432,
       21716
+     ],
+     "web_offsets": [
+      -1,
+      966660,
+      1010095
      ]
     }
    ],
@@ -926,7 +1061,7 @@
    ]
   },
   {
-   "name": "Ocean",
+   "name": "Ocean Drum",
    "short": "Ocn",
    "kind": "tex",
    "chord": false,
@@ -947,6 +1082,11 @@
       97200,
       48600,
       24300
+     ],
+     "web_offsets": [
+      -1,
+      1031814,
+      1080417
      ]
     }
    ],
@@ -1027,6 +1167,11 @@
       92368,
       46184,
       23092
+     ],
+     "web_offsets": [
+      -1,
+      1104720,
+      1150907
      ]
     }
    ],
@@ -1107,6 +1252,11 @@
       79536,
       39768,
       19884
+     ],
+     "web_offsets": [
+      -1,
+      1174002,
+      1213773
      ]
     }
    ],
@@ -1166,7 +1316,7 @@
    ]
   },
   {
-   "name": "Chimes",
+   "name": "Hand Chimes",
    "short": "Chim",
    "kind": "shot",
    "chord": false,
@@ -1174,7 +1324,7 @@
     {
      "file": "VCSL/Idiophones/Struck Idiophones/Hand Chimes/sus_D4_r01_main.wav",
      "sha256": "ab6598ca5d49f8d19f14b9e5fdfbdb35353ca7cc83e7d4f78946b6faa9371c67",
-     "root": 62.0,
+     "root": 62.001,
      "loop_start": 64000,
      "loop_end": 64000,
      "oneshot": true,
@@ -1187,12 +1337,17 @@
       64000,
       32000,
       16000
+     ],
+     "web_offsets": [
+      -1,
+      1233660,
+      1265663
      ]
     },
     {
      "file": "VCSL/Idiophones/Struck Idiophones/Hand Chimes/sus_A4_r01_main.wav",
      "sha256": "43604b3b049f3d7c60c6e5c8601d7027045ded1f124debcd65c2ccef723daaa1",
-     "root": 69.0,
+     "root": 69.118,
      "loop_start": 64000,
      "loop_end": 64000,
      "oneshot": true,
@@ -1205,12 +1360,17 @@
       64000,
       32000,
       16000
+     ],
+     "web_offsets": [
+      -1,
+      1281666,
+      1313669
      ]
     },
     {
      "file": "VCSL/Idiophones/Struck Idiophones/Hand Chimes/sus_F#5_r01_main.wav",
      "sha256": "7bf55316322d46c635be1b1180e0bc8a4988b26e4ebc5cff2d326ecd46b82302",
-     "root": 78.0,
+     "root": 78.013,
      "loop_start": 64000,
      "loop_end": 64000,
      "oneshot": true,
@@ -1223,6 +1383,11 @@
       64000,
       32000,
       16000
+     ],
+     "web_offsets": [
+      -1,
+      1329672,
+      1361675
      ]
     }
    ],
@@ -1279,15 +1444,15 @@
    "loop": null
   },
   {
-   "name": "Vibes",
-   "short": "Vibe",
+   "name": "Soft Vibes",
+   "short": "SVib",
    "kind": "shot",
    "chord": false,
    "zones": [
     {
      "file": "VCSL/Idiophones/Struck Idiophones/Vibraphone/Soft Mallets/Vibes_soft_D4_v1_rr1_Main.wav",
      "sha256": "daedf613863d4de0a383d66b2db6ab9ffd8dc492d16ff7d735cf3b3107046a26",
-     "root": 62.0,
+     "root": 62.001,
      "loop_start": 57600,
      "loop_end": 57600,
      "oneshot": true,
@@ -1300,6 +1465,11 @@
       57600,
       28800,
       14400
+     ],
+     "web_offsets": [
+      -1,
+      1377678,
+      1406481
      ]
     },
     {
@@ -1318,12 +1488,17 @@
       57600,
       28800,
       14400
+     ],
+     "web_offsets": [
+      -1,
+      1420884,
+      1449687
      ]
     },
     {
      "file": "VCSL/Idiophones/Struck Idiophones/Vibraphone/Soft Mallets/Vibes_soft_E5_v1_rr1_Main.wav",
      "sha256": "d2a9412550115bfdc4e1087cad3cd6e9d8146c1f4a91bf47f60aa7936c5f5dbe",
-     "root": 76.0,
+     "root": 76.001,
      "loop_start": 57600,
      "loop_end": 57600,
      "oneshot": true,
@@ -1336,6 +1511,11 @@
       57600,
       28800,
       14400
+     ],
+     "web_offsets": [
+      -1,
+      1464090,
+      1492893
      ]
     }
    ],
@@ -1413,6 +1593,11 @@
       44800,
       22400,
       11200
+     ],
+     "web_offsets": [
+      -1,
+      1507296,
+      1529699
      ]
     },
     {
@@ -1431,6 +1616,11 @@
       44800,
       22400,
       11200
+     ],
+     "web_offsets": [
+      -1,
+      1540902,
+      1563305
      ]
     }
    ],
@@ -1495,7 +1685,7 @@
     {
      "file": "VCSL/Idiophones/Plucked Idiophones/Kalimba, Kenya/Mbira6_Normal_MainSpirit_F#3_k10_vl3_rr2.wav",
      "sha256": "274fff90bf95d9c39408387117a16a8d7732a42094f5ae6d32b9e26528c7fe24",
-     "root": 54.0,
+     "root": 54.154,
      "loop_start": 48000,
      "loop_end": 48000,
      "oneshot": true,
@@ -1508,12 +1698,17 @@
       48000,
       24000,
       12000
+     ],
+     "web_offsets": [
+      -1,
+      1574508,
+      1598511
      ]
     },
     {
      "file": "VCSL/Idiophones/Plucked Idiophones/Kalimba, Kenya/Mbira6_Normal_MainSpirit_B3_k3_vl3_rr2.wav",
      "sha256": "d35e8f5773ee989511e376876d9698e0027f44a754eb9e001de01abb29b19808",
-     "root": 59.0,
+     "root": 59.155,
      "loop_start": 48000,
      "loop_end": 48000,
      "oneshot": true,
@@ -1526,6 +1721,11 @@
       48000,
       24000,
       12000
+     ],
+     "web_offsets": [
+      -1,
+      1610514,
+      1634517
      ]
     },
     {
@@ -1544,6 +1744,11 @@
       48000,
       24000,
       12000
+     ],
+     "web_offsets": [
+      -1,
+      1646520,
+      1670523
      ]
     }
    ],
@@ -1600,8 +1805,8 @@
    "loop": null
   },
   {
-   "name": "Organ",
-   "short": "Orgn",
+   "name": "Pipe Organ",
+   "short": "POrg",
    "kind": "sus",
    "chord": false,
    "zones": [
@@ -1621,6 +1826,11 @@
       40236,
       20118,
       10059
+     ],
+     "web_offsets": [
+      -1,
+      1682526,
+      1702647
      ]
     },
     {
@@ -1639,6 +1849,11 @@
       44592,
       22296,
       11148
+     ],
+     "web_offsets": [
+      -1,
+      1712709,
+      1735008
      ]
     },
     {
@@ -1657,6 +1872,11 @@
       39736,
       19868,
       9934
+     ],
+     "web_offsets": [
+      -1,
+      1746159,
+      1766030
      ]
     },
     {
@@ -1675,6 +1895,11 @@
       46528,
       23264,
       11632
+     ],
+     "web_offsets": [
+      -1,
+      1775967,
+      1799234
      ]
     }
    ],
@@ -1734,15 +1959,15 @@
    ]
   },
   {
-   "name": "FM Piano",
-   "short": "FMP",
+   "name": "Digi E.Piano",
+   "short": "DEP",
    "kind": "shot",
    "chord": false,
    "zones": [
     {
      "file": "VCSL/Electrophones/TX81Z/FM Piano/FMPiano_E2_vl2.wav",
      "sha256": "d738ad3fa006ca3429cef9dc13a7f8d8f27154100c8c6ea8757016d5e46114a9",
-     "root": 40.0,
+     "root": 40.02,
      "loop_start": 64000,
      "loop_end": 64000,
      "oneshot": true,
@@ -1755,12 +1980,17 @@
       64000,
       32000,
       16000
+     ],
+     "web_offsets": [
+      -1,
+      1810869,
+      1842872
      ]
     },
     {
      "file": "VCSL/Electrophones/TX81Z/FM Piano/FMPiano_C3_vl2.wav",
      "sha256": "6f11eda294358ac5931225e3cf2400dadf0730a1fe092a75457f6e097148fdec",
-     "root": 48.0,
+     "root": 48.011,
      "loop_start": 64000,
      "loop_end": 64000,
      "oneshot": true,
@@ -1773,12 +2003,17 @@
       64000,
       32000,
       16000
+     ],
+     "web_offsets": [
+      -1,
+      1858875,
+      1890878
      ]
     },
     {
      "file": "VCSL/Electrophones/TX81Z/FM Piano/FMPiano_G#3_vl2.wav",
      "sha256": "6c32c0dea461ea49f4cf3c3439b20f5f94340e387fd0a32d6d5cbaa937a4a04d",
-     "root": 56.0,
+     "root": 56.008,
      "loop_start": 64000,
      "loop_end": 64000,
      "oneshot": true,
@@ -1791,12 +2026,17 @@
       64000,
       32000,
       16000
+     ],
+     "web_offsets": [
+      -1,
+      1906881,
+      1938884
      ]
     },
     {
      "file": "VCSL/Electrophones/TX81Z/FM Piano/FMPiano_E4_vl2.wav",
      "sha256": "ffdb976f02bc4b1ab8a8eda4f880a46c2505804f35ce07e73fff02b177b54e46",
-     "root": 64.0,
+     "root": 64.013,
      "loop_start": 64000,
      "loop_end": 64000,
      "oneshot": true,
@@ -1809,12 +2049,17 @@
       64000,
       32000,
       16000
+     ],
+     "web_offsets": [
+      -1,
+      1954887,
+      1986890
      ]
     },
     {
      "file": "VCSL/Electrophones/TX81Z/FM Piano/FMPiano_C5_vl2.wav",
      "sha256": "b5d604f62d61b427214a34bef34974a9cb0bc3ac216b16f1e7ebf6ab27969d40",
-     "root": 72.0,
+     "root": 72.009,
      "loop_start": 64000,
      "loop_end": 64000,
      "oneshot": true,
@@ -1827,6 +2072,11 @@
       64000,
       32000,
       16000
+     ],
+     "web_offsets": [
+      -1,
+      2002893,
+      2034896
      ]
     }
    ],
@@ -1904,6 +2154,11 @@
       51544,
       25772,
       12886
+     ],
+     "web_offsets": [
+      -1,
+      2050899,
+      2076674
      ]
     },
     {
@@ -1922,6 +2177,11 @@
       49048,
       24524,
       12262
+     ],
+     "web_offsets": [
+      -1,
+      2089563,
+      2114090
      ]
     }
    ],
@@ -2002,6 +2262,11 @@
       57020,
       28510,
       14255
+     ],
+     "web_offsets": [
+      -1,
+      2126355,
+      2154868
      ]
     }
    ],
@@ -2062,7 +2327,7 @@
   },
   {
    "name": "Sung Chord",
-   "short": "Chrd",
+   "short": "SChd",
    "kind": "sus",
    "chord": true,
    "zones": [
@@ -2082,6 +2347,11 @@
       49032,
       24516,
       12258
+     ],
+     "web_offsets": [
+      -1,
+      2169126,
+      2193645
      ]
     }
    ],
@@ -2162,6 +2432,11 @@
       60432,
       30216,
       15108
+     ],
+     "web_offsets": [
+      -1,
+      2205906,
+      2236125
      ]
     }
    ],
@@ -2221,8 +2496,8 @@
    ]
   },
   {
-   "name": "Breath",
-   "short": "Brth",
+   "name": "Breath Loop",
+   "short": "BrLp",
    "kind": "tex",
    "chord": false,
    "zones": [
@@ -2242,6 +2517,11 @@
       79592,
       39796,
       19898
+     ],
+     "web_offsets": [
+      -1,
+      2251236,
+      2291035
      ]
     }
    ],
@@ -2299,92 +2579,1272 @@
     0.196,
     1.0
    ]
+  },
+  {
+   "name": "Shakuhachi",
+   "short": "Shak",
+   "kind": "sus",
+   "chord": false,
+   "zones": [
+    {
+     "file": "freesound/159550_Skakuhachi_12_Samples_wav.wav",
+     "sha256": "ecf3a42b3bf565654b29fe705a08bc3107737f55cb49e50ea51388dc76f246e0",
+     "root": 55.86,
+     "loop_start": 19888,
+     "loop_end": 51424,
+     "oneshot": false,
+     "offsets": [
+      5391904,
+      5443331,
+      5469046
+     ],
+     "lens": [
+      51424,
+      25712,
+      12856
+     ],
+     "web_offsets": [
+      -1,
+      2310936,
+      2336651
+     ]
+    },
+    {
+     "file": "freesound/159550_Skakuhachi_12_Samples_wav.wav",
+     "sha256": "ecf3a42b3bf565654b29fe705a08bc3107737f55cb49e50ea51388dc76f246e0",
+     "root": 64.846,
+     "loop_start": 16112,
+     "loop_end": 50384,
+     "oneshot": false,
+     "offsets": [
+      5481905,
+      5532292,
+      5557487
+     ],
+     "lens": [
+      50384,
+      25192,
+      12596
+     ],
+     "web_offsets": [
+      -1,
+      2349510,
+      2374705
+     ]
+    },
+    {
+     "file": "freesound/159550_Skakuhachi_12_Samples_wav.wav",
+     "sha256": "ecf3a42b3bf565654b29fe705a08bc3107737f55cb49e50ea51388dc76f246e0",
+     "root": 73.149,
+     "loop_start": 14352,
+     "loop_end": 46340,
+     "oneshot": false,
+     "offsets": [
+      5570086,
+      5616429,
+      5639602
+     ],
+     "lens": [
+      46340,
+      23170,
+      11585
+     ],
+     "web_offsets": [
+      -1,
+      2387304,
+      2410477
+     ]
+    },
+    {
+     "file": "freesound/159550_Skakuhachi_12_Samples_wav.wav",
+     "sha256": "ecf3a42b3bf565654b29fe705a08bc3107737f55cb49e50ea51388dc76f246e0",
+     "root": 81.074,
+     "loop_start": 13112,
+     "loop_end": 45228,
+     "oneshot": false,
+     "offsets": [
+      5651190,
+      5696421,
+      5719038
+     ],
+     "lens": [
+      45228,
+      22614,
+      11307
+     ],
+     "web_offsets": [
+      -1,
+      2422065,
+      2444682
+     ]
+    }
+   ],
+   "overview": [
+    0.506,
+    0.562,
+    0.648,
+    0.734,
+    0.784,
+    0.888,
+    0.998,
+    1.0,
+    0.999,
+    0.997,
+    0.999,
+    0.987,
+    0.946,
+    0.953,
+    0.96,
+    0.935,
+    0.949,
+    0.937,
+    0.933,
+    0.917,
+    0.933,
+    0.924,
+    0.906,
+    0.908,
+    0.903,
+    0.898,
+    0.895,
+    0.912,
+    0.907,
+    0.901,
+    0.902,
+    0.901,
+    0.903,
+    0.913,
+    0.9,
+    0.9,
+    0.895,
+    0.879,
+    0.886,
+    0.909,
+    0.915,
+    0.894,
+    0.897,
+    0.905,
+    0.886,
+    0.874,
+    0.916,
+    0.942
+   ],
+   "loop": [
+    0.32,
+    1.0
+   ]
+  },
+  {
+   "name": "Shaku Breath",
+   "short": "ShBr",
+   "kind": "tex",
+   "chord": false,
+   "zones": [
+    {
+     "file": "freesound/500765_shakuhachi_blow_23.wav",
+     "sha256": "78380cff0172752635760fd6cf32373225f288804244a5069c19fba3df0f0b85",
+     "root": 60.0,
+     "loop_start": 16280,
+     "loop_end": 80280,
+     "oneshot": false,
+     "offsets": [
+      5730348,
+      5810631,
+      5850774
+     ],
+     "lens": [
+      80280,
+      40140,
+      20070
+     ],
+     "web_offsets": [
+      -1,
+      2455992,
+      2496135
+     ]
+    }
+   ],
+   "overview": [
+    0.45,
+    0.514,
+    0.51,
+    0.557,
+    0.451,
+    0.5,
+    0.498,
+    0.652,
+    0.552,
+    0.526,
+    0.468,
+    0.535,
+    0.479,
+    0.496,
+    0.457,
+    0.554,
+    0.598,
+    0.646,
+    0.678,
+    0.783,
+    0.858,
+    0.594,
+    0.695,
+    0.717,
+    0.742,
+    0.641,
+    0.659,
+    0.525,
+    0.713,
+    0.618,
+    0.539,
+    0.852,
+    0.625,
+    0.623,
+    0.888,
+    0.687,
+    0.696,
+    0.653,
+    0.682,
+    0.814,
+    0.843,
+    0.762,
+    0.784,
+    1.0,
+    0.704,
+    0.665,
+    0.739,
+    0.5
+   ],
+   "loop": [
+    0.203,
+    1.0
+   ]
+  },
+  {
+   "name": "Sitar",
+   "short": "Sitr",
+   "kind": "shot",
+   "chord": false,
+   "zones": [
+    {
+     "file": "freesound/754604_Free_Style_Sitar.wav",
+     "sha256": "1ea685249f12579928acfc34e54600d60c914fdeb6f3115243690f8f4e65732a",
+     "root": 63.0,
+     "loop_start": 60800,
+     "loop_end": 60800,
+     "oneshot": true,
+     "offsets": [
+      5870847,
+      5931650,
+      5962053
+     ],
+     "lens": [
+      60800,
+      30400,
+      15200
+     ],
+     "web_offsets": [
+      -1,
+      2516208,
+      2546611
+     ]
+    },
+    {
+     "file": "freesound/754604_Free_Style_Sitar.wav",
+     "sha256": "1ea685249f12579928acfc34e54600d60c914fdeb6f3115243690f8f4e65732a",
+     "root": 68.0,
+     "loop_start": 60800,
+     "loop_end": 60800,
+     "oneshot": true,
+     "offsets": [
+      5977256,
+      6038059,
+      6068462
+     ],
+     "lens": [
+      60800,
+      30400,
+      15200
+     ],
+     "web_offsets": [
+      -1,
+      2561814,
+      2592217
+     ]
+    }
+   ],
+   "overview": [
+    1.0,
+    0.537,
+    0.561,
+    0.591,
+    0.447,
+    0.306,
+    0.164,
+    0.114,
+    0.64,
+    0.493,
+    0.399,
+    0.374,
+    0.402,
+    0.225,
+    0.184,
+    0.163,
+    0.114,
+    0.128,
+    0.878,
+    0.495,
+    0.5,
+    0.487,
+    0.358,
+    0.292,
+    0.287,
+    0.298,
+    0.254,
+    0.182,
+    0.123,
+    0.08,
+    0.088,
+    0.106,
+    0.114,
+    0.138,
+    0.127,
+    0.106,
+    0.404,
+    0.302,
+    0.219,
+    0.155,
+    0.24,
+    0.241,
+    0.164,
+    0.082,
+    0.032,
+    0.016,
+    0.008,
+    0.001
+   ],
+   "loop": null
+  },
+  {
+   "name": "Tanpura",
+   "short": "Tanp",
+   "kind": "shot",
+   "chord": false,
+   "zones": [
+    {
+     "file": "freesound/416606_Tanpura_note_A_sharp_wav.wav",
+     "sha256": "2b90c4e6fecab31132df026a6ede38b2af7a1ec29d7874a152beb8f85c291595",
+     "root": 46.044,
+     "loop_start": 89600,
+     "loop_end": 89600,
+     "oneshot": true,
+     "offsets": [
+      6083665,
+      6173268,
+      6218071
+     ],
+     "lens": [
+      89600,
+      44800,
+      22400
+     ],
+     "web_offsets": [
+      -1,
+      2607420,
+      2652223
+     ]
+    },
+    {
+     "file": "freesound/416605_Tanpura_note_C_sharp_wav.wav",
+     "sha256": "c51a9fb8d49e82ae9dd9fa3f7fee040cebf74bcf5ca67ccbd54c614b9b8825a1",
+     "root": 48.986,
+     "loop_start": 89600,
+     "loop_end": 89600,
+     "oneshot": true,
+     "offsets": [
+      6240474,
+      6330077,
+      6374880
+     ],
+     "lens": [
+      89600,
+      44800,
+      22400
+     ],
+     "web_offsets": [
+      -1,
+      2674626,
+      2719429
+     ]
+    }
+   ],
+   "overview": [
+    0.05,
+    0.056,
+    0.399,
+    0.323,
+    0.323,
+    0.514,
+    0.69,
+    0.87,
+    0.949,
+    0.979,
+    1.0,
+    0.987,
+    0.926,
+    0.849,
+    0.777,
+    0.711,
+    0.701,
+    0.703,
+    0.7,
+    0.698,
+    0.705,
+    0.704,
+    0.727,
+    0.712,
+    0.72,
+    0.672,
+    0.578,
+    0.5,
+    0.449,
+    0.391,
+    0.364,
+    0.34,
+    0.306,
+    0.275,
+    0.259,
+    0.24,
+    0.226,
+    0.215,
+    0.18,
+    0.167,
+    0.143,
+    0.128,
+    0.122,
+    0.118,
+    0.09,
+    0.054,
+    0.019,
+    0.004
+   ],
+   "loop": null
+  },
+  {
+   "name": "Dan Tranh",
+   "short": "DanT",
+   "kind": "shot",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/B2_vib_mf_1.wav",
+     "sha256": "1adc195248597de8855e205b43fa0c058778ec3c6e4ea7e7656e891faf8887f3",
+     "root": 47.0,
+     "loop_start": 76800,
+     "loop_end": 76800,
+     "oneshot": true,
+     "offsets": [
+      6397283,
+      6474086,
+      6512489
+     ],
+     "lens": [
+      76800,
+      38400,
+      19200
+     ],
+     "web_offsets": [
+      -1,
+      2741832,
+      2780235
+     ]
+    },
+    {
+     "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/F#3_vib_mf_1.wav",
+     "sha256": "6034ac2439fd2d812ebb82845cceb83246d5125225440b8168ee117a86f53833",
+     "root": 54.107,
+     "loop_start": 76800,
+     "loop_end": 76800,
+     "oneshot": true,
+     "offsets": [
+      6531692,
+      6608495,
+      6646898
+     ],
+     "lens": [
+      76800,
+      38400,
+      19200
+     ],
+     "web_offsets": [
+      -1,
+      2799438,
+      2837841
+     ]
+    },
+    {
+     "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/C#4_vib_mf_1.wav",
+     "sha256": "c13de6df19cbb6c0122d629fa217549aa4ebdb54a7c1a921f64325a911bef205",
+     "root": 60.899,
+     "loop_start": 76800,
+     "loop_end": 76800,
+     "oneshot": true,
+     "offsets": [
+      6666101,
+      6742904,
+      6781307
+     ],
+     "lens": [
+      76800,
+      38400,
+      19200
+     ],
+     "web_offsets": [
+      -1,
+      2857044,
+      2895447
+     ]
+    },
+    {
+     "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/G#4_vib_mf_1.wav",
+     "sha256": "d9564ca86383dfb5160fbea83a5047202b707377ea89a6ebd9446a05867da9df",
+     "root": 68.0,
+     "loop_start": 76800,
+     "loop_end": 76800,
+     "oneshot": true,
+     "offsets": [
+      6800510,
+      6877313,
+      6915716
+     ],
+     "lens": [
+      76800,
+      38400,
+      19200
+     ],
+     "web_offsets": [
+      -1,
+      2914650,
+      2953053
+     ]
+    }
+   ],
+   "overview": [
+    1.0,
+    0.688,
+    0.463,
+    0.265,
+    0.24,
+    0.3,
+    0.219,
+    0.192,
+    0.217,
+    0.241,
+    0.236,
+    0.238,
+    0.207,
+    0.204,
+    0.178,
+    0.166,
+    0.162,
+    0.127,
+    0.088,
+    0.086,
+    0.073,
+    0.069,
+    0.067,
+    0.047,
+    0.04,
+    0.028,
+    0.026,
+    0.023,
+    0.021,
+    0.024,
+    0.025,
+    0.025,
+    0.029,
+    0.026,
+    0.024,
+    0.024,
+    0.022,
+    0.022,
+    0.021,
+    0.021,
+    0.017,
+    0.016,
+    0.016,
+    0.01,
+    0.005,
+    0.003,
+    0.001,
+    0.0
+   ],
+   "loop": null
+  },
+  {
+   "name": "Duduk",
+   "short": "Dudk",
+   "kind": "sus",
+   "chord": false,
+   "zones": [
+    {
+     "file": "freesound/479213_duduk_C3.wav",
+     "sha256": "69e18cb8f1c17c27feb6aaa2f32d2b38e8e006e7b991e8284980b61722c159c7",
+     "root": 48.035,
+     "loop_start": 20648,
+     "loop_end": 55784,
+     "oneshot": false,
+     "offsets": [
+      6934919,
+      6990706,
+      7018601
+     ],
+     "lens": [
+      55784,
+      27892,
+      13946
+     ],
+     "web_offsets": [
+      -1,
+      2972256,
+      3000151
+     ]
+    }
+   ],
+   "overview": [
+    0.057,
+    0.253,
+    0.803,
+    0.833,
+    0.815,
+    0.81,
+    0.816,
+    0.817,
+    0.839,
+    0.848,
+    0.869,
+    0.87,
+    0.86,
+    0.883,
+    0.901,
+    0.89,
+    0.899,
+    0.899,
+    0.918,
+    0.918,
+    0.926,
+    0.937,
+    0.942,
+    0.933,
+    0.934,
+    0.939,
+    0.948,
+    0.95,
+    0.95,
+    0.947,
+    0.947,
+    0.954,
+    0.973,
+    0.987,
+    0.992,
+    0.991,
+    0.986,
+    0.996,
+    1.0,
+    0.97,
+    0.963,
+    0.936,
+    0.927,
+    0.91,
+    0.913,
+    0.884,
+    0.889,
+    0.892
+   ],
+   "loop": [
+    0.37,
+    1.0
+   ]
+  },
+  {
+   "name": "Erhu",
+   "short": "Erhu",
+   "kind": "sus",
+   "chord": false,
+   "zones": [
+    {
+     "file": "freesound/569838_4_Erhu_E4_wav.wav",
+     "sha256": "4e69e692a8aab3d3ba37f64522409a20a03a490bbbce1f4864c177a21e3b0742",
+     "root": 63.996,
+     "loop_start": 17080,
+     "loop_end": 45920,
+     "oneshot": false,
+     "offsets": [
+      7032550,
+      7078473,
+      7101436
+     ],
+     "lens": [
+      45920,
+      22960,
+      11480
+     ],
+     "web_offsets": [
+      -1,
+      3014100,
+      3037063
+     ]
+    }
+   ],
+   "overview": [
+    0.325,
+    0.877,
+    1.0,
+    0.956,
+    0.936,
+    0.825,
+    0.829,
+    0.828,
+    0.815,
+    0.813,
+    0.834,
+    0.844,
+    0.844,
+    0.819,
+    0.851,
+    0.933,
+    0.953,
+    0.939,
+    0.909,
+    0.864,
+    0.82,
+    0.787,
+    0.787,
+    0.903,
+    0.982,
+    0.978,
+    0.926,
+    0.86,
+    0.785,
+    0.729,
+    0.668,
+    0.777,
+    0.829,
+    0.844,
+    0.731,
+    0.734,
+    0.685,
+    0.541,
+    0.505,
+    0.513,
+    0.624,
+    0.627,
+    0.606,
+    0.562,
+    0.461,
+    0.548,
+    0.721,
+    0.923
+   ],
+   "loop": [
+    0.372,
+    1.0
+   ]
+  },
+  {
+   "name": "Sarangi",
+   "short": "Sarg",
+   "kind": "sus",
+   "chord": false,
+   "zones": [
+    {
+     "file": "freesound/167088_Sarangi_G3_wav.wav",
+     "sha256": "6eb8736a83dc3ce720c647bf1488b3fc23e22af362b6cdd13809403158517a8f",
+     "root": 55.869,
+     "loop_start": 12624,
+     "loop_end": 41040,
+     "oneshot": false,
+     "offsets": [
+      7112919,
+      7153962,
+      7174485
+     ],
+     "lens": [
+      41040,
+      20520,
+      10260
+     ],
+     "web_offsets": [
+      -1,
+      3048546,
+      3069069
+     ]
+    }
+   ],
+   "overview": [
+    0.946,
+    0.761,
+    0.996,
+    0.71,
+    0.727,
+    0.985,
+    0.972,
+    0.981,
+    1.0,
+    0.981,
+    0.983,
+    0.995,
+    0.996,
+    0.977,
+    0.991,
+    0.98,
+    0.98,
+    0.98,
+    0.988,
+    0.997,
+    0.979,
+    0.994,
+    0.986,
+    0.976,
+    0.981,
+    0.985,
+    0.98,
+    0.998,
+    0.99,
+    0.983,
+    0.983,
+    0.985,
+    0.992,
+    0.988,
+    0.983,
+    0.991,
+    0.986,
+    0.983,
+    0.975,
+    0.993,
+    0.979,
+    0.983,
+    0.979,
+    0.974,
+    0.976,
+    0.976,
+    0.968,
+    0.988
+   ],
+   "loop": [
+    0.308,
+    1.0
+   ]
+  },
+  {
+   "name": "Koto",
+   "short": "Koto",
+   "kind": "shot",
+   "chord": false,
+   "zones": [
+    {
+     "file": "freesound/223956_Koto_G4_wav.wav",
+     "sha256": "958fea88cda3c47dcca064fda4fe909b74a1d53ec4399272aad1238f42c8381c",
+     "root": 66.989,
+     "loop_start": 64000,
+     "loop_end": 64000,
+     "oneshot": true,
+     "offsets": [
+      7184748,
+      7248751,
+      7280754
+     ],
+     "lens": [
+      64000,
+      32000,
+      16000
+     ],
+     "web_offsets": [
+      -1,
+      3079332,
+      3111335
+     ]
+    }
+   ],
+   "overview": [
+    1.0,
+    0.787,
+    0.408,
+    0.3,
+    0.256,
+    0.212,
+    0.194,
+    0.198,
+    0.195,
+    0.178,
+    0.171,
+    0.162,
+    0.152,
+    0.138,
+    0.124,
+    0.111,
+    0.1,
+    0.093,
+    0.087,
+    0.082,
+    0.077,
+    0.075,
+    0.075,
+    0.076,
+    0.075,
+    0.073,
+    0.071,
+    0.068,
+    0.067,
+    0.066,
+    0.067,
+    0.07,
+    0.072,
+    0.073,
+    0.073,
+    0.073,
+    0.072,
+    0.071,
+    0.069,
+    0.067,
+    0.063,
+    0.059,
+    0.055,
+    0.036,
+    0.023,
+    0.013,
+    0.006,
+    0.001
+   ],
+   "loop": null
+  },
+  {
+   "name": "Singing Bowl",
+   "short": "Bowl",
+   "kind": "shot",
+   "chord": false,
+   "zones": [
+    {
+     "file": "freesound/535950_E_flat_Tibetan_singing_bowl_struck.wav",
+     "sha256": "9e3696d6910111ab32b424da858a7da1d4d40aeeb9240e467d8d09a34b82470a",
+     "root": 73.77,
+     "loop_start": 128000,
+     "loop_end": 128000,
+     "oneshot": true,
+     "offsets": [
+      7296757,
+      7424760,
+      7488763
+     ],
+     "lens": [
+      128000,
+      64000,
+      32000
+     ],
+     "web_offsets": [
+      -1,
+      3127338,
+      3191341
+     ]
+    }
+   ],
+   "overview": [
+    1.0,
+    0.47,
+    0.414,
+    0.394,
+    0.351,
+    0.33,
+    0.312,
+    0.303,
+    0.298,
+    0.294,
+    0.287,
+    0.276,
+    0.263,
+    0.248,
+    0.235,
+    0.222,
+    0.209,
+    0.202,
+    0.191,
+    0.181,
+    0.18,
+    0.172,
+    0.169,
+    0.162,
+    0.155,
+    0.147,
+    0.14,
+    0.132,
+    0.126,
+    0.118,
+    0.115,
+    0.111,
+    0.108,
+    0.107,
+    0.102,
+    0.099,
+    0.099,
+    0.091,
+    0.087,
+    0.085,
+    0.079,
+    0.075,
+    0.073,
+    0.07,
+    0.07,
+    0.066,
+    0.027,
+    0.007
+   ],
+   "loop": null
+  },
+  {
+   "name": "Didgeridoo",
+   "short": "Didg",
+   "kind": "tex",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VCSL/Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_Sus2_Main.wav",
+     "sha256": "eaed2088c808f5fc1f18bb7dc11c38ab57ae7c8a76a08e7934f5dab22f9d8fc8",
+     "root": 37.0,
+     "loop_start": 19208,
+     "loop_end": 83208,
+     "oneshot": false,
+     "offsets": [
+      7520766,
+      7603977,
+      7645584
+     ],
+     "lens": [
+      83208,
+      41604,
+      20802
+     ],
+     "web_offsets": [
+      -1,
+      3223344,
+      3264951
+     ]
+    }
+   ],
+   "overview": [
+    0.53,
+    0.58,
+    0.583,
+    0.568,
+    0.611,
+    0.6,
+    0.579,
+    0.656,
+    0.602,
+    0.587,
+    0.583,
+    0.509,
+    0.507,
+    0.539,
+    0.532,
+    0.603,
+    0.61,
+    0.652,
+    0.643,
+    0.699,
+    0.769,
+    0.78,
+    0.725,
+    0.71,
+    0.732,
+    0.693,
+    0.738,
+    0.777,
+    0.807,
+    0.811,
+    0.833,
+    0.815,
+    0.837,
+    0.812,
+    0.93,
+    1.0,
+    0.987,
+    0.97,
+    0.995,
+    0.967,
+    0.889,
+    0.939,
+    0.96,
+    0.918,
+    0.774,
+    0.72,
+    0.677,
+    0.635
+   ],
+   "loop": [
+    0.231,
+    1.0
+   ]
   }
  ],
  "types": [
   {
-   "name": "Glass Air",
-   "short": "GlAr",
-   "a": 0,
-   "b": 6
+   "name": "Wine Glass",
+   "short": "WGls",
+   "a": 0
   },
   {
-   "name": "Bowed Glass",
-   "short": "BwGl",
-   "a": 1,
-   "b": 0
+   "name": "Bowed Vibes",
+   "short": "BVib",
+   "a": 1
   },
   {
-   "name": "Aah Ooh",
-   "short": "AhOh",
-   "a": 16,
-   "b": 17
+   "name": "Section Strings",
+   "short": "SStr",
+   "a": 2
   },
   {
-   "name": "Choir Glass",
-   "short": "ChGl",
-   "a": 17,
-   "b": 0
+   "name": "Psaltery",
+   "short": "Psal",
+   "a": 3
   },
   {
-   "name": "Digi Strings",
-   "short": "DStr",
-   "a": 2,
-   "b": 3
+   "name": "Concert Flute",
+   "short": "CFlt",
+   "a": 4
   },
   {
-   "name": "Breath Flute",
-   "short": "BrFl",
-   "a": 4,
-   "b": 5
+   "name": "Ocarina",
+   "short": "Ocar",
+   "a": 5
   },
   {
-   "name": "Hollow Vox",
-   "short": "HVox",
-   "a": 5,
-   "b": 16
+   "name": "Organ Blower",
+   "short": "Blwr",
+   "a": 6
   },
   {
-   "name": "Air Wash",
-   "short": "AirW",
-   "a": 6,
-   "b": 7
+   "name": "Ocean Drum",
+   "short": "Ocn",
+   "a": 7
   },
   {
-   "name": "Metal Shimmer",
-   "short": "MShm",
-   "a": 8,
-   "b": 9
+   "name": "Cymbal Bow",
+   "short": "Cymb",
+   "a": 8
   },
   {
-   "name": "Chime Bells",
-   "short": "ChBl",
-   "a": 10,
-   "b": 11
+   "name": "Gong Scrape",
+   "short": "Gong",
+   "a": 9
   },
   {
-   "name": "Glock Kalimba",
-   "short": "GlKa",
-   "a": 12,
-   "b": 13
+   "name": "Hand Chimes",
+   "short": "Chim",
+   "a": 10
   },
   {
-   "name": "Organ Air",
-   "short": "OrAr",
-   "a": 14,
-   "b": 20
+   "name": "Soft Vibes",
+   "short": "SVib",
+   "a": 11
   },
   {
-   "name": "FM Keys",
-   "short": "FMKy",
-   "a": 15,
-   "b": 11
+   "name": "Glock",
+   "short": "Glck",
+   "a": 12
   },
   {
-   "name": "Sung Chords",
+   "name": "Kalimba",
+   "short": "Kalm",
+   "a": 13
+  },
+  {
+   "name": "Pipe Organ",
+   "short": "POrg",
+   "a": 14
+  },
+  {
+   "name": "Digi E.Piano",
+   "short": "DEP",
+   "a": 15
+  },
+  {
+   "name": "Aah",
+   "short": "Aah",
+   "a": 16
+  },
+  {
+   "name": "Ooh",
+   "short": "Ooh",
+   "a": 17
+  },
+  {
+   "name": "Sung Chord",
    "short": "SChd",
-   "a": 18,
-   "b": 19
+   "a": 18
+  },
+  {
+   "name": "Dream Chord",
+   "short": "Drm",
+   "a": 19
+  },
+  {
+   "name": "Breath Loop",
+   "short": "BrLp",
+   "a": 20
+  },
+  {
+   "name": "Shakuhachi",
+   "short": "Shak",
+   "a": 21
+  },
+  {
+   "name": "Shaku Breath",
+   "short": "ShBr",
+   "a": 22
+  },
+  {
+   "name": "Sitar",
+   "short": "Sitr",
+   "a": 23
+  },
+  {
+   "name": "Tanpura",
+   "short": "Tanp",
+   "a": 24
+  },
+  {
+   "name": "Dan Tranh",
+   "short": "DanT",
+   "a": 25
+  },
+  {
+   "name": "Duduk",
+   "short": "Dudk",
+   "a": 26
+  },
+  {
+   "name": "Erhu",
+   "short": "Erhu",
+   "a": 27
+  },
+  {
+   "name": "Sarangi",
+   "short": "Sarg",
+   "a": 28
+  },
+  {
+   "name": "Koto",
+   "short": "Koto",
+   "a": 29
+  },
+  {
+   "name": "Singing Bowl",
+   "short": "Bowl",
+   "a": 30
+  },
+  {
+   "name": "Didgeridoo",
+   "short": "Didg",
+   "a": 31
   }
  ]
 }

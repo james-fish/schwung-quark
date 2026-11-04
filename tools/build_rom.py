@@ -48,14 +48,14 @@ def midi(name):
 V, VS = "VCSL/", "VSCO-2-CE/"
 FS = "freesound/"
 SETS = [
-    ("Glass", "Glas", "sus", [(V + "Idiophones/Friction Idiophones/Wine Glasses/Sustains/Slow/glass1_D#4_Slow_1_Main.wav", "D#4"),
+    ("Wine Glass", "WGls", "sus", [(V + "Idiophones/Friction Idiophones/Wine Glasses/Sustains/Slow/glass1_D#4_Slow_1_Main.wav", "D#4"),
                               (V + "Idiophones/Friction Idiophones/Wine Glasses/Sustains/Slow/glass2_F#4_Slow_1_Main.wav", "F#4"),
                               (V + "Idiophones/Friction Idiophones/Wine Glasses/Sustains/Slow/glass3_A#4_Slow_1_Main.wav", "A#4"),
                               (V + "Idiophones/Friction Idiophones/Wine Glasses/Sustains/Slow/glass4_D5_Slow_2_Main.wav", "D5")],
      dict(attack=0.9, loop=1.1)),
     ("Bowed Vibes", "BVib", "sus", [(V + "Idiophones/Struck Idiophones/Vibraphone/Bowed/Vibes_bowed_%s_rr1_Main.wav" % n, n)
                                     for n in ("G3", "D4", "A4", "E5")], dict(attack=0.6, loop=1.0)),
-    ("Strings", "Str", "sus", [(VS + "Strings/Cello Section/susvib/susvib_D2_v1_1.wav", "D2"),
+    ("Section Strings", "SStr", "sus", [(VS + "Strings/Cello Section/susvib/susvib_D2_v1_1.wav", "D2"),
                                (VS + "Strings/Cello Section/susvib/susvib_A2_v1_1.wav", "A2"),
                                (VS + "Strings/Viola Section/susvib/ViolaEns_susvib_F3_v1_1.wav", "F3"),
                                (VS + "Strings/Violin Section/susVib/VlnEns_susVib_C4_v1.wav", "C4"),
@@ -63,55 +63,90 @@ SETS = [
                                (VS + "Strings/Violin Section/susVib/VlnEns_susVib_D5_v1.wav", "D5")], dict(attack=0.45, loop=0.9)),
     ("Psaltery", "Psal", "sus", [(V + "Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_%s_Main_LongBow_rr%d.wav" % (n, r), n)
                                  for n, r in (("A#3", 2), ("E4", 2), ("A#4", 2), ("E5", 2))], dict(attack=0.4, loop=0.9)),
-    ("Flute", "Flut", "sus", [(VS + "Woodwinds/Flute/susNV/LDFlute_susNV_%s_v1_1.wav" % n, n) for n in ("C4", "E4", "A4", "E5")],
+    ("Concert Flute", "CFlt", "sus", [(VS + "Woodwinds/Flute/susNV/LDFlute_susNV_%s_v1_1.wav" % n, n) for n in ("C4", "E4", "A4", "E5")],
      dict(attack=0.3, loop=0.9)),
     ("Ocarina", "Ocar", "sus", [(V + "Aerophones/Edge-blown Aerophones/Ocarina, Typical/Sustains/Sus/StdOcarina_Sus_%s.wav" % n, n)
                                 for n in ("B3", "E4", "G#4", "C#5")], dict(attack=0.3, loop=0.9)),
-    ("Air", "Air", "tex", [(VS + "Keys/Organ/Rode_Blower.wav", "C4")], dict(start=4.0, loop=2.2)),
-    ("Ocean", "Ocn", "tex", [(V + "Membranophones/Other Membranophones/Ocean Drum/OceanDrum_Sus_2_Mid.wav", "C4")], dict(start=2.0, loop=2.4)),
+    ("Organ Blower", "Blwr", "tex", [(VS + "Keys/Organ/Rode_Blower.wav", "C4")], dict(start=4.0, loop=2.2)),
+    ("Ocean Drum", "Ocn", "tex", [(V + "Membranophones/Other Membranophones/Ocean Drum/OceanDrum_Sus_2_Mid.wav", "C4")], dict(start=2.0, loop=2.4)),
     ("Cymbal Bow", "Cymb", "tex", [(VS + "Percussion/susCymb1-bow-1.wav", "C4")], dict(start=1.0, loop=2.2)),
     ("Gong Scrape", "Gong", "tex", [(VS + "Percussion/gongscrape_pp.wav", "C4")], dict(start=0.6, loop=2.0)),
-    ("Chimes", "Chim", "shot", [(V + "Idiophones/Struck Idiophones/Hand Chimes/sus_%s_r01_main.wav" % n, n) for n in ("D4", "A4", "F#5")],
+    ("Hand Chimes", "Chim", "shot", [(V + "Idiophones/Struck Idiophones/Hand Chimes/sus_%s_r01_main.wav" % n, n) for n in ("D4", "A4", "F#5")],
      dict(length=2.0)),
-    ("Vibes", "Vibe", "shot", [(V + "Idiophones/Struck Idiophones/Vibraphone/Soft Mallets/Vibes_soft_%s_v1_rr1_Main.wav" % n, n)
+    ("Soft Vibes", "SVib", "shot", [(V + "Idiophones/Struck Idiophones/Vibraphone/Soft Mallets/Vibes_soft_%s_v1_rr1_Main.wav" % n, n)
                                for n in ("D4", "A4", "E5")], dict(length=1.8)),
     ("Glock", "Glck", "shot", [(V + "Idiophones/Struck Idiophones/Glockenspiel/glock_medium_%s_01.wav" % n, n) for n in ("G5", "C6")],
      dict(length=1.4)),
     ("Kalimba", "Kalm", "shot", [(V + "Idiophones/Plucked Idiophones/Kalimba, Kenya/Mbira6_Normal_MainSpirit_%s.wav" % f, n)
                                  for f, n in (("F#3_k10_vl3_rr2", "F#3"), ("B3_k3_vl3_rr2", "B3"), ("F#4_k14_vl3_rr2", "F#4"))],
      dict(length=1.5)),
-    ("Organ", "Orgn", "sus", [(V + "Aerophones/Edge-blown Aerophones/Pipe Organ/Quiet/NT5_Man3Quiet_%s_rr1.wav" % n, n)
+    ("Pipe Organ", "POrg", "sus", [(V + "Aerophones/Edge-blown Aerophones/Pipe Organ/Quiet/NT5_Man3Quiet_%s_rr1.wav" % n, n)
                               for n in ("A2", "A3", "D#4", "A4")], dict(attack=0.35, loop=0.9)),
-    ("FM Piano", "FMP", "shot", [(V + "Electrophones/TX81Z/FM Piano/FMPiano_%s_vl2.wav" % n, n) for n in ("E2", "C3", "G#3", "E4", "C5")],
+    ("Digi E.Piano", "DEP", "shot", [(V + "Electrophones/TX81Z/FM Piano/FMPiano_%s_vl2.wav" % n, n) for n in ("E2", "C3", "G#3", "E4", "C5")],
      dict(length=2.0)),
     ("Aah", "Aah", "sus", [(FS + "764221_CRWDSing_Ahh_Vowel_Sung_Near_F_02_ShaneVincent_G.wav", "F3"),
                            (FS + "211494_choir_aah_wav.wav", "G#4")], dict(attack=0.5, loop=1.0)),
     ("Ooh", "Ooh", "sus", [(FS + "413713_Voice_Choir_OOOH_wav.wav", "C3")], dict(attack=0.5, loop=1.0)),
-    ("Sung Chord", "Chrd", "sus", [(FS + "274121_Choir_of_Voices_Single_Chord.wav", "E4")], dict(attack=0.5, loop=1.0, chord=True)),
+    ("Sung Chord", "SChd", "sus", [(FS + "274121_Choir_of_Voices_Single_Chord.wav", "E4")], dict(attack=0.5, loop=1.0, chord=True)),
     ("Dream Chord", "Drm", "sus", [(FS + "558416_Mystery_dream_vocal_chord.wav", "E3")], dict(attack=0.5, loop=1.2, chord=True)),
-    ("Breath", "Brth", "tex", [(FS + "554906_Male_Breath_Scared_Frozen_Loop_Stereo_wav.wav", "C4")], dict(start=0.3, loop=2.0)),
+    ("Breath Loop", "BrLp", "tex", [(FS + "554906_Male_Breath_Scared_Frozen_Loop_Stereo_wav.wav", "C4")], dict(start=0.3, loop=2.0)),
+    # world instruments. A zone may name a slice of a longer file: (file, root, start s, end s)
+    ("Shakuhachi", "Shak", "sus", [(FS + "159550_Skakuhachi_12_Samples_wav.wav", n, a, b)
+                                   for n, a, b in (("G#3", 0.03, 6.9), ("F4", 17.84, 25.1), ("C#5", 33.51, 37.7), ("A5", 58.06, 63.6))],
+     dict(attack=0.4, loop=1.0)),
+    ("Shaku Breath", "ShBr", "tex", [(FS + "500765_shakuhachi_blow_23.wav", "C4")], dict(start=4.0, loop=2.0)),
+    ("Sitar", "Sitr", "shot", [(FS + "754604_Free_Style_Sitar.wav", "D#4", 0.0, 2.68), (FS + "754604_Free_Style_Sitar.wav", "G#4", 11.63, 13.55)],
+     dict(length=1.9)),
+    ("Tanpura", "Tanp", "shot", [(FS + "416606_Tanpura_note_A_sharp_wav.wav", "A#2"), (FS + "416605_Tanpura_note_C_sharp_wav.wav", "C#3")],
+     dict(length=2.8)),
+    ("Dan Tranh", "DanT", "shot", [(V + "Chordophones/Zithers/Dan Tranh/Vibrato/%s_vib_mf_1.wav" % n, n) for n in ("B2", "F#3", "C#4", "G#4")],
+     dict(length=2.4)),
+    ("Duduk", "Dudk", "sus", [(FS + "479213_duduk_C3.wav", "C3")], dict(attack=0.4, loop=1.0)),
+    ("Erhu", "Erhu", "sus", [(FS + "569838_4_Erhu_E4_wav.wav", "E4")], dict(attack=0.35, loop=0.9)),
+    ("Sarangi", "Sarg", "sus", [(FS + "167088_Sarangi_G3_wav.wav", "G#3")], dict(attack=0.35, loop=0.9)),   # named G3, plays G#3
+    ("Koto", "Koto", "shot", [(FS + "223956_Koto_G4_wav.wav", "G4")], dict(length=2.0)),
+    ("Singing Bowl", "Bowl", "shot", [(FS + "535950_E_flat_Tibetan_singing_bowl_struck.wav", "D5")], dict(length=4.0)),
+    ("Didgeridoo", "Didg", "tex", [(V + "Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_Sus2_Main.wav", "C#2")], dict(start=1.5, loop=2.0)),
 ]
-# The Atmos PCM types: Variation crossfades set A into set B (vector style)
-TYPES = [
-    ("Glass Air", "GlAr", "Glass", "Air"),
-    ("Bowed Glass", "BwGl", "Bowed Vibes", "Glass"),
-    ("Aah Ooh", "AhOh", "Aah", "Ooh"),
-    ("Choir Glass", "ChGl", "Ooh", "Glass"),
-    ("Digi Strings", "DStr", "Strings", "Psaltery"),
-    ("Breath Flute", "BrFl", "Flute", "Ocarina"),
-    ("Hollow Vox", "HVox", "Ocarina", "Aah"),
-    ("Air Wash", "AirW", "Air", "Ocean"),
-    ("Metal Shimmer", "MShm", "Cymbal Bow", "Gong Scrape"),
-    ("Chime Bells", "ChBl", "Chimes", "Vibes"),
-    ("Glock Kalimba", "GlKa", "Glock", "Kalimba"),
-    ("Organ Air", "OrAr", "Organ", "Breath"),
-    ("FM Keys", "FMKy", "FM Piano", "Vibes"),
-    ("Sung Chords", "SChd", "Sung Chord", "Dream Chord"),
-]
+# Every set is an Atmos PCM type; the PCM B knob picks the set Variation crossfades into.
 
 
 # ---- audio --------------------------------------------------------------------------------------
+def read_riff(path):
+    """WAV chunks by hand, for what the wave module refuses: IEEE float (format 3) and
+    WAVE_FORMAT_EXTENSIBLE (0xFFFE)."""
+    import struct
+    b = open(path, "rb").read()
+    if b[:4] != b"RIFF" or b[8:12] != b"WAVE":
+        raise ValueError("not a WAV: " + path)
+    i, fmt, data = 12, None, None
+    while i + 8 <= len(b):
+        cid, n = b[i:i + 4], struct.unpack_from("<I", b, i + 4)[0]
+        if cid == b"fmt ":
+            fmt = struct.unpack_from("<HHIIHH", b, i + 8)
+            if fmt[0] == 0xFFFE:   # extensible: the real format is the sub-format GUID's first two bytes
+                fmt = (struct.unpack_from("<H", b, i + 8 + 24)[0],) + fmt[1:]
+        elif cid == b"data":
+            data = b[i + 8:i + 8 + n]
+        i += 8 + n + (n & 1)
+    tag, ch, sr, _, _, bits = fmt
+    if tag == 3:
+        x = np.frombuffer(data[:len(data) // (bits // 8) * (bits // 8)], "<f4" if bits == 32 else "<f8").astype(float)
+    elif tag == 1 and bits == 24:
+        u = np.frombuffer(data[:len(data) // 3 * 3], np.uint8).reshape(-1, 3).astype(np.int32)
+        x = ((u[:, 0] | (u[:, 1] << 8) | (u[:, 2] << 16)) << 8 >> 8) / 8388608.0
+    elif tag == 1 and bits in (16, 32):
+        x = np.frombuffer(data[:len(data) // (bits // 8) * (bits // 8)], "<i2" if bits == 16 else "<i4") / float(2 ** (bits - 1))
+    else:
+        raise ValueError("unsupported WAV format %d / %d bit: %s" % (tag, bits, path))
+    return x[:len(x) // ch * ch].reshape(-1, ch).mean(axis=1), sr
+
+
 def read(path):
+    try:
+        wave.open(path).close()
+    except wave.Error:
+        return read_riff(path)
     with wave.open(path) as w:
         n, sr, sw, ch = w.getnframes(), w.getframerate(), w.getsampwidth(), w.getnchannels()
         raw = w.readframes(n)
@@ -217,13 +252,22 @@ def mips_of(x, ls, le, looped):
     return out
 
 
-def build_zone(kind, opt, path, root):
+def build_zone(kind, opt, path, root, t0=None, t1=None):
     x, fs = read(os.path.join(SRC, path))
+    if t0 is not None:   # a slice of a longer file (one note of a multisample take)
+        x = x[int(t0 * fs):int(t1 * fs)]
     x = resample(x, fs, SR) if fs != SR else x
     x = x[onset(x):]
     f0 = 440.0 * 2 ** ((root - 69) / 12.0)
     tune, match = 0.0, None
     if kind == "shot":
+        # fine-tune from just after the strike (pitched one-shots; inharmonic ones stay at the named root)
+        seg = x[int(0.08 * SR):int(0.33 * SR)]
+        if len(seg) > SR // 10:
+            per, pc = period_of(seg, f0)
+            t = 1200 * math.log2((SR / per) / f0)
+            if abs(t) <= 30 and pc >= 0.6:   # struck tones are inharmonic: only trust small corrections
+                tune = t
         n = min(len(x), int(opt["length"] * SR)) // 4 * 4
         x = x[:n].copy()
         fl = int(0.25 * SR)
@@ -280,10 +324,11 @@ def main():
     for name, short, kind, zones, opt in SETS:
         zs = []
         print("%s (%s)" % (name, kind))
-        for path, note in zones:
+        for zspec in zones:
+            path, note = zspec[0], zspec[1]
             if path not in sources:
                 sys.exit("not in SOURCES.json (run fetch_sources.py manifest): " + path)
-            z = build_zone(kind, opt, path, midi(note))
+            z = build_zone(kind, opt, path, midi(note), *zspec[2:])
             print("   %-58s root %-4s %+5.1f ct  %.2fs%s" % (os.path.basename(path)[:58], note, z["tune"], len(z["x"]) / SR,
                   "" if z["oneshot"] else "  loop %.2fs match %.2f" % ((z["le"] - z["ls"]) / SR, z["match"])))
             zs.append(z)
@@ -315,14 +360,25 @@ def main():
         z = min(s["zones"], key=lambda q: abs(q["root"] - 64))
         s["overview"] = overview(arr[z["offsets"][0]:z["offsets"][0] + z["lens"][0]].astype(float))
         s["loop"] = None if z["oneshot"] else [round(z["loop_start"] / z["lens"][0], 3), 1.0]
-    names = {s["name"]: i for i, s in enumerate(sets_out)}
-    types = [dict(name=n, short=sh, a=names[a], b=names[b]) for n, sh, a, b in TYPES]
+    types = [dict(name=st["name"], short=st["short"], a=i) for i, st in enumerate(sets_out)]
     with open(os.path.join(OUT, "rom.bin"), "wb") as f:
         f.write(data)
+    # the browser build carries mips 1 and 2 only (16 / 8 kHz): ~43% of the size, same zones and loops
+    web, woff = [], 0
+    for st in sets_out:
+        for z in st["zones"]:
+            z["web_offsets"] = [-1]
+            for k in (1, 2):
+                n = z["lens"][k] + GUARD
+                web.append(arr[z["offsets"][k]:z["offsets"][k] + n].tobytes())
+                z["web_offsets"].append(woff)
+                woff += n
+    with open(os.path.join(OUT, "rom_web.bin"), "wb") as f:
+        f.write(b"".join(web))
     json.dump(dict(sr=SR, mips=MIPS, guard=GUARD, samples=len(arr), sha256=hashlib.sha256(data).hexdigest(),
                    sets=sets_out, types=types), open(os.path.join(OUT, "rom.json"), "w"), indent=1)
-    print("ROM: %d sets, %d zones, %.1f s of mip-0 audio, %.2f MB (budget %.0f MB)" % (
-        len(sets_out), sum(len(s["zones"]) for s in sets_out), total_s, len(data) / 1048576, BUDGET / 1048576))
+    print("ROM: %d sets, %d zones, %.1f s of mip-0 audio, %.2f MB (budget %.0f MB); web ROM %.2f MB" % (
+        len(sets_out), sum(len(s["zones"]) for s in sets_out), total_s, len(data) / 1048576, BUDGET / 1048576, woff * 2 / 1048576))
     if len(data) > HARD_LIMIT:
         sys.exit("ROM over %d MB: check the recipes" % (HARD_LIMIT >> 20))
     if len(data) > BUDGET:

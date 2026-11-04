@@ -290,8 +290,8 @@
   function redrawGraphics() {
     var type = vals.tx_type, va = effective.tx_var !== undefined && engine ? effective.tx_var : vals.tx_var;
     var fam = M.texTypes[Math.round(type)].family;
-    plotCanvas(document.getElementById("wave"), function (t) { return Q.texWave(type, va, t); }, fam === 0 ? 1 : 2);
-    document.getElementById("wavecap").textContent = Q.familyName(type) + " · " + Q.variationText({ tx_type: type, tx_var: va });
+    plotCanvas(document.getElementById("wave"), function (t) { return Q.texWave(type, va, t, vals.pcm_b); }, fam === 0 ? 1 : 2);
+    document.getElementById("wavecap").textContent = Q.familyName(type) + " · " + Q.variationText({ tx_type: type, tx_var: va, pcm_b: vals.pcm_b });
     plotCanvas(document.getElementById("lwave"), function (t) { return Q.lineWave(vals.ln_shape, vals.ln_var, t); }, 2);
     envCanvas(document.getElementById("txenv"), vals.tx_a, vals.tx_d, vals.tx_s, vals.tx_r);
     extraGraphics.forEach(function (f) { f(); });
@@ -793,7 +793,7 @@
     ["tx_type", "tx_anim", "tx_depth", "tx_a", "tx_d", "tx_s", "tx_r", "ens_amt", "ens_type",
      "ln_shape", "ln_var", "ln_a", "ln_d", "ln_sus", "ln_spread", "ln_dly", "ln_dtime", "fx_type", "fx_ctrl", "fx_amt", "sh_pitch", "sh_amt",
      "rv_decay", "rv_amt", "tx_drive", "tx_drvpos", "tx_detune", "tx_bloom", "tx_latch", "ln_wenv", "arp_mode", "arp_src",
-     "arp_oct", "arp_hold", "pcm_era"].forEach(function (k) { mount(k); });
+     "arp_oct", "arp_hold", "pcm_era", "pcm_b"].forEach(function (k) { mount(k); });
     mount("tx_var", "beige");
     mount("tx_vol", "white"); mount("ln_vol", "white"); mount("vol", "white"); mount("vintage", "beige");
     var sel = document.getElementById("preset");

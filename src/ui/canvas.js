@@ -25,7 +25,8 @@
     var type = Q.val(v, "tx_type"), va = Q.val(v, "tx_var");
     var fam = Q.M.texTypes[Math.max(0, Math.min(Q.M.texTypes.length - 1, Math.round(type)))].family;
     var wh = Math.max(6, H - 4);
-    Q.plot(ctx, function (t) { return Q.texWave(type, va, t); }, 0, 0, W, wh, fam === 0 ? 1 : 2);
+    var pb = Q.val(v, "pcm_b");
+    Q.plot(ctx, function (t) { return Q.texWave(type, va, t, pb); }, 0, 0, W, wh, fam === 0 ? 1 : 2);
     /* variation tick + family dots */
     var by = H - 2;
     Q.dotted(ctx, 0, by, W);

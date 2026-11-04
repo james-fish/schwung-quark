@@ -58,7 +58,8 @@
         var fam = Q.M.texTypes[Math.round(type)].family;
         ctx.print(1, top + 1, Q.familyName(type), 1);
         ctx.print(1, top + 11, Q.fit(ctx, key === "tx_type" ? Q.variationText(values) : Q.byKey.tx_type.opts[Math.round(type)], 46), 1);
-        Q.plot(ctx, function (t) { return Q.texWave(type, va, t); }, 50, top, W - 52, bh - 4, fam === 0 ? 1 : 2);
+        var pb = Q.val(values, "pcm_b");
+        Q.plot(ctx, function (t) { return Q.texWave(type, va, t, pb); }, 50, top, W - 52, bh - 4, fam === 0 ? 1 : 2);
         bar(ctx, 50, H - 5, W - 52, va, false);
         return;
       }
@@ -264,6 +265,26 @@
           ctx.fillRect(2 + l16 * cwl, top + bh - hl, Math.max(1, cwl - 1), hl, 1);
           if (lp > 0 && stp === 0) { ctx.fillRect(2 + l16 * cwl, top, 1, 4, 1); ctx.fillRect(2 + l16 * cwl, top, Math.min(lp, 16 - l16) * cwl - 1, 1, 1); }
         }
+        return;
+      }
+      case "pcm_b": {
+        /* PCM B: the Atmos PCM set (top) and the set Variation fades into (bottom), as level outlines */
+        var tt = Q.M.texTypes[Math.max(0, Math.min(Q.M.texTypes.length - 1, Math.round(Q.val(values, "tx_type"))))];
+        var bi = Math.round(Q.val(values, "pcm_b")) - 1, rows = [];
+        if (tt.family === 3) rows.push(Q.M.pcmSets[Q.M.pcmTypes[tt.index]]);
+        else { ctx.print(1, top + 1, "Atmos Type is", 1); ctx.print(1, top + 11, "not PCM", 1); }
+        if (bi >= 0) rows.push(Q.M.pcmSets[bi]);
+        else if (tt.family === 3) { ctx.print(1, top + bh - 8, "Var = start", 1); }
+        var rh2 = Math.floor(bh / 2);
+        rows.forEach(function (st, r) {
+          var y0 = top + r * rh2, ov = st.overview;
+          for (var xo = 0; xo < W - 4; xo++) {
+            var e = ov[Math.min(ov.length - 1, Math.floor(xo / (W - 4) * ov.length))];
+            var hh = Math.max(1, Math.round(e * (rh2 - 2)));
+            if (xo % 2 === 0) ctx.fillRect(2 + xo, y0 + Math.round((rh2 - hh) / 2), 1, hh, 1);
+          }
+          if (st.loop) ctx.fillRect(2 + Math.round(st.loop[0] * (W - 5)), y0, 1, rh2 - 1, 1);
+        });
         return;
       }
       case "an_shape":

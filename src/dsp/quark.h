@@ -71,7 +71,7 @@ typedef struct {
      * main + partner; the zone of each set for this note; the type they belong to */
     double pa, pa2, pb, pb2;
     float incb, incb2, ga, gb;
-    int za, zb, mipb, ptype;
+    int za, zb, mipb, ptype, pbset;    /* zb < 0: no B (PCM B Off) */
 } QTexVoice;
 
 /* ---- lines ---------------------------------------------------------------------------------- */

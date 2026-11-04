@@ -10,7 +10,9 @@
  *                  optional detuned unison partner (Spread).
  *  FM              carrier + mod 1 (Variation = index, with feedback) + mod 2 (a decaying "tine").
  *  PCM             multisample playback from the read-only ROM (rom.bin, built by tools/build_rom.py):
- *                  each type is two sets and Variation crossfades A into B. At note-on each set picks
+ *                  each type is one set, and Variation crossfades it into the set PCM B names (PCM B
+ *                  Off: Variation sets where each note starts, from the full attack to straight into
+ *                  the loop). At note-on each set picks
  *                  its zone (the lowest root at or above the note, so most notes transpose down);
  *                  per control tick a mip (32 / 16 / 8 kHz) so the read stays band-limited; the
  *                  attack plays once, then a plain wrap inside the loop (seams crossfaded offline).
@@ -346,6 +348,9 @@ int q_pcm_pick(int set, int era, int key) {
 static inline int pcm_mip(float inc, int era) {
     int k = inc <= 1.2f ? 0 : inc <= 2.4f ? 1 : 2;
     k += era;
+#ifdef QUARK_WASM
+    if (k < 1) k = 1;   /* the browser ROM carries mips 1 and 2 only */
+#endif
     return k < Q_PCM_MIPS - 1 ? k : Q_PCM_MIPS - 1;
 }
 
@@ -356,9 +361,19 @@ static void pcm_voice_init(QInstance *q, QTexVoice *v) {
     if (Q_TEX_FAMILY[type] != 3) return;
     int ix = Q_TEX_INDEX[type], era = q_clampi((int)(q->ps[P_PCM_ERA] + 0.5f), 0, 2);
     int key = v->note + q_clampi((int)lroundf(q->ps[P_TX_TR]), -24, 24);
+    int bset = q_clampi((int)(q->ps[P_PCM_B] + 0.5f), 0, Q_PCM_NUM_SETS) - 1;
     v->ptype = ix;
+    v->pbset = bset;
     v->za = q_pcm_pick(quark_pcm_types[ix].a, era, key);
-    v->zb = q_pcm_pick(quark_pcm_types[ix].b, era, key);
+    v->zb = bset >= 0 ? q_pcm_pick(bset, era, key) : -1;
+    if (bset < 0) {
+        /* no B: Variation is the start point, 0 = the whole attack .. 1 = straight into the loop
+         * (a one-shot: up to half way in). Multiples of 4 keep every mip on the same sample. */
+        const QPcmZone *z = &quark_pcm_zones[v->za];
+        float var = q_clamp(q->ps[P_TX_VAR], 0.0f, 1.0f);
+        int span = z->oneshot ? z->loop_end / 2 : z->loop_start;
+        v->pa = v->pa2 = (double)(((int)(var * (float)span)) & ~3);
+    }
 }
 
 /* one read of zone z at mip-0 position p from mip k. The ROM carries 3 guard samples after each mip
@@ -670,18 +685,25 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
                 v->mip = have_wave ? q_wave_mip(&wv, whz * (1.0f + pc * 0.0006f), sr) : 0;
             } else if (fam == 3) {
                 if (v->ptype != ix) pcm_voice_init(q, v);   /* the type changed under a held note */
+                int bset = q_clampi((int)(P[P_PCM_B] + 0.5f), 0, Q_PCM_NUM_SETS) - 1;
+                if (bset != v->pbset) {                     /* PCM B changed: B joins (from its top) or leaves */
+                    v->pbset = bset;
+                    v->zb = bset >= 0 ? q_pcm_pick(bset, pcm_era, v->note + q_clampi((int)lroundf(P[P_TX_TR]), -24, 24)) : -1;
+                    v->pb = v->pb2 = 0.0;
+                }
                 /* mip-0 samples per output sample: the ROM's rate against ours, from each zone's root */
                 float pc = spread * 14.0f + detune * detune * 20.0f * v->bloom, pr = partner ? exp2f(pc / 1200.0f) : 0.0f;
                 float semis = pitch;
                 v->inc = pcm_rate * exp2f((semis - quark_pcm_zones[v->za].root) * (1.0f / 12.0f));
-                v->incb = pcm_rate * exp2f((semis - quark_pcm_zones[v->zb].root) * (1.0f / 12.0f));
+                v->incb = v->zb >= 0 ? pcm_rate * exp2f((semis - quark_pcm_zones[v->zb].root) * (1.0f / 12.0f)) : 0.0f;
                 v->inc2 = v->inc * pr;
                 v->incb2 = v->incb * pr;
                 v->mip = pcm_mip(v->inc * (pr > 1.0f ? pr : 1.0f), pcm_era);
                 v->mipb = pcm_mip(v->incb * (pr > 1.0f ? pr : 1.0f), pcm_era);
-                /* Variation: an equal-power crossfade from set A to set B */
-                v->ga = cosf(var * (Q_PI * 0.5f));
-                v->gb = sinf(var * (Q_PI * 0.5f));
+                /* Variation: an equal-power crossfade from set A to set B (no B: A alone, Variation was
+                 * the start point at note-on) */
+                v->ga = v->zb >= 0 ? cosf(var * (Q_PI * 0.5f)) : 1.0f;
+                v->gb = v->zb >= 0 ? sinf(var * (Q_PI * 0.5f)) : 0.0f;
             } else {
                 v->inc = hz / sr;
                 v->inc2 = v->inc * fmr[0];
@@ -777,11 +799,11 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
                 v->ph2 = ph2;
                 v->wpos = wp;
             } else if (fam == 3) {
-                const QPcmZone *za = &quark_pcm_zones[v->za], *zb = &quark_pcm_zones[v->zb];
+                const QPcmZone *za = &quark_pcm_zones[v->za], *zb = &quark_pcm_zones[v->zb >= 0 ? v->zb : v->za];
                 double qa = v->pa, qa2 = v->pa2, qb = v->pb, qb2 = v->pb2;
                 double ia = v->inc, ia2 = v->inc2, ib = v->incb, ib2 = v->incb2;
                 float ga = v->ga, gb = v->gb;
-                int ka = v->mip, kb = v->mipb, useA = ga > 0.002f, useB = gb > 0.002f, two = ia2 > 0.0;
+                int ka = v->mip, kb = v->mipb, useA = ga > 0.002f, useB = gb > 0.002f, two = ia2 > 0.0, hasB = v->zb >= 0;
                 float pg = two ? 0.62f : 1.0f;
                 for (int i = 0; i < m; i++) {
                     float x = 0.0f;
@@ -797,8 +819,8 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
                     }
                     /* both sets keep moving, so a Variation sweep never restarts either one */
                     qa = pcm_step(za, qa, ia);
-                    qb = pcm_step(zb, qb, ib);
-                    if (two) { qa2 = pcm_step(za, qa2, ia2); qb2 = pcm_step(zb, qb2, ib2); }
+                    if (two) qa2 = pcm_step(za, qa2, ia2);
+                    if (hasB) { qb = pcm_step(zb, qb, ib); if (two) qb2 = pcm_step(zb, qb2, ib2); }
                     buf[i] = x * pg * 0.9f;
                 }
                 v->pa = qa; v->pa2 = qa2; v->pb = qb; v->pb2 = qb2;

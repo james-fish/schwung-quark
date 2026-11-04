@@ -899,6 +899,9 @@ int main(int argc, char **argv) {
                     snprintf(tv, sizeof tv, "%d", era);
                     api->set_param(in, "pcm_era", tv);
                     api->set_param(in, "tx_var", side ? "1" : "0");
+                    /* B: the next set along, so every set is heard as A and as B */
+                    snprintf(tv, sizeof tv, "%d", 1 + (t + 1) % Q_PCM_NUM_SETS);
+                    api->set_param(in, "pcm_b", tv);
                     api->set_param(in, "all_notes_off", "1");
                     for (int i = 0; i < 400; i++) api->render_block(in, pb, 128);
                     int keys[3] = {36, 60, 84};
@@ -924,6 +927,28 @@ int main(int argc, char **argv) {
         printf("pcm types: %d types x 3 Eras rendered; HF share Clean %.4f 90s %.4f Lo-Fi %.4f\n", Q_PCM_NUM_TYPES, hf[0], hf[1], hf[2]);
         CHECK(!silent && !nans, "every PCM type sounds in every Era, no NaN (%d silent, %d NaN)", silent, nans);
         CHECK(same == 0, "Variation crossfades two different sets on every PCM type");
+        /* PCM B Off: Variation is the start point. Variation 1 skips the attack, so the first block
+         * of a note is louder (straight into the loop) than with the attack from the top */
+        {
+            double first[2];
+            for (int side = 0; side < 2; side++) {
+                for (size_t k = 0; k < sizeof ps / sizeof ps[0]; k++) api->set_param(in, ps[k][0], ps[k][1]);
+                char tv[16];
+                snprintf(tv, sizeof tv, "%d", Q_NUM_TEX_BUILTIN - Q_PCM_NUM_TYPES);   /* Wine Glass: a slow attack */
+                api->set_param(in, "tx_type", tv);
+                api->set_param(in, "pcm_b", "0");
+                api->set_param(in, "tx_var", side ? "1" : "0");
+                api->set_param(in, "all_notes_off", "1");
+                for (int i = 0; i < 400; i++) api->render_block(in, pb, 128);
+                midi(api, in, 0x90, 64, 110);
+                double e = 0;
+                for (int i = 0; i < 20; i++) { api->render_block(in, pb, 128); for (int j = 0; j < 256; j++) e += (double)pb[j] * pb[j]; }
+                midi(api, in, 0x80, 64, 0);
+                first[side] = e;
+            }
+            printf("pcm start point (PCM B off): first 60 ms, start 0 %.3g vs start 1 %.3g\n", first[0], first[1]);
+            CHECK(first[1] > 2.0 * first[0], "PCM B Off: Variation moves the start point past the attack");
+        }
         CHECK(hf[2] > hf[0], "Lo-Fi Era is grittier than Clean");
         api->set_param(in, "tx_type", "0");
         api->set_param(in, "pcm_era", "0");

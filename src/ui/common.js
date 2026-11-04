@@ -82,7 +82,8 @@ var Q = (function () {
   /* detune offset in cents for chord voice i (mirrors DET_PAT in tex.c) */
   var DET_PAT = [0.62, -0.85, 0.33, -0.48, 1.0, -0.2, 0.78, -0.66, 0.15, -1.0, 0.5, -0.36];
   function detCents(i, det) { return det * det * 45 * DET_PAT[i % 12]; }
-  function texWave(type, v, t) {
+  /* pcmB: the PCM B value (0 = Off, else set index + 1); only PCM types use it */
+  function texWave(type, v, t, pcmB) {
     var tt = M.texTypes[Math.max(0, Math.min(M.texTypes.length - 1, Math.round(type)))];
     t -= Math.floor(t);
     if (tt.family === 0) {
@@ -94,10 +95,11 @@ var Q = (function () {
     }
     if (tt.family === 1) return bankWave(tt.index, v, t);
     if (tt.family === 3) {
-      /* PCM: the two sets' level outlines (from the ROM, sampled across the zone nearest E4), blended
-       * by Variation, drawn as a waveform under that envelope */
-      var pr = M.pcmTypes[tt.index], oa = M.pcmSets[pr[0]].overview, ob = M.pcmSets[pr[1]].overview;
-      var w = Math.max(0, Math.min(1, v)), at = t * (oa.length - 1), i0 = Math.floor(at), fr = at - i0;
+      /* PCM: the set's level outline (from the ROM, the zone nearest E4) blended with PCM B's by
+       * Variation, drawn as a waveform under that envelope; no B: one outline */
+      var bi = Math.round(Number(pcmB) || 0) - 1, oa = M.pcmSets[M.pcmTypes[tt.index]].overview;
+      var ob = bi >= 0 && M.pcmSets[bi] ? M.pcmSets[bi].overview : oa;
+      var w = bi >= 0 ? Math.max(0, Math.min(1, v)) : 0, at = t * (oa.length - 1), i0 = Math.floor(at), fr = at - i0;
       var ea = oa[i0] + ((oa[i0 + 1] || 0) - oa[i0]) * fr, eb = ob[i0] + ((ob[i0 + 1] || 0) - ob[i0]) * fr;
       return 0.95 * ((1 - w) * ea + w * eb) * Math.sin(2 * Math.PI * t * 23);
     }
@@ -153,7 +155,9 @@ var Q = (function () {
     if (tt.family === 1) return isAmino(tt.index) ? "Wave " + (1 + Math.round(v * (M.amWaves - 1))) + "/" + M.amWaves :
       chordFrames(tt.index) ? chordFrames(tt.index)[Math.round(Math.max(0, Math.min(1, v)) * 7)] : "Frame " + (1 + v * 7).toFixed(1) + "/8";
     if (tt.family === 3) {
-      var p2 = M.pcmTypes[tt.index], na = M.pcmSets[p2[0]].name, nb = M.pcmSets[p2[1]].name;
+      var na = M.pcmSets[M.pcmTypes[tt.index]].name, b2 = Math.round(val(values, "pcm_b")) - 1;
+      if (b2 < 0 || !M.pcmSets[b2]) return "Start " + pct(v);
+      var nb = M.pcmSets[b2].name;
       return v < 0.03 ? na : v > 0.97 ? nb : na + ">" + nb + " " + pct(v);
     }
     return "FM index " + (v * M.fm[tt.index][1]).toFixed(2);

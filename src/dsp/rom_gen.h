@@ -4,15 +4,15 @@
 
 #define Q_PCM_SR 32000
 #define Q_PCM_MIPS 3
-#define Q_PCM_NUM_ZONES 56
-#define Q_PCM_NUM_SETS 21
-#define Q_PCM_NUM_TYPES 14
+#define Q_PCM_NUM_ZONES 75
+#define Q_PCM_NUM_SETS 32
+#define Q_PCM_NUM_TYPES 32
 
 /* one zone: per mip its first sample in the ROM and its length (3 guard samples follow); loop
  * points in mip-0 samples (multiples of 4, so every mip keeps the same loop); root as a MIDI note */
 typedef struct { int off[Q_PCM_MIPS], len[Q_PCM_MIPS]; int loop_start, loop_end; float root; int oneshot; } QPcmZone;
 typedef struct { short first, count; } QPcmSet;   /* zones sorted by root */
-typedef struct { short a, b; } QPcmType;          /* Variation: set a -> set b */
+typedef struct { short a; } QPcmType;             /* the set; Variation's B is the PCM B knob */
 typedef short __attribute__((may_alias)) q_rom_s16;
 extern const q_rom_s16 *const quark_rom;
 extern const QPcmZone quark_pcm_zones[Q_PCM_NUM_ZONES];

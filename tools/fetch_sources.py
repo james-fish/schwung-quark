@@ -23,6 +23,7 @@ import re
 import ssl
 import subprocess
 import sys
+import time
 import urllib.parse
 import urllib.request
 import wave
@@ -83,11 +84,17 @@ LIB_FOLDERS = [
     ("VSCO-2-CE", "Keys/Organ/Quiet", "Organ / hollow"),
     ("VCSL", "Electrophones/TX81Z/FM Piano", "90s FM keys"),
     ("VCSL", "Electrophones/TX81Z/Clavisynth", "90s FM keys"),
+    ("VCSL", "Chordophones/Zithers/Dan Tranh/Vibrato", "World: Dan Tranh zither"),
+    ("VCSL", "Aerophones/Lip Aerophones/Didgeridoo", "World: didgeridoo drone"),
+    ("VCSL", "Idiophones/Struck Idiophones/Hand Bells, Nepalese", "World: Nepalese bells"),
 ]
 LIB_URL = {"VCSL": "https://github.com/sgossner/VCSL", "VSCO-2-CE": "https://github.com/sgossner/VSCO-2-CE"}
 
 # Freesound: the plan's two known candidates plus voice searches (CC0 only)
 FS_KNOWN = [274121, 679486]
+# world instruments (CC0, original WAVs; D-50 factory-sound recordings excluded on purpose)
+FS_WORLD = [159550, 499726, 500765, 500723, 785871, 416606, 416605, 148850, 167088, 569838, 479213, 223956, 535950,
+            339970, 754604]
 FS_QUERIES = ["sustained aah", "ooh single note", "choir sustain", "vocal pad", "breath loop",
               "female aah sustain", "male ooh sustain", "choir aah"]
 FS_FIELDS = "id,name,username,license,duration,tags,url,type,samplerate,channels,bitdepth,ac_note_name,ac_note_midi"
@@ -142,6 +149,19 @@ def cmd_libs():
 
 
 # ---- Freesound --------------------------------------------------------------------------------
+def urlopen_retry(req, timeout):
+    """Freesound rate-limits bursts (HTTP 429): back off and retry rather than fail the batch."""
+    for i in range(6):
+        try:
+            return urllib.request.urlopen(req, timeout=timeout, context=TLS)
+        except urllib.error.HTTPError as e:
+            if e.code != 429 or i == 5:
+                raise
+            wait = int(e.headers.get("Retry-After") or 0) or 5 * 2 ** i
+            print("   rate limited, waiting %ds" % wait)
+            time.sleep(wait)
+
+
 def fs_get(path, params=None, token=None):
     c = creds()
     params = dict(params or {})
@@ -152,7 +172,7 @@ def fs_get(path, params=None, token=None):
         params["token"] = c["FREESOUND_API_KEY"]
     url = FS_API + path + ("?" + urllib.parse.urlencode(params) if params else "")
     req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req, timeout=60, context=TLS) as r:
+    with urlopen_retry(req, 60) as r:
         return json.loads(r.read().decode())
 
 
@@ -209,17 +229,19 @@ def cmd_freesound(ids):
     if os.path.exists(mp):
         meta = json.load(open(mp))
     for sid in ids:
+        if any(k.startswith("%s_" % sid) for k in meta):
+            continue   # already fetched
         s = fs_get("/sounds/%s/" % sid, {"fields": FS_FIELDS})
         if not is_cc0(s["license"]) and str(sid) not in ALLOW_CC_BY:
             print("%s: licence %s is not CC0 - skipped" % (sid, s["license"]))
             continue
         name = "%s_%s.%s" % (sid, re.sub(r"[^A-Za-z0-9]+", "_", s["name"]).strip("_")[:48], s["type"])
         req = urllib.request.Request(FS_API + "/sounds/%s/download/" % sid, headers={"Authorization": "Bearer " + tok})
-        with urllib.request.urlopen(req, timeout=300, context=TLS) as r, open(os.path.join(d, name), "wb") as f:
+        with urlopen_retry(req, 300) as r, open(os.path.join(d, name), "wb") as f:
             f.write(r.read())
         meta[name] = {k: s.get(k) for k in ("id", "name", "username", "license", "url", "duration")}
+        json.dump(meta, open(mp, "w"), indent=1)   # after each file, so a failure keeps what came down
         print("%s -> rom_src/freesound/%s" % (sid, name))
-    json.dump(meta, open(mp, "w"), indent=1)
 
 
 # ---- manifest + shortlist ---------------------------------------------------------------------

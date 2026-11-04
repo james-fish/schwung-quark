@@ -3996,6 +3996,429 @@
   "sha256": "b893eeae987aaa569dac3eec9106b862830b5f9baccdae2a3e69043d2e7a5805"
  },
  {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/B1_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/B1_vib_ff_1.wav",
+  "sha256": "091ceae3cbc82fbc224d06d66d84962e61544a92b7793422c3f2160bac24f640"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/B1_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/B1_vib_mf_1.wav",
+  "sha256": "22ad11961bbbb90c252cf3f845106365cf151d72191ac5e02128bbba982b3bb4"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/B2_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/B2_vib_ff_1.wav",
+  "sha256": "1e8b2e41ffc63faaffa49eec66b8cb4ece0ac112462eb2a555928bf2f6476fa4"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/B2_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/B2_vib_mf_1.wav",
+  "sha256": "1adc195248597de8855e205b43fa0c058778ec3c6e4ea7e7656e891faf8887f3"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/B3_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/B3_vib_ff_1.wav",
+  "sha256": "4b4ec0b7e6e86034f6fea475d99efe62eed19109dba8a6719c95d0ced2ac6ec0"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/B3_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/B3_vib_mf_1.wav",
+  "sha256": "afb7ec384fc73f30718af37b7df161c52dc4660eaeb7d069136bb4a5c2003408"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/B4_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/B4_vib_ff_1.wav",
+  "sha256": "155a4e43f4a1bf55c241215b1b78aed91eddaae13cecc2ba187d3342028d030f"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/B4_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/B4_vib_mf_1.wav",
+  "sha256": "4a73968925cfbd194c9f560e73dd1d7e49cc7f04d5b3e23c447bacb21842b9e8"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/C%232_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/C#2_vib_ff_1.wav",
+  "sha256": "8ecb7339f66ca76d18816276ee73b57441b650c060c5072fd21ffb0c14cc798d"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/C%232_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/C#2_vib_mf_1.wav",
+  "sha256": "692cd1120579fc8f3b49d56f00835886e77d4517c41fee9b56fd96023afc27da"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/C%233_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/C#3_vib_ff_1.wav",
+  "sha256": "f54f314660f275994e5e44f127d25aa2f2bfea1eba14ec896b89ae11e38a6200"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/C%233_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/C#3_vib_mf_1.wav",
+  "sha256": "0350b9e47485ad64ad94b44677ebd6f530e15b02f8b5f584dab1c1ffb4f79398"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/C%234_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/C#4_vib_ff_1.wav",
+  "sha256": "5024a2bf95ef976f1b472382891c9043b9f313685500ded45457e453b3e84f38"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/C%234_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/C#4_vib_mf_1.wav",
+  "sha256": "c13de6df19cbb6c0122d629fa217549aa4ebdb54a7c1a921f64325a911bef205"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/D%232_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/D#2_vib_ff_1.wav",
+  "sha256": "8613246741fb93c4b1696eb1bf27f07f8498afb19969c5fb4eb4e88d383481e1"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/D%232_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/D#2_vib_mf_1.wav",
+  "sha256": "a87d1cb4ce4cbadda9df9bc0d72acc583a5eea69c6eac834859fb4aa1d04480f"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/D%233_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/D#3_vib_ff_1.wav",
+  "sha256": "b91b43771691d43261659551f0fd2cc737357f31d066b3a8834d2967ca40b0cf"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/D%233_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/D#3_vib_mf_1.wav",
+  "sha256": "bc64eb185a2eb38a399b05772e29f1960965599c4854693ed38210d84eaa84be"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/D%234_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/D#4_vib_ff_1.wav",
+  "sha256": "b760d511113607a31c6805d131a5c793eafc07a8c34bb79e9bf9aa8c87863f8e"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/D%234_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/D#4_vib_mf_1.wav",
+  "sha256": "767036247ff33208eb3da977b9ae22a586f99e1e39f9e4c7e093ae709dd12e4e"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/F%232_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/F#2_vib_ff_1.wav",
+  "sha256": "c44d64671fe0b83b1f067807f8daee3bab3f7edc0e8c494f33ed48ca19355517"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/F%232_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/F#2_vib_mf_1.wav",
+  "sha256": "6edc7d611c93ef7abbf771b3eb227be2297d70cf2bbf2e1b3702df0bc1de440c"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/F%233_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/F#3_vib_ff_1.wav",
+  "sha256": "66f55535e3fa8a30c51089303da974df2548c17b59822bed042b62838cd7ba05"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/F%233_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/F#3_vib_mf_1.wav",
+  "sha256": "6034ac2439fd2d812ebb82845cceb83246d5125225440b8168ee117a86f53833"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/F%234_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/F#4_vib_ff_1.wav",
+  "sha256": "52e4d6875025f4ae4071818ec9ed06c3ad59a51800a737dc3cc5b892ffb36672"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/F%234_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/F#4_vib_mf_1.wav",
+  "sha256": "856d38d3dcb75301bd12b2c7eaf5a3001b01f0067eeea84768eb780cbe1e9bfd"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/G%232_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/G#2_vib_ff_1.wav",
+  "sha256": "eb77a1cc8f027f2e66126adb6667b3d6db78af50419916c55435f478598beff5"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/G%232_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/G#2_vib_mf_1.wav",
+  "sha256": "ce278e374c920297acb281edade6ddf3644d82b41d5f71d5c6f91fc47c210713"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/G%233_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/G#3_vib_ff_1.wav",
+  "sha256": "c0feb5a74c0dd08b6e9c14504a7a9a6bb5331f5d3ec436315e2db96b3ac1d25c"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/G%233_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/G#3_vib_mf_1.wav",
+  "sha256": "9e1a9bf86417dbd1baf927c1cbabe8db0cbda02b8b45bb35e3658292ba3b695d"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/G%234_vib_ff_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/G#4_vib_ff_1.wav",
+  "sha256": "fceae71a65c1c3a82b9f2abeb7ec4d7256b589fe1d449b82443f3ad2b7c1c08a"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Chordophones/Zithers/Dan%20Tranh/Vibrato/G%234_vib_mf_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Dan Tranh zither",
+  "file": "VCSL/Chordophones/Zithers/Dan Tranh/Vibrato/G#4_vib_mf_1.wav",
+  "sha256": "d9564ca86383dfb5160fbea83a5047202b707377ea89a6ebd9446a05867da9df"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Aerophones/Lip%20Aerophones/Didgeridoo/Didgeridoo1_Bark1_Main_rr3.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: didgeridoo drone",
+  "file": "VCSL/Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_Bark1_Main_rr3.wav",
+  "sha256": "4c91d328d892da07c4cf717f2f44a862833ea23d1abca53087f00ced2d354e25"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Aerophones/Lip%20Aerophones/Didgeridoo/Didgeridoo1_BarkDown2_Main.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: didgeridoo drone",
+  "file": "VCSL/Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_BarkDown2_Main.wav",
+  "sha256": "64ea0a7cf688ab4da28d2787e70b5d202945eb0197a1bde8f13ac4cf48bcc47c"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Aerophones/Lip%20Aerophones/Didgeridoo/Didgeridoo1_Phrase1_Main.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: didgeridoo drone",
+  "file": "VCSL/Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_Phrase1_Main.wav",
+  "sha256": "22c16fb5950f520e55a7e8636db09e7309b2a04b17091178272f1ee923555cd8"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Aerophones/Lip%20Aerophones/Didgeridoo/Didgeridoo1_Phrase3_Main.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: didgeridoo drone",
+  "file": "VCSL/Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_Phrase3_Main.wav",
+  "sha256": "ddcf9bf25aa9f0bedac3c6ae5cb77e4d68913f2322b20ac8c10165ee3c753835"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Aerophones/Lip%20Aerophones/Didgeridoo/Didgeridoo1_Phrase5_Main.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: didgeridoo drone",
+  "file": "VCSL/Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_Phrase5_Main.wav",
+  "sha256": "8c21db400950249d7d62220e65badc1139657a85ac6c957c5af4eba1eb71b3bf"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Aerophones/Lip%20Aerophones/Didgeridoo/Didgeridoo1_Phrase6_Main.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: didgeridoo drone",
+  "file": "VCSL/Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_Phrase6_Main.wav",
+  "sha256": "689d7ef41a0abdab2332788fc2472925a9f952bb15acbbd64b94e4c36ff28a32"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Aerophones/Lip%20Aerophones/Didgeridoo/Didgeridoo1_Phrase8_Main.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: didgeridoo drone",
+  "file": "VCSL/Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_Phrase8_Main.wav",
+  "sha256": "dcce6df3d735ad17ad1b7a7e59e7abbfc8082c37654e9e0890a50ab27c6a7c92"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Aerophones/Lip%20Aerophones/Didgeridoo/Didgeridoo1_Short1_Main_rr2.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: didgeridoo drone",
+  "file": "VCSL/Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_Short1_Main_rr2.wav",
+  "sha256": "eae62adf204bb0fe3f669eab2077f9890d75ed21e1152dc4a74cbb326de48a61"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Aerophones/Lip%20Aerophones/Didgeridoo/Didgeridoo1_Sus2_Main.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: didgeridoo drone",
+  "file": "VCSL/Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_Sus2_Main.wav",
+  "sha256": "eaed2088c808f5fc1f18bb7dc11c38ab57ae7c8a76a08e7934f5dab22f9d8fc8"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Aerophones/Lip%20Aerophones/Didgeridoo/Didgeridoo1_Sus3_Main.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: didgeridoo drone",
+  "file": "VCSL/Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_Sus3_Main.wav",
+  "sha256": "b1f73d0933a0cc6f05ddb92cffda83ad0ebe874487790c8ca02a542c6718bc7c"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Aerophones/Lip%20Aerophones/Didgeridoo/Didgeridoo1_Sus8_Main.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: didgeridoo drone",
+  "file": "VCSL/Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_Sus8_Main.wav",
+  "sha256": "13fcc35157fe36a6f2d69e94ff4f724f22bd6e3a9b66455f70d7924c8bdb76a4"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Aerophones/Lip%20Aerophones/Didgeridoo/Didgeridoo1_Tap1_Main_rr16.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: didgeridoo drone",
+  "file": "VCSL/Aerophones/Lip Aerophones/Didgeridoo/Didgeridoo1_Tap1_Main_rr16.wav",
+  "sha256": "8f39df500d7a673e9f5bfa68c5453dd66b22bfcc9c94afafe22dbd94b9ce1cdd"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Idiophones/Struck%20Idiophones/Hand%20Bells%2C%20Nepalese/HB_1.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Nepalese bells",
+  "file": "VCSL/Idiophones/Struck Idiophones/Hand Bells, Nepalese/HB_1.wav",
+  "sha256": "46e19962db5cb9b339f22609f1c529cd187249c36f3bcd05d4002179c403c222"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Idiophones/Struck%20Idiophones/Hand%20Bells%2C%20Nepalese/HB_2.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Nepalese bells",
+  "file": "VCSL/Idiophones/Struck Idiophones/Hand Bells, Nepalese/HB_2.wav",
+  "sha256": "e201ef095eac406a1bd5a9ec774229b57f40407d633e6dbeed53c67ebb973d56"
+ },
+ {
+  "provider": "VCSL",
+  "url": "https://github.com/sgossner/VCSL/blob/HEAD/Idiophones/Struck%20Idiophones/Hand%20Bells%2C%20Nepalese/HB_3.wav",
+  "author": "Versilian Studios (sgossner)",
+  "license": "Creative Commons Legal Code",
+  "use": "World: Nepalese bells",
+  "file": "VCSL/Idiophones/Struck Idiophones/Hand Bells, Nepalese/HB_3.wav",
+  "sha256": "9824e5aafb07085913231fe4f574561e92b02ba44bcd4a105783b857c1ca2f71"
+ },
+ {
   "provider": "Freesound",
   "url": "https://freesound.org/people/ShangusBurger/sounds/764221/",
   "author": "ShangusBurger",
@@ -4048,5 +4471,140 @@
   "use": "Choir / vocal",
   "file": "freesound/554906_Male_Breath_Scared_Frozen_Loop_Stereo_wav.wav",
   "sha256": "e01c7ac350bc361c9e6d4217366e4d62384acb8de1111431fb04f734f3da06af"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/--DeletedUser--/sounds/159550/",
+  "author": "--DeletedUser--",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/159550_Skakuhachi_12_Samples_wav.wav",
+  "sha256": "ecf3a42b3bf565654b29fe705a08bc3107737f55cb49e50ea51388dc76f246e0"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/PhonosUPF/sounds/499726/",
+  "author": "PhonosUPF",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/499726_shakuhachi_blow.wav",
+  "sha256": "daa03665560ce5cacd2164faa4c4f7311992999f4a971662efebec91746779b5"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/PhonosUPF/sounds/500765/",
+  "author": "PhonosUPF",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/500765_shakuhachi_blow_23.wav",
+  "sha256": "78380cff0172752635760fd6cf32373225f288804244a5069c19fba3df0f0b85"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/PhonosUPF/sounds/500723/",
+  "author": "PhonosUPF",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/500723_shakuhachi_chorus_2.wav",
+  "sha256": "aaac8458d6165a3dd3d62bff4d1ec34ae65a6f6ead4a78c49632f0f9cff2045f"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/slackwareslacker/sounds/785871/",
+  "author": "slackwareslacker",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/785871_shakuhachi_Attack_Transient.wav",
+  "sha256": "afcbf5f664f2fec99057461e6fd061ca10d14fc44d505328993bdb82001563f5"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/luckylittleraven/sounds/416606/",
+  "author": "luckylittleraven",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/416606_Tanpura_note_A_sharp_wav.wav",
+  "sha256": "2b90c4e6fecab31132df026a6ede38b2af7a1ec29d7874a152beb8f85c291595"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/luckylittleraven/sounds/416605/",
+  "author": "luckylittleraven",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/416605_Tanpura_note_C_sharp_wav.wav",
+  "sha256": "c51a9fb8d49e82ae9dd9fa3f7fee040cebf74bcf5ca67ccbd54c614b9b8825a1"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/iluppai/sounds/148850/",
+  "author": "iluppai",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/148850_Tanpura_in_E.wav",
+  "sha256": "4455a5228a8809f42d5f61fe9d76636cf3c5ece4ac2516200bf788b4d1bdb30c"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/--DeletedUser--/sounds/167088/",
+  "author": "--DeletedUser--",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/167088_Sarangi_G3_wav.wav",
+  "sha256": "6eb8736a83dc3ce720c647bf1488b3fc23e22af362b6cdd13809403158517a8f"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/tarane468/sounds/569838/",
+  "author": "tarane468",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/569838_4_Erhu_E4_wav.wav",
+  "sha256": "4e69e692a8aab3d3ba37f64522409a20a03a490bbbce1f4864c177a21e3b0742"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/blood_of_a_pomegranate/sounds/479213/",
+  "author": "blood_of_a_pomegranate",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/479213_duduk_C3.wav",
+  "sha256": "69e18cb8f1c17c27feb6aaa2f32d2b38e8e006e7b991e8284980b61722c159c7"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/--DeletedUser--/sounds/223956/",
+  "author": "--DeletedUser--",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/223956_Koto_G4_wav.wav",
+  "sha256": "958fea88cda3c47dcca064fda4fe909b74a1d53ec4399272aad1238f42c8381c"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/mttvn/sounds/535950/",
+  "author": "mttvn",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/535950_E_flat_Tibetan_singing_bowl_struck.wav",
+  "sha256": "9e3696d6910111ab32b424da858a7da1d4d40aeeb9240e467d8d09a34b82470a"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/Toni_Quiroga/sounds/339970/",
+  "author": "Toni_Quiroga",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/339970_Sitar_wav.wav",
+  "sha256": "43105a52701c7c777deeb7d8d40d64b67e15bbb5986429acad121e0c2ee09b35"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/FuzzyTuesday/sounds/754604/",
+  "author": "FuzzyTuesday",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/754604_Free_Style_Sitar.wav",
+  "sha256": "1ea685249f12579928acfc34e54600d60c914fdeb6f3115243690f8f4e65732a"
  }
 ]
