@@ -9,6 +9,9 @@
  *                  played note's Nyquist), linear interpolation in the frame and between frames, and an
  *                  optional detuned unison partner (Spread).
  *  FM              carrier + mod 1 (Variation = index, with feedback) + mod 2 (a decaying "tine").
+ *  PCM             sample playback from the read-only ROM (rom_gen.c): a 4-point Hermite read at a
+ *                  fractional position (double), the attack once, then a plain wrap inside the loop
+ *                  (the seam is crossfaded offline), plus the Detune / Spread partner read.
  *
  * Every voice then goes through an optional TPT state-variable filter (LP12/LP24/BP/HP) and the amp
  * ADSR. Animate is one global LFO; Depth routes the per-voice Mod Env to Variation.
@@ -19,6 +22,7 @@
 #include <string.h>
 
 #include "tables_gen.h"
+#include "rom_gen.h"
 
 /* ------------------------------------------------------------------ wavetables */
 
@@ -370,6 +374,9 @@ static void voice_start(QInstance *q, QTexVoice *v, int key, int note, float vel
         v->wpos = -1.0f;   /* snap on the first control tick */
         for (int j = 0; j < 7; j++) v->g[j] = -1.0f;
     }
+    /* PCM: every note plays its attack from the top */
+    v->pp = 0.0;
+    v->pp2 = 0.0;
     /* FM: restart the modulators so every note's attack has the same bite */
     if (Q_TEX_FAMILY[q_clampi((int)q->ps[P_TX_TYPE], 0, Q_NUM_TEX_TYPES - 1)] == 2) {
         v->ph2 = 0.0f;
@@ -438,6 +445,17 @@ static inline float lfo_shape(int shape, float ph, float held, float prev) {
     }
 }
 
+/* PCM: 4-point Hermite at position p (samples). The ROM carries 3 guard samples past the loop end
+ * (the loop start again), so i+2 never needs a wrap; only p < 1 clamps the sample before. */
+static inline float pcm_read(const QPcmZone *z, double p) {
+    int i = (int)p;
+    float f = (float)(p - (double)i);
+    const short *d = z->data;
+    float xm = (float)d[i > 0 ? i - 1 : 0], x0 = (float)d[i], x1 = (float)d[i + 1], x2 = (float)d[i + 2];
+    float c1 = 0.5f * (x1 - xm), c2 = xm - 2.5f * x0 + 2.0f * x1 - 0.5f * x2, c3 = 0.5f * (x2 - xm) + 1.5f * (x0 - x1);
+    return (((c3 * f + c2) * f + c1) * f + x0) * (1.0f / 32768.0f);
+}
+
 /* 0 = not modulated, 1 = the main LFO, 2 = LFO 2 */
 static inline float an_pick(int src, float an, float an2) {
     return src == 1 ? an : src == 2 ? an2 : 0.0f;
@@ -504,6 +522,8 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
     float k_ctrl = (float)Q_CTRL;
     float kill_c = 1.0f - expf(-1.0f / (0.0015f * sr));
     const float *fmr = Q_FM[fam == 2 ? ix : 0];
+    const QPcmZone *pz = &quark_pcm_zones[fam == 3 ? ix : 0];
+    float pcm_rate = (float)Q_PCM_SR / sr, pcm_root_hz = q_note_hz((float)pz->root);
     QWave wv;
     int have_wave = 0;
     if (fam == 1) {
@@ -591,6 +611,11 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
                 float pc = spread * 14.0f + detune * detune * 20.0f * v->bloom;
                 v->inc2 = partner ? v->inc * exp2f(pc / 1200.0f) : 0.0f;
                 v->mip = have_wave ? q_wave_mip(&wv, whz * (1.0f + pc * 0.0006f), sr) : 0;
+            } else if (fam == 3) {
+                /* samples per output sample: the zone's rate against ours, transposed from its root */
+                v->inc = pcm_rate * hz / pcm_root_hz;
+                float pc = spread * 14.0f + detune * detune * 20.0f * v->bloom;
+                v->inc2 = partner ? v->inc * exp2f(pc / 1200.0f) : 0.0f;
             } else {
                 v->inc = hz / sr;
                 v->inc2 = v->inc * fmr[0];
@@ -685,6 +710,21 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
                 v->ph = ph;
                 v->ph2 = ph2;
                 v->wpos = wp;
+            } else if (fam == 3) {
+                double pp = v->pp, pp2 = v->pp2, inc = v->inc, inc2 = v->inc2;
+                for (int i = 0; i < m; i++) {
+                    float x = pcm_read(pz, pp);
+                    pp += inc;
+                    if (pp >= (double)pz->loop_end) pp -= (double)(pz->loop_end - pz->loop_start);
+                    if (inc2 > 0.0) {
+                        x = 0.62f * (x + pcm_read(pz, pp2));
+                        pp2 += inc2;
+                        if (pp2 >= (double)pz->loop_end) pp2 -= (double)(pz->loop_end - pz->loop_start);
+                    }
+                    buf[i] = x * 0.8f;
+                }
+                v->pp = pp;
+                v->pp2 = pp2;
             } else {
                 float ph = v->ph, p2 = v->ph2, p3 = v->ph3, fbm = v->fbm, i1 = v->idx1;
                 float fb = fmr[5] * 0.25f, i2 = v->idx2 * (1.0f / Q_TAU);

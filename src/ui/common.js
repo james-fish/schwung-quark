@@ -93,6 +93,12 @@ var Q = (function () {
       return norm ? out / Math.sqrt(norm) * 0.7 : 0;
     }
     if (tt.family === 1) return bankWave(tt.index, v, t);
+    if (tt.family === 3) {
+      /* PCM (phase 1 spike): a noisy attack into the harmonic loop, drawn across the cell */
+      var a = t < 0.25 ? Math.sin(t * 977) * Math.sin(t * 331) * (1 - t * 4) : 0, tone = 0;
+      for (var hk = 1; hk < 7; hk++) tone += Math.sin(2 * Math.PI * hk * t * 6) / hk;
+      return 0.6 * a + 0.35 * tone * Math.min(1, t * 20);
+    }
     var fm = M.fm[tt.index], tau = 2 * Math.PI;
     var m1 = Math.sin(tau * t * fm[0]) * v * fm[1], m2 = Math.sin(tau * t * fm[2]) * fm[3] * 0.5;
     return Math.sin(tau * t + m1 + m2);
@@ -129,7 +135,7 @@ var Q = (function () {
   }
   function familyName(type) {
     var tt = M.texTypes[Math.max(0, Math.min(M.texTypes.length - 1, Math.round(type)))];
-    return ["STRINGS", "WAVETABLE", "FM"][tt.family];
+    return ["STRINGS", "WAVETABLE", "FM", "PCM"][tt.family];
   }
   function variationText(values) {
     var type = Math.round(val(values, "tx_type")), v = val(values, "tx_var");
@@ -144,6 +150,7 @@ var Q = (function () {
     }
     if (tt.family === 1) return isAmino(tt.index) ? "Wave " + (1 + Math.round(v * (M.amWaves - 1))) + "/" + M.amWaves :
       chordFrames(tt.index) ? chordFrames(tt.index)[Math.round(Math.max(0, Math.min(1, v)) * 7)] : "Frame " + (1 + v * 7).toFixed(1) + "/8";
+    if (tt.family === 3) return "Sample";
     return "FM index " + (v * M.fm[tt.index][1]).toFixed(2);
   }
 

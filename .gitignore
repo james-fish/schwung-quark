@@ -5,3 +5,10 @@ REference/
 reference/
 *.o
 0*-*.md
+
+# secrets and raw sample sources (never commit)
+.env
+.env.*
+tools/data/rom_src/
+tools/data/.freesound_token.json
+__pycache__/

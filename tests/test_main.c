@@ -26,6 +26,8 @@
 extern plugin_api_v2_t *move_plugin_init_v2(const host_api_v1_t *host);
 
 static int g_fail;
+/* PCM types appended before the User slots since 0.4.5 (the old-state test shifts by this) */
+#define PCM_TYPES_ADDED 1
 #define CHECK(c, ...) do { if (!(c)) { printf("FAIL: " __VA_ARGS__); printf("\n"); g_fail++; } } while (0)
 
 static float host_bpm(void) { return 120.0f; }
@@ -826,6 +828,46 @@ int main(int argc, char **argv) {
         api->set_param(in, "ln_wenv", "0");
     }
 
+    /* ---- PCM (phase 1 spike): the loop seam is silent. A held note through 16 wraps, nothing else
+     * in the chain: no sample-to-sample corner around a wrap sharper than the loop's own ---- */
+    {
+        static int16_t sb[256];
+        const char *ss[][2] = {{"preset", "0"}, {"key_mode", "3"}, {"tx_type", "100"}, {"flt_type", "0"}, {"rv_amt", "0"},
+                               {"fx_amt", "0"}, {"sh_amt", "0"}, {"ens_amt", "0"}, {"tx_spread", "0"}, {"tx_detune", "0"},
+                               {"vintage", "0"}, {"tx_anim", "0"}, {"tx_drive", "0"}, {"tx_a", "0"}, {"tx_s", "1"}, {"vib", "0"},
+                               {"tx_depth", "0"}, {"tx_vol", "0.8"}};
+        for (size_t k = 0; k < sizeof ss / sizeof ss[0]; k++) api->set_param(in, ss[k][0], ss[k][1]);
+        char tn[64];
+        api->get_param(in, "tx_type", tn, sizeof tn);
+        int pcm_ok = atoi(tn) == Q_NUM_TEX_BUILTIN - PCM_TYPES_ADDED;
+        api->set_param(in, "all_notes_off", "1");
+        for (int i = 0; i < 3000; i++) api->render_block(in, sb, 128);
+        midi(api, in, 0x90, 60, 127);
+        /* at the root, inc = 32000 / 44100; the loop starts at 9600 and is 19520 samples long */
+        double inc = 32000.0 / 44100.0, first = 9600.0 / inc, period = 19520.0 / inc;
+        long sn = 0;
+        double near_max = 0, far_max = 0, pk = 0, x1 = 0, x2 = 0;
+        int wraps = 0;
+        for (int b = 0; b < 44100 * 10 / 128; b++) {
+            api->render_block(in, sb, 128);
+            for (int j = 0; j < 128; j++, sn++) {
+                double x = sb[2 * j] / 32768.0, d2 = fabs(x - 2 * x1 + x2);
+                x2 = x1; x1 = x;
+                if (sn < (long)(first + 2000)) continue;   /* past the attack */
+                if (fabs(x) > pk) pk = fabs(x);
+                double ph = fmod((double)sn - first, period), dist = fmin(ph, period - ph);
+                if (dist < 48) { if (d2 > near_max) near_max = d2; if (dist < 1) wraps++; }
+                else if (d2 > far_max) far_max = d2;
+            }
+        }
+        midi(api, in, 0x80, 60, 0);
+        api->set_param(in, "all_notes_off", "1");
+        printf("pcm seam: %d wraps, corner at wraps %.5f vs elsewhere %.5f (peak %.3f)\n", wraps, near_max, far_max, pk);
+        CHECK(pcm_ok && wraps >= 14 && pk > 0.05 && near_max < 1.3 * far_max, "PCM loop seam has no click");
+        api->set_param(in, "tx_type", "0");
+        api->set_param(in, "flt_type", "1");
+    }
+
     /* ---- Mono velocity: a fixed 9 dB level range, even with the Velocity knob at 0 ---- */
     {
         api->set_param(in, "preset", "0");
@@ -957,6 +999,26 @@ int main(int argc, char **argv) {
             api->set_param(u, "state", st);
             api->get_param(u, "tx_type", tv, sizeof tv);
             CHECK(atoi(tv) == 0, "a missing user table falls back to the default (got %s)", tv);
+            /* a 0.4.5 state: before the PCM types the built-ins ended one slot earlier, so the same
+             * user table was saved at an index one lower. The name still finds it. */
+            {
+                static char old[65536];
+                if (nm) memcpy(nm, "Test Saw Sine", 13);
+                char want[32], from[32];
+                snprintf(want, sizeof want, "\"tx_type\":%d", Q_NUM_TEX_BUILTIN + 1);
+                snprintf(from, sizeof from, "\"tx_type\":%d", Q_NUM_TEX_BUILTIN + 1 - PCM_TYPES_ADDED);
+                char *at = strstr(st, want);
+                int okp = at != 0;
+                if (at) {
+                    size_t pre = (size_t)(at - st);
+                    snprintf(old, sizeof old, "%.*s%s%s", (int)pre, st, from, at + strlen(want));
+                    api->set_param(u, "preset", "3");
+                    api->set_param(u, "state", old);
+                    api->get_param(u, "tx_type", tv, sizeof tv);
+                    okp = atoi(tv) == Q_NUM_TEX_BUILTIN + 1;
+                }
+                CHECK(okp, "a pre-PCM state restores its user table by name after the new types (got %s)", tv);
+            }
             snprintf(tv, sizeof tv, "%d", Q_NUM_TEX_BUILTIN + 9);
             api->set_param(u, "tx_type", tv);
             api->get_param(u, "tx_type", tv, sizeof tv);
