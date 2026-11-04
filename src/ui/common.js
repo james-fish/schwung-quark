@@ -94,10 +94,12 @@ var Q = (function () {
     }
     if (tt.family === 1) return bankWave(tt.index, v, t);
     if (tt.family === 3) {
-      /* PCM (phase 1 spike): a noisy attack into the harmonic loop, drawn across the cell */
-      var a = t < 0.25 ? Math.sin(t * 977) * Math.sin(t * 331) * (1 - t * 4) : 0, tone = 0;
-      for (var hk = 1; hk < 7; hk++) tone += Math.sin(2 * Math.PI * hk * t * 6) / hk;
-      return 0.6 * a + 0.35 * tone * Math.min(1, t * 20);
+      /* PCM: the two sets' level outlines (from the ROM, sampled across the zone nearest E4), blended
+       * by Variation, drawn as a waveform under that envelope */
+      var pr = M.pcmTypes[tt.index], oa = M.pcmSets[pr[0]].overview, ob = M.pcmSets[pr[1]].overview;
+      var w = Math.max(0, Math.min(1, v)), at = t * (oa.length - 1), i0 = Math.floor(at), fr = at - i0;
+      var ea = oa[i0] + ((oa[i0 + 1] || 0) - oa[i0]) * fr, eb = ob[i0] + ((ob[i0 + 1] || 0) - ob[i0]) * fr;
+      return 0.95 * ((1 - w) * ea + w * eb) * Math.sin(2 * Math.PI * t * 23);
     }
     var fm = M.fm[tt.index], tau = 2 * Math.PI;
     var m1 = Math.sin(tau * t * fm[0]) * v * fm[1], m2 = Math.sin(tau * t * fm[2]) * fm[3] * 0.5;
@@ -150,7 +152,10 @@ var Q = (function () {
     }
     if (tt.family === 1) return isAmino(tt.index) ? "Wave " + (1 + Math.round(v * (M.amWaves - 1))) + "/" + M.amWaves :
       chordFrames(tt.index) ? chordFrames(tt.index)[Math.round(Math.max(0, Math.min(1, v)) * 7)] : "Frame " + (1 + v * 7).toFixed(1) + "/8";
-    if (tt.family === 3) return "Sample";
+    if (tt.family === 3) {
+      var p2 = M.pcmTypes[tt.index], na = M.pcmSets[p2[0]].name, nb = M.pcmSets[p2[1]].name;
+      return v < 0.03 ? na : v > 0.97 ? nb : na + ">" + nb + " " + pct(v);
+    }
     return "FM index " + (v * M.fm[tt.index][1]).toFixed(2);
   }
 

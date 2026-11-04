@@ -18,6 +18,7 @@
 #include "plugin_api.h"
 #include "params_gen.h"
 #include "tables_gen.h"
+#include "rom_gen.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -27,7 +28,8 @@ extern plugin_api_v2_t *move_plugin_init_v2(const host_api_v1_t *host);
 
 static int g_fail;
 /* PCM types appended before the User slots since 0.4.5 (the old-state test shifts by this) */
-#define PCM_TYPES_ADDED 1
+#define PCM_TYPES_ADDED Q_PCM_NUM_TYPES
+extern int q_pcm_pick(int set, int era, int key);
 #define CHECK(c, ...) do { if (!(c)) { printf("FAIL: " __VA_ARGS__); printf("\n"); g_fail++; } } while (0)
 
 static float host_bpm(void) { return 120.0f; }
@@ -828,44 +830,105 @@ int main(int argc, char **argv) {
         api->set_param(in, "ln_wenv", "0");
     }
 
-    /* ---- PCM (phase 1 spike): the loop seam is silent. A held note through 16 wraps, nothing else
-     * in the chain: no sample-to-sample corner around a wrap sharper than the loop's own ---- */
+    /* ---- PCM ROM: every looped zone, at every mip, wraps without a corner sharper than the loop's
+     * own (2nd difference across the seam vs the loop's 99.5th percentile) ---- */
     {
-        static int16_t sb[256];
-        const char *ss[][2] = {{"preset", "0"}, {"key_mode", "3"}, {"tx_type", "100"}, {"flt_type", "0"}, {"rv_amt", "0"},
-                               {"fx_amt", "0"}, {"sh_amt", "0"}, {"ens_amt", "0"}, {"tx_spread", "0"}, {"tx_detune", "0"},
-                               {"vintage", "0"}, {"tx_anim", "0"}, {"tx_drive", "0"}, {"tx_a", "0"}, {"tx_s", "1"}, {"vib", "0"},
-                               {"tx_depth", "0"}, {"tx_vol", "0.8"}};
-        for (size_t k = 0; k < sizeof ss / sizeof ss[0]; k++) api->set_param(in, ss[k][0], ss[k][1]);
-        char tn[64];
-        api->get_param(in, "tx_type", tn, sizeof tn);
-        int pcm_ok = atoi(tn) == Q_NUM_TEX_BUILTIN - PCM_TYPES_ADDED;
-        api->set_param(in, "all_notes_off", "1");
-        for (int i = 0; i < 3000; i++) api->render_block(in, sb, 128);
-        midi(api, in, 0x90, 60, 127);
-        /* at the root, inc = 32000 / 44100; the loop starts at 9600 and is 19520 samples long */
-        double inc = 32000.0 / 44100.0, first = 9600.0 / inc, period = 19520.0 / inc;
-        long sn = 0;
-        double near_max = 0, far_max = 0, pk = 0, x1 = 0, x2 = 0;
-        int wraps = 0;
-        for (int b = 0; b < 44100 * 10 / 128; b++) {
-            api->render_block(in, sb, 128);
-            for (int j = 0; j < 128; j++, sn++) {
-                double x = sb[2 * j] / 32768.0, d2 = fabs(x - 2 * x1 + x2);
-                x2 = x1; x1 = x;
-                if (sn < (long)(first + 2000)) continue;   /* past the attack */
-                if (fabs(x) > pk) pk = fabs(x);
-                double ph = fmod((double)sn - first, period), dist = fmin(ph, period - ph);
-                if (dist < 48) { if (d2 > near_max) near_max = d2; if (dist < 1) wraps++; }
-                else if (d2 > far_max) far_max = d2;
+        int bad_seams = 0, seams = 0;
+        double seam_worst = 0;
+        static float d2[200000];
+        for (int z = 0; z < Q_PCM_NUM_ZONES; z++) {
+            const QPcmZone *pz = &quark_pcm_zones[z];
+            if (pz->oneshot) continue;
+            for (int k = 0; k < Q_PCM_MIPS; k++) {
+                const q_rom_s16 *rd = quark_rom + pz->off[k];
+                int ls = pz->loop_start >> k, le = pz->loop_end >> k, L = le - ls, nd = 0;
+                if (L > 200000) L = 200000;
+                for (int i = ls + 1; i < ls + L - 1; i++) d2[nd++] = fabsf((float)rd[i + 1] - 2.0f * rd[i] + rd[i - 1]);
+                /* the wrap: ... le-2, le-1 | ls, ls+1 ... */
+                float s1 = fabsf((float)rd[ls] - 2.0f * rd[le - 1] + rd[le - 2]);
+                float s2 = fabsf((float)rd[ls + 1] - 2.0f * rd[ls] + rd[le - 1]);
+                float seam = s1 > s2 ? s1 : s2;
+                /* 99.5th percentile by partial selection (nth element) */
+                int kth = (int)(nd * 0.995);
+                for (int lo = 0, hi = nd - 1; lo < hi;) {
+                    float piv = d2[(lo + hi) / 2];
+                    int a = lo, b = hi;
+                    while (a <= b) { while (d2[a] < piv) a++; while (d2[b] > piv) b--; if (a <= b) { float t2 = d2[a]; d2[a] = d2[b]; d2[b] = t2; a++; b--; } }
+                    if (kth <= b) hi = b; else if (kth >= a) lo = a; else break;
+                }
+                double ratio = seam / (d2[kth] + 1.0);
+                if (ratio > seam_worst) seam_worst = ratio;
+                seams++;
+                if (ratio > 1.5) { bad_seams++; printf("  seam zone %d mip %d: %.2f x the loop's own\n", z, k, ratio); }
             }
         }
-        midi(api, in, 0x80, 60, 0);
-        api->set_param(in, "all_notes_off", "1");
-        printf("pcm seam: %d wraps, corner at wraps %.5f vs elsewhere %.5f (peak %.3f)\n", wraps, near_max, far_max, pk);
-        CHECK(pcm_ok && wraps >= 14 && pk > 0.05 && near_max < 1.3 * far_max, "PCM loop seam has no click");
+        printf("pcm rom: %d zones, %d loop seams checked, worst %.2f x the loop's 99.5th percentile\n", Q_PCM_NUM_ZONES, seams, seam_worst);
+        CHECK(seams > 0 && bad_seams == 0, "every PCM loop seam is smooth at every mip");
+        /* every key resolves to a zone of its own set, in every Era; the zone is at or above the key
+         * unless the key is above the set's top */
+        int bad_pick = 0;
+        for (int st = 0; st < Q_PCM_NUM_SETS; st++)
+            for (int era = 0; era < 3; era++)
+                for (int key = 0; key < 128; key++) {
+                    int z = q_pcm_pick(st, era, key);
+                    const QPcmSet *ps = &quark_pcm_sets[st];
+                    float top = quark_pcm_zones[ps->first + ps->count - 1].root;
+                    if (z < ps->first || z >= ps->first + ps->count) bad_pick++;
+                    else if (quark_pcm_zones[z].root + 0.5f < (float)key && key <= (int)top) bad_pick++;
+                }
+        CHECK(bad_pick == 0, "every key maps to a zone of its set in every Era (%d bad)", bad_pick);
+    }
+
+    /* ---- PCM types: every type in every Era sounds, stays finite, and Variation really crossfades
+     * (A alone and B alone differ); Lo-Fi is grittier than Clean on a high note ---- */
+    {
+        static int16_t pb[256];
+        const char *ps[][2] = {{"preset", "0"}, {"key_mode", "3"}, {"flt_type", "0"}, {"rv_amt", "0"}, {"fx_amt", "0"},
+                               {"sh_amt", "0"}, {"ens_amt", "0"}, {"tx_spread", "0.3"}, {"tx_detune", "0.2"}, {"vintage", "0"},
+                               {"tx_anim", "0"}, {"tx_a", "0"}, {"tx_s", "1"}, {"tx_depth", "0"}, {"tx_vol", "0.8"}};
+        int silent = 0, nans = 0, same = 0;
+        double hf[3] = {0, 0, 0};
+        for (int t = 0; t < Q_PCM_NUM_TYPES; t++)
+            for (int era = 0; era < 3; era++) {
+                double e2[2] = {0, 0};
+                for (int side = 0; side < 2; side++) {
+                    for (size_t k = 0; k < sizeof ps / sizeof ps[0]; k++) api->set_param(in, ps[k][0], ps[k][1]);
+                    char tv[16];
+                    snprintf(tv, sizeof tv, "%d", Q_NUM_TEX_BUILTIN - Q_PCM_NUM_TYPES + t);
+                    api->set_param(in, "tx_type", tv);
+                    snprintf(tv, sizeof tv, "%d", era);
+                    api->set_param(in, "pcm_era", tv);
+                    api->set_param(in, "tx_var", side ? "1" : "0");
+                    api->set_param(in, "all_notes_off", "1");
+                    for (int i = 0; i < 400; i++) api->render_block(in, pb, 128);
+                    int keys[3] = {36, 60, 84};
+                    for (int k = 0; k < 3; k++) midi(api, in, 0x90, keys[k], 110);
+                    double e = 0, d1 = 0;
+                    for (int i = 0; i < 250; i++) {
+                        api->render_block(in, pb, 128);
+                        for (int j = 0; j < 256; j++) {
+                            double x = pb[j] / 32768.0;
+                            if (x != x) nans++;
+                            e += x * x;
+                            if (j >= 2) { double d = (pb[j] - pb[j - 2]) / 32768.0; d1 += d * d; }
+                        }
+                    }
+                    for (int k = 0; k < 3; k++) midi(api, in, 0x80, keys[k], 0);
+                    if (e < 1e-3) { silent++; printf("  pcm type %d era %d var %d is silent\n", t, era, side); }
+                    e2[side] = e;
+                    if (t == 1 && side == 0) hf[era] = d1 / (e + 1e-12);
+                }
+                if (fabs(e2[0] - e2[1]) < 1e-6 * (e2[0] + e2[1])) same++;
+            }
+        /* a high note on Bowed Glass, all Eras: the grit measure is HF energy over total */
+        printf("pcm types: %d types x 3 Eras rendered; HF share Clean %.4f 90s %.4f Lo-Fi %.4f\n", Q_PCM_NUM_TYPES, hf[0], hf[1], hf[2]);
+        CHECK(!silent && !nans, "every PCM type sounds in every Era, no NaN (%d silent, %d NaN)", silent, nans);
+        CHECK(same == 0, "Variation crossfades two different sets on every PCM type");
+        CHECK(hf[2] > hf[0], "Lo-Fi Era is grittier than Clean");
         api->set_param(in, "tx_type", "0");
+        api->set_param(in, "pcm_era", "0");
         api->set_param(in, "flt_type", "1");
+        api->set_param(in, "all_notes_off", "1");
     }
 
     /* ---- Mono velocity: a fixed 9 dB level range, even with the Velocity knob at 0 ---- */

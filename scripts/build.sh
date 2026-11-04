@@ -19,7 +19,6 @@ for a in "$@"; do
   esac
 done
 PY=${PYTHON:-python3}
-CC=${CC:-cc}
 find_zig() {
   if [ -n "${ZIG:-}" ]; then echo "$ZIG"; return; fi
   if command -v zig >/dev/null 2>&1; then command -v zig; return; fi
@@ -27,7 +26,9 @@ find_zig() {
 }
 ZIG=$(find_zig)
 [ -n "$ZIG" ] && [ -x "$ZIG" ] || { echo "zig not found: brew install zig  or  python3 -m pip install ziglang" >&2; exit 1; }
-FLAGS="-std=c11 -O2 -ffast-math -fno-finite-math-only -Wall -Wextra -Wshadow"
+# the native tests use zig's clang too: the PCM ROM is embedded with C23 #embed, which Apple's clang lacks
+CC=${CC:-"$ZIG cc"}
+FLAGS="-std=c11 -O2 -ffast-math -fno-finite-math-only -Wall -Wextra -Wshadow -Wno-c23-extensions"
 MOD="$ROOT/modules/sound_generators/quark"
 mkdir -p build "$MOD"
 
@@ -57,9 +58,9 @@ COPYFILE_DISABLE=1 tar -czf "$ROOT/dist/quark-module.tar.gz" --exclude '.DS_Stor
   mkdir -p "$ROOT/dist"; COPYFILE_DISABLE=1 tar -czf "$ROOT/dist/quark-module.tar.gz" --exclude '.DS_Store' -C "$ROOT/modules/sound_generators" quark; }
 
 echo "== quark.wasm + dist/quark.html"
-"$ZIG" cc -target wasm32-wasi -mexec-model=reactor -DQUARK_WASM -std=c11 -O2 -ffast-math -fno-finite-math-only \
+"$ZIG" cc -target wasm32-wasi -mexec-model=reactor -DQUARK_WASM -std=c11 -O2 -ffast-math -fno-finite-math-only -Wno-c23-extensions \
   -ffile-prefix-map="$ROOT"=. -I src/dsp -o build/quark.wasm src/dsp/*.c web/wasm_host.c -lm \
-  -Wl,--no-entry -Wl,-z,stack-size=1048576 -Wl,--strip-all -Wl,--initial-memory=33554432 \
+  -Wl,--no-entry -Wl,-z,stack-size=1048576 -Wl,--strip-all -Wl,--initial-memory=50331648 \
   -Wl,--max-memory=134217728 -Wl,--export-dynamic
 [ "$TEST" = 1 ] && node tests/test_wasm.mjs
 "$PY" scripts/build_web.py

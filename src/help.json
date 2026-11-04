@@ -200,6 +200,20 @@
     "Vibrato + rate act",
     "on both layers."
    ]
+  },
+  {
+   "title": "Atmos PCM",
+   "lines": [
+    "PCM types (end of",
+    "Atmos Type): sampled",
+    "sets; Variation",
+    "fades set A into B.",
+    "Era: Clean = full",
+    "quality; 90s = half",
+    "rate, aliasing, more",
+    "stretch; Lo-Fi =",
+    "quarter rate, 12-bit."
+   ]
   }
  ]
 }

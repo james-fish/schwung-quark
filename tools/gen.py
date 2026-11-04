@@ -18,7 +18,6 @@ import base64
 import json
 import math
 import os
-import random
 import re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -305,10 +304,12 @@ for i, n in enumerate(AMINO_NAMES):
     _used_short.add(sh)
     AMINO_TYPES.append((disp, sh))
     TEX_TYPES.append((disp, sh, 1, NUM_WT_QUARK + i))
-# PCM family (3): sample playback. Phase 1 spike: one generated sample, index 0.
-PCM_SETS = [("PCM Test", "PCM")]
-for i, (n, sh) in enumerate(PCM_SETS):
-    TEX_TYPES.append((n, sh, 3, i))
+# PCM family (3): sample playback from the ROM that tools/build_rom.py makes from CC0 recordings
+# (tools/data/rom/: rom.bin + rom.json, committed; see docs/QUARK_PCM_PLAN.md). Each type is a pair of
+# multisample sets: Variation crossfades A into B.
+ROM = json.load(open(os.path.join(HERE, "data", "rom", "rom.json")))
+for i, t in enumerate(ROM["types"]):
+    TEX_TYPES.append((t["name"], t["short"], 3, i))
 # user wavetables: fixed slots after the built-ins. The DSP names them after the files it finds and
 # serves only those slots in chain_params (the "@U<n>@" / "@S<n>@" placeholders below).
 NUM_WT_USER = 16
@@ -528,6 +529,9 @@ E("ln_mode", "Melody Mode", "Mode", 1, LINE_MODES, LINE_MODES_S)
 E("tx_latch", "Atmos Latch", "Latch", 0, ONOFF, viz={"kind": "switch"})
 # LFO 2 (pair Motion Targets): rate as a multiple of Motion Rate; below 0 it runs backwards
 F("an_lfo2", "LFO 2 Rate", "LFO2", 1.0, -4.0, 4.0, card=CARD)
+# PCM Era: how the PCM types are read. Clean = full rate, Hermite, anti-aliased; 90s = the half-rate
+# copy, linear, allowed to alias, every 2nd zone; Lo-Fi = quarter rate, drop-sample, 12-bit, every 3rd
+E("pcm_era", "PCM Era", "Era", 0, ["Clean", "90s", "Lo-Fi"], ["Cln", "90s", "Lo"])
 E("an_mode", "LFO Mode", "LFOMd", 0, AN_MODES, AN_MODES_S, card=CARD)
 
 KEYS = [p["key"] for p in P]
@@ -558,6 +562,7 @@ PAGES = [
     ("mix", "Mix & Effect", ["tx_vol", "ln_vol", "tx_fx", "ln_fx", "fx_type", "fx_ctrl", "fx_tone", "fx_amt"]),
     ("space", "Reverb", ["rv_decay", "rv_size", "rv_tone", "rv_amt", "sh_pitch", "sh_amt", "vintage", "vol"]),
     ("play", "Play", ["tx_tr", "ln_tr", "key_mode", "split", "vel", "wheel", "vib", "vib_rate"]),
+    ("pcm", "Atmos PCM", ["pcm_era", None, None, None, None, None, None, None]),
 ]
 _on_page = [k for _, _, ks in PAGES for k in ks if k]
 assert set(_on_page) == set(KEYS), sorted(set(KEYS) ^ set(_on_page))
@@ -751,6 +756,57 @@ PRESETS += [
                               ens_type=1, fx_type=FX["Phaser"], fx_amt=0.3, fx_ctrl=0.3, key_mode=1, split=55,
                               ln_vol=0.65, ln_shape=LS["E-Bass"], ln_var=0.2, ln_cut=0.5, ln_res=0.2, ln_fenv=0.3,
                               ln_a=0.0, ln_d=0.4, ln_sus=1, ln_mode=0, ln_fx=2, rv_amt=0.2)),
+    # 0.5: PCM, each using the sampled sets a different way. Era 90s unless the sound wants Clean or
+    # Lo-Fi; long attacks, LP24 sweeps, Ensemble Deep, shimmer and big reverb for 90s ambient / liquid.
+    # Variation as a vector sweep: Motion on Variation crossfades glass into air
+    ("Glass Horizon", dict(tx_type=T["Glass Air"], pcm_era=1, tx_var=0.2, tx_anim=0.55, an_dest=AD["Variation"], an_rate=0.12,
+                           an_shape=0, tx_a=0.55, tx_d=0.6, tx_s=0.9, tx_r=0.7, flt_type=2, flt_cut=0.7, flt_res=0.15,
+                           ens_type=3, ens_amt=0.75, sh_pitch=5, sh_amt=0.35, rv_amt=0.5, rv_decay=0.82, rv_size=0.8,
+                           vintage=0.3)),
+    # per-voice motion: every choir note drifts in Variation and pan on its own (LFO Mode Spread)
+    ("Choir of Ages", dict(tx_type=T["Aah Ooh"], pcm_era=1, tx_var=0.35, tx_anim=0.4, an_dest=AD["Var+Pan"], an_mode=1,
+                           an_rate=0.18, an_lfo2=0.7, tx_a=0.65, tx_r=0.75, flt_type=1, flt_cut=0.62, ens_type=2, ens_amt=0.6,
+                           tx_detune=0.25, tx_bloom=0.4, rv_amt=0.55, rv_decay=0.85, vintage=0.3)),
+    # Clean samples, a slow filter-envelope swell, Detune + Bloom, a sub bass on Melody below the split
+    ("Liquid Strings", dict(tx_type=T["Digi Strings"], pcm_era=0, tx_var=0.15, tx_a=0.45, tx_r=0.6, flt_type=2, flt_cut=0.45,
+                            flt_res=0.2, flt_env=0.35, me_a=0.6, me_d=0.7, me_s=0.6, me_r=0.6, ens_type=0, ens_amt=0.8,
+                            tx_detune=0.3, tx_bloom=0.5, rv_amt=0.4, rv_decay=0.7, key_mode=1, split=48,
+                            ln_vol=0.55, ln_shape=LS["Sub"], ln_var=0.0, ln_det=0, ln_cut=0.4, ln_a=0.02, ln_d=0.5,
+                            ln_sus=1, ln_mode=1, ln_glide=0.15, ln_fx=1)),
+    # Lo-Fi Era, Var Env sweeping flute into ocarina per note, a tape echo
+    ("Breath Machine", dict(tx_type=T["Breath Flute"], pcm_era=2, tx_var=0.1, tx_depth=0.7, me_a=0.5, me_d=0.8, me_s=0.4,
+                            tx_a=0.35, tx_r=0.55, flt_type=2, flt_cut=0.6, fx_type=FX["Tape Echo"], fx_amt=0.3, fx_ctrl=0.55,
+                            fx_tone=0.45, ens_amt=0.5, rv_amt=0.4, vintage=0.45)),
+    # noise textures as a pad: high-pass, Motion on the filter, latched for drones
+    ("Air Wash Drone", dict(tx_type=T["Air Wash"], pcm_era=1, tx_var=0.4, flt_type=3, flt_cut=0.42, flt_res=0.35,
+                            tx_anim=0.5, an_dest=AD["Filter"], an_rate=0.08, an_shape=5, tx_a=0.7, tx_r=0.8, tx_latch=1,
+                            ens_type=3, ens_amt=0.8, sh_pitch=6, sh_amt=0.4, rv_amt=0.6, rv_decay=0.9, rv_size=0.9)),
+    # bowed metal through a tuned comb: the filter turns the texture into pitched resonance
+    ("Metal Cathedral", dict(tx_type=T["Metal Shimmer"], pcm_era=0, tx_var=0.3, flt_type=8, flt_cut=0.55, flt_res=0.7,
+                             tx_a=0.5, tx_r=0.85, tx_anim=0.3, an_dest=AD["Var+Filter"], an_rate=0.1, an_lfo2=-0.5,
+                             ens_type=3, ens_amt=0.6, sh_pitch=6, sh_amt=0.45, rv_amt=0.6, rv_decay=0.95, rv_size=0.9)),
+    # one-shot bells under a long release, each note's pan restarted by its note (LFO Mode Retrig), ping-pong
+    ("Chime Rain", dict(tx_type=T["Chime Bells"], pcm_era=1, tx_var=0.35, tx_a=0.0, tx_d=0.7, tx_s=0.6, tx_r=0.75,
+                        flt_type=1, flt_cut=0.85, tx_anim=0.6, an_dest=AD["Pan"], an_mode=2, an_rate=0.4,
+                        fx_type=FX["Ping Pong"], fx_amt=0.3, fx_ctrl=0.55, ens_amt=0.4, sh_pitch=5, sh_amt=0.25,
+                        rv_amt=0.5, rv_decay=0.8, vel=0.7)),
+    # latched glock/kalimba chord with Melody arpeggiating it on a mallet wavetable
+    ("Glock Garden", dict(tx_type=T["Glock Kalimba"], pcm_era=1, tx_var=0.6, tx_a=0.0, tx_d=0.6, tx_s=0.5, tx_r=0.6,
+                          tx_latch=1, tx_vol=0.8, flt_type=1, flt_cut=0.8, ens_amt=0.5, rv_amt=0.45, rv_decay=0.75,
+                          ln_vol=0.55, ln_shape=LS["Mallet WT"], ln_var=0.3, ln_tr=12, ln_a=0.0, ln_d=0.3, ln_sus=0,
+                          ln_mode=2, ln_cut=0.8, arp_mode=3, arp_src=1, arp_rate=4, arp_oct=1, arp_hold=1, arp_vrnd=0.3,
+                          ln_dly=0.25, ln_dtime=7)),
+    # sampled 90s FM keys, vibes faded in by velocity-free Variation, chorus and a dry-ish room
+    ("FM Tines 93", dict(tx_type=T["FM Keys"], pcm_era=1, tx_var=0.3, tx_a=0.0, tx_d=0.55, tx_s=0.55, tx_r=0.4, tx_vol=1.0,
+                         flt_type=1, flt_cut=0.75, fx_type=FX["Chorus"], fx_amt=0.35, ens_amt=0.3, rv_amt=0.3,
+                         vel=0.75, vintage=0.35)),
+    # a whole sung chord played chromatically (the old sampled-chord trick), stab envelope + dotted delay,
+    # a sub on Melody underneath every note
+    ("Sung Chord Stab", dict(tx_type=T["Sung Chords"], pcm_era=1, tx_var=0.25, tx_a=0.0, tx_d=0.5, tx_s=0.55, tx_r=0.5, tx_vol=1.0,
+                             flt_type=2, flt_cut=0.6, flt_env=0.3, me_a=0.0, me_d=0.4, fx_type=FX["Delay"], fx_amt=0.3,
+                             fx_ctrl=0.6, fx_tone=0.4, ens_amt=0.5, rv_amt=0.45, rv_decay=0.75,
+                             ln_vol=0.4, ln_shape=LS["Sub"], ln_var=0.0, ln_tr=-12, ln_det=0, ln_cut=0.35, ln_a=0.0,
+                             ln_d=0.45, ln_sus=1, ln_mode=1, ln_fx=1)),
 ]
 for name, d in PRESETS:
     for k in d:
@@ -1109,63 +1165,50 @@ def gen_amino():
 
 
 # ------------------------------------------------------------------------------------------------
-# PCM ROM.  Phase 1 spike: one generated sample (a noise-burst attack into a harmonic tone whose loop
-# is NOT a whole number of cycles, with a slow wobble per harmonic, so only the offline crossfade
-# makes the seam silent). 32 kHz mono int16, attack + loop, then 3 guard samples (the loop start
-# again) so the 4-point read past the loop end never needs a wrap check.
+# PCM ROM tables. The samples themselves are rom.bin, embedded with #embed (C23; zig's clang) so the
+# 10 MB never passes through a C source file.
 # ------------------------------------------------------------------------------------------------
-PCM_SR = 32000
-
-
-def pcm_loop_crossfade(x, ls, le, n):
-    """Blend the last n samples of the loop with the n before its start (equal power), so the wrap
-    from le-1 to ls continues the waveform that led into ls."""
-    for i in range(n):
-        t = (i + 0.5) / n
-        a, b = math.cos(t * math.pi / 2), math.sin(t * math.pi / 2)
-        x[le - n + i] = x[le - n + i] * a + x[ls - n + i] * b
-    return x
-
-
-def pcm_spike():
-    rnd = random.Random(7)
-    root = 60
-    f0 = 440.0 * 2 ** ((root - 69) / 12.0)
-    ls, ll = int(0.30 * PCM_SR), int(0.61 * PCM_SR)   # loop of 0.61 s = 159.6 cycles: not whole
-    le = ls + ll
-    x = [0.0] * le
-    lp = 0.0
-    for i in range(le):
-        t = i / PCM_SR
-        tone = 0.0
-        for h in range(1, 7):
-            wob = 1.0 + 0.25 * math.sin(2 * math.pi * (0.7 + 0.37 * h) * t + h)
-            tone += wob * math.sin(2 * math.pi * f0 * h * t) / h
-        lp += (rnd.uniform(-1, 1) - lp) * 0.35
-        x[i] = tone * min(1.0, t / 0.012) * 0.5 + lp * 1.6 * math.exp(-t / 0.035)
-    pcm_loop_crossfade(x, ls, le, int(0.075 * PCM_SR))
-    pk = max(abs(v) for v in x)
-    q = [max(-32767, min(32767, int(round(v / pk * 0.85 * 32767)))) for v in x]
-    q += q[ls:ls + 3]
-    return dict(root=root, ls=ls, le=le, data=q)
-
-
 def gen_rom():
-    sp = pcm_spike()
-    h = ["/* GENERATED by tools/gen.py. Do not edit. PCM ROM (phase 1 spike). */",
+    zones, sets = [], []
+    for st in ROM["sets"]:
+        sets.append((len(zones), len(st["zones"])))
+        for z in st["zones"]:
+            zones.append(z)
+    h = ["/* GENERATED by tools/gen.py from tools/data/rom/rom.json. Do not edit. */",
          "#ifndef QUARK_ROM_GEN_H", "#define QUARK_ROM_GEN_H", "",
-         "#define Q_PCM_SR %d" % PCM_SR,
-         "typedef struct { const short *data; int len, loop_start, loop_end, root; } QPcmZone;",
-         "extern const QPcmZone quark_pcm_zones[%d];" % len(PCM_SETS), "", "#endif", ""]
-    c = ["/* GENERATED by tools/gen.py. Do not edit. */", '#include "rom_gen.h"', "",
-         "static const short pcm_spike[%d] = {" % len(sp["data"])]
-    for i in range(0, len(sp["data"]), 24):
-        c.append("  " + ",".join(str(v) for v in sp["data"][i:i + 24]) + ",")
-    c += ["};", "", "const QPcmZone quark_pcm_zones[%d] = {" % len(PCM_SETS),
-          "  {pcm_spike, %d, %d, %d, %d}," % (len(sp["data"]), sp["ls"], sp["le"], sp["root"]), "};", ""]
+         "#define Q_PCM_SR %d" % ROM["sr"], "#define Q_PCM_MIPS %d" % ROM["mips"],
+         "#define Q_PCM_NUM_ZONES %d" % len(zones), "#define Q_PCM_NUM_SETS %d" % len(sets),
+         "#define Q_PCM_NUM_TYPES %d" % len(ROM["types"]), "",
+         "/* one zone: per mip its first sample in the ROM and its length (3 guard samples follow); loop",
+         " * points in mip-0 samples (multiples of 4, so every mip keeps the same loop); root as a MIDI note */",
+         "typedef struct { int off[Q_PCM_MIPS], len[Q_PCM_MIPS]; int loop_start, loop_end; float root; int oneshot; } QPcmZone;",
+         "typedef struct { short first, count; } QPcmSet;   /* zones sorted by root */",
+         "typedef struct { short a, b; } QPcmType;          /* Variation: set a -> set b */",
+         "typedef short __attribute__((may_alias)) q_rom_s16;",
+         "extern const q_rom_s16 *const quark_rom;",
+         "extern const QPcmZone quark_pcm_zones[Q_PCM_NUM_ZONES];",
+         "extern const QPcmSet quark_pcm_sets[Q_PCM_NUM_SETS];",
+         "extern const QPcmType quark_pcm_types[Q_PCM_NUM_TYPES];", "", "#endif", ""]
+    c = ["/* GENERATED by tools/gen.py from tools/data/rom/rom.json. Do not edit.",
+         " * Samples: CC0 recordings (VCSL, VSCO-2-CE, Freesound), see tools/data/rom/SOURCES.json. */",
+         '#include "rom_gen.h"', "",
+         "static const unsigned char rom_bytes[] __attribute__((aligned(16))) = {",
+         '#embed "../../tools/data/rom/rom.bin"', "};",
+         "const q_rom_s16 *const quark_rom = (const q_rom_s16 *)rom_bytes;", "",
+         "const QPcmZone quark_pcm_zones[Q_PCM_NUM_ZONES] = {"]
+    for z in zones:
+        c.append("  {{%s}, {%s}, %d, %d, %sf, %d}, /* %s */" % (
+            ", ".join(map(str, z["offsets"])), ", ".join(map(str, z["lens"])), z["loop_start"], z["loop_end"],
+            repr(float(z["root"])), 1 if z["oneshot"] else 0, os.path.basename(z["file"])))
+    c += ["};", "", "const QPcmSet quark_pcm_sets[Q_PCM_NUM_SETS] = {"]
+    for st, (f, n) in zip(ROM["sets"], sets):
+        c.append("  {%d, %d}, /* %s */" % (f, n, st["name"]))
+    c += ["};", "", "const QPcmType quark_pcm_types[Q_PCM_NUM_TYPES] = {"]
+    for t in ROM["types"]:
+        c.append("  {%d, %d}, /* %s */" % (t["a"], t["b"], t["name"]))
+    c += ["};", ""]
     write(os.path.join(DSP, "rom_gen.h"), "\n".join(h))
     write(os.path.join(DSP, "rom_gen.c"), "\n".join(c))
-
 
 def gen_meta():
     meta = {
@@ -1180,6 +1223,8 @@ def gen_meta():
         "fm": [FM_TYPES[n] for n in FM_TYPES],
         "wt": wt_previews(),
         "wtQuark": NUM_WT_QUARK,
+        "pcmSets": [{k: st[k] for k in ("name", "short", "kind", "chord", "overview", "loop")} for st in ROM["sets"]],
+        "pcmTypes": [[t["a"], t["b"]] for t in ROM["types"]],
         "wtUser0": NUM_WT_QUARK + len(AMINO_NAMES),
         "anSrc": AN_SRC,
         "anTargets": [t[1] for t in AN_TARGETS],

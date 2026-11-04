@@ -97,6 +97,7 @@ enum {
     P_LN_MODE,
     P_TX_LATCH,
     P_AN_LFO2,
+    P_PCM_ERA,
     P_AN_MODE,
     P_COUNT
 };
@@ -108,7 +109,7 @@ extern const float quark_presets[][P_COUNT];
 extern const char quark_chain_params[];
 extern const char quark_ui_hierarchy[];
 
-#define Q_NUM_TEX_TYPES 117
+#define Q_NUM_TEX_TYPES 130
 #define Q_NUM_ARP_RHYTHMS 40
 #define Q_NUM_ARP_PATTERNS 40
 #define Q_NUM_ARP_OCTS 9
@@ -116,7 +117,7 @@ extern const char quark_ui_hierarchy[];
 #define Q_NUM_WT_AMINO 74
 #define Q_NUM_WT (Q_NUM_WT_QUARK + Q_NUM_WT_AMINO)
 #define Q_UW_MAX 16
-#define Q_NUM_TEX_BUILTIN 101
+#define Q_NUM_TEX_BUILTIN 114
 #define Q_NUM_LINE_BUILTIN 93
 extern const char *const quark_cp_frag[];
 extern const short quark_cp_hole[];

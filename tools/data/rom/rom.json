@@ -1,0 +1,2390 @@
+{
+ "sr": 32000,
+ "mips": 3,
+ "guard": 3,
+ "samples": 5391904,
+ "sha256": "0593913f327059e83ca6039a226941e9b340d2cd9a2ba0e8afad686390a0a0a4",
+ "sets": [
+  {
+   "name": "Glass",
+   "short": "Glas",
+   "kind": "sus",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VCSL/Idiophones/Friction Idiophones/Wine Glasses/Sustains/Slow/glass1_D#4_Slow_1_Main.wav",
+     "sha256": "6cdc2f602fac912a768561b3831ebb9099c884cb5ea76c88befedf545bab1997",
+     "root": 63.3,
+     "loop_start": 34640,
+     "loop_end": 70016,
+     "oneshot": false,
+     "offsets": [
+      0,
+      70019,
+      105030
+     ],
+     "lens": [
+      70016,
+      35008,
+      17504
+     ]
+    },
+    {
+     "file": "VCSL/Idiophones/Friction Idiophones/Wine Glasses/Sustains/Slow/glass2_F#4_Slow_1_Main.wav",
+     "sha256": "a6dea146ee3b11fb1d667742ac4a3c16f0bdb567103ef5602cdf3df163b52080",
+     "root": 65.876,
+     "loop_start": 33368,
+     "loop_end": 68644,
+     "oneshot": false,
+     "offsets": [
+      122537,
+      191184,
+      225509
+     ],
+     "lens": [
+      68644,
+      34322,
+      17161
+     ]
+    },
+    {
+     "file": "VCSL/Idiophones/Friction Idiophones/Wine Glasses/Sustains/Slow/glass3_A#4_Slow_1_Main.wav",
+     "sha256": "b35da8d5c9ea4e24b33508094e3cb3e736e7ff5ea4517335844023f82c9bb503",
+     "root": 70.0,
+     "loop_start": 36792,
+     "loop_end": 71992,
+     "oneshot": false,
+     "offsets": [
+      242673,
+      314668,
+      350667
+     ],
+     "lens": [
+      71992,
+      35996,
+      17998
+     ]
+    },
+    {
+     "file": "VCSL/Idiophones/Friction Idiophones/Wine Glasses/Sustains/Slow/glass4_D5_Slow_2_Main.wav",
+     "sha256": "ffb776b67e6d43f6eeb8ff2b73d9a45e233919a83d4cb104c5dad2807f681322",
+     "root": 74.079,
+     "loop_start": 34368,
+     "loop_end": 72184,
+     "oneshot": false,
+     "offsets": [
+      368668,
+      440855,
+      476950
+     ],
+     "lens": [
+      72184,
+      36092,
+      18046
+     ]
+    }
+   ],
+   "overview": [
+    0.12,
+    0.193,
+    0.229,
+    0.247,
+    0.223,
+    0.182,
+    0.128,
+    0.075,
+    0.176,
+    0.283,
+    0.424,
+    0.531,
+    0.606,
+    0.61,
+    0.529,
+    0.361,
+    0.162,
+    0.185,
+    0.351,
+    0.582,
+    0.845,
+    0.982,
+    1.0,
+    0.947,
+    0.672,
+    0.41,
+    0.236,
+    0.121,
+    0.145,
+    0.229,
+    0.278,
+    0.293,
+    0.286,
+    0.245,
+    0.189,
+    0.176,
+    0.38,
+    0.596,
+    0.724,
+    0.735,
+    0.702,
+    0.541,
+    0.323,
+    0.19,
+    0.3,
+    0.502,
+    0.838,
+    0.878
+   ],
+   "loop": [
+    0.495,
+    1.0
+   ]
+  },
+  {
+   "name": "Bowed Vibes",
+   "short": "BVib",
+   "kind": "sus",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VCSL/Idiophones/Struck Idiophones/Vibraphone/Bowed/Vibes_bowed_G3_rr1_Main.wav",
+     "sha256": "4b566300ee58c75de89e97278607f710ba0a807622582118d9f2e451d8bf573c",
+     "root": 54.991,
+     "loop_start": 22760,
+     "loop_end": 54940,
+     "oneshot": false,
+     "offsets": [
+      494999,
+      549942,
+      577415
+     ],
+     "lens": [
+      54940,
+      27470,
+      13735
+     ]
+    },
+    {
+     "file": "VCSL/Idiophones/Struck Idiophones/Vibraphone/Bowed/Vibes_bowed_D4_rr1_Main.wav",
+     "sha256": "b5a6ab0a6c51b446832bc3686e27a62489f3169182ad4c872698912536d1ece6",
+     "root": 61.995,
+     "loop_start": 19856,
+     "loop_end": 51684,
+     "oneshot": false,
+     "offsets": [
+      591153,
+      642840,
+      668685
+     ],
+     "lens": [
+      51684,
+      25842,
+      12921
+     ]
+    },
+    {
+     "file": "VCSL/Idiophones/Struck Idiophones/Vibraphone/Bowed/Vibes_bowed_A4_rr1_Main.wav",
+     "sha256": "78be0c9d01f464cb76a46a398b3ae7ed412e9ae3d573f76c99a6821a1a04279f",
+     "root": 68.994,
+     "loop_start": 19912,
+     "loop_end": 51848,
+     "oneshot": false,
+     "offsets": [
+      681609,
+      733460,
+      759387
+     ],
+     "lens": [
+      51848,
+      25924,
+      12962
+     ]
+    },
+    {
+     "file": "VCSL/Idiophones/Struck Idiophones/Vibraphone/Bowed/Vibes_bowed_E5_rr1_Main.wav",
+     "sha256": "da6ea2e49db457b30e7a72e0361f7da67863ed3077977e73ff45ec09b2a91c65",
+     "root": 75.996,
+     "loop_start": 25184,
+     "loop_end": 53856,
+     "oneshot": false,
+     "offsets": [
+      772352,
+      826211,
+      853142
+     ],
+     "lens": [
+      53856,
+      26928,
+      13464
+     ]
+    }
+   ],
+   "overview": [
+    0.035,
+    0.04,
+    0.041,
+    0.037,
+    0.042,
+    0.051,
+    0.06,
+    0.067,
+    0.072,
+    0.077,
+    0.088,
+    0.106,
+    0.126,
+    0.153,
+    0.19,
+    0.226,
+    0.249,
+    0.282,
+    0.313,
+    0.337,
+    0.383,
+    0.418,
+    0.463,
+    0.509,
+    0.544,
+    0.562,
+    0.601,
+    0.65,
+    0.713,
+    0.799,
+    0.901,
+    0.988,
+    1.0,
+    0.965,
+    0.94,
+    0.887,
+    0.839,
+    0.853,
+    0.864,
+    0.861,
+    0.852,
+    0.896,
+    0.915,
+    0.931,
+    0.942,
+    0.834,
+    0.644,
+    0.469
+   ],
+   "loop": [
+    0.384,
+    1.0
+   ]
+  },
+  {
+   "name": "Strings",
+   "short": "Str",
+   "kind": "sus",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VSCO-2-CE/Strings/Cello Section/susvib/susvib_D2_v1_1.wav",
+     "sha256": "e8640dec9febc6e39fcf06b19d2c95a85d5ff8c38f13c9879e69f551eaf38ab8",
+     "root": 38.029,
+     "loop_start": 14424,
+     "loop_end": 42332,
+     "oneshot": false,
+     "offsets": [
+      866609,
+      908944,
+      930113
+     ],
+     "lens": [
+      42332,
+      21166,
+      10583
+     ]
+    },
+    {
+     "file": "VSCO-2-CE/Strings/Cello Section/susvib/susvib_A2_v1_1.wav",
+     "sha256": "c97a003184fdcb153d6b6c0bae8d82a90592a1b04b06bd7caaeda8b9776d5284",
+     "root": 45.008,
+     "loop_start": 17248,
+     "loop_end": 43296,
+     "oneshot": false,
+     "offsets": [
+      940699,
+      983998,
+      1005649
+     ],
+     "lens": [
+      43296,
+      21648,
+      10824
+     ]
+    },
+    {
+     "file": "VSCO-2-CE/Strings/Viola Section/susvib/ViolaEns_susvib_F3_v1_1.wav",
+     "sha256": "7a37f00ecb58fcaa5c32427a5ffb30950787b40c247409a8e18cfe0880955fd8",
+     "root": 52.988,
+     "loop_start": 20328,
+     "loop_end": 50576,
+     "oneshot": false,
+     "offsets": [
+      1016476,
+      1067055,
+      1092346
+     ],
+     "lens": [
+      50576,
+      25288,
+      12644
+     ]
+    },
+    {
+     "file": "VSCO-2-CE/Strings/Violin Section/susVib/VlnEns_susVib_C4_v1.wav",
+     "sha256": "c07edd5b2119fa1da2207aba996961b50dd616f69bbcf2300ab271bc6c16239f",
+     "root": 60.001,
+     "loop_start": 20952,
+     "loop_end": 49568,
+     "oneshot": false,
+     "offsets": [
+      1104993,
+      1154564,
+      1179351
+     ],
+     "lens": [
+      49568,
+      24784,
+      12392
+     ]
+    },
+    {
+     "file": "VSCO-2-CE/Strings/Violin Section/susVib/VlnEns_susVib_G4_v1.wav",
+     "sha256": "ed2a89cf254432d2af073699fa43ebfa16cfbc5552c7fc964a184fc434eaaa39",
+     "root": 67.032,
+     "loop_start": 19896,
+     "loop_end": 48908,
+     "oneshot": false,
+     "offsets": [
+      1191746,
+      1240657,
+      1265114
+     ],
+     "lens": [
+      48908,
+      24454,
+      12227
+     ]
+    },
+    {
+     "file": "VSCO-2-CE/Strings/Violin Section/susVib/VlnEns_susVib_D5_v1.wav",
+     "sha256": "f8d870457826c94270b9c3ead8e8ec02cb7e6c4a3481cded055641b7fab7df62",
+     "root": 74.004,
+     "loop_start": 20352,
+     "loop_end": 46652,
+     "oneshot": false,
+     "offsets": [
+      1277344,
+      1323999,
+      1347328
+     ],
+     "lens": [
+      46652,
+      23326,
+      11663
+     ]
+    }
+   ],
+   "overview": [
+    0.067,
+    0.079,
+    0.145,
+    0.145,
+    0.139,
+    0.172,
+    0.168,
+    0.179,
+    0.226,
+    0.212,
+    0.279,
+    0.293,
+    0.259,
+    0.267,
+    0.359,
+    0.372,
+    0.322,
+    0.378,
+    0.45,
+    0.416,
+    0.349,
+    0.358,
+    0.501,
+    0.491,
+    0.494,
+    0.502,
+    0.531,
+    0.537,
+    0.516,
+    0.515,
+    0.418,
+    0.566,
+    0.805,
+    0.774,
+    0.495,
+    0.384,
+    0.602,
+    0.719,
+    0.707,
+    0.941,
+    0.846,
+    0.721,
+    0.75,
+    1.0,
+    0.779,
+    0.747,
+    0.436,
+    0.471
+   ],
+   "loop": [
+    0.407,
+    1.0
+   ]
+  },
+  {
+   "name": "Psaltery",
+   "short": "Psal",
+   "kind": "sus",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VCSL/Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_A#3_Main_LongBow_rr2.wav",
+     "sha256": "e3538b10f32200b70e4fdeb60eea57d395109b5a080181c2cb7cfde6c0b772bb",
+     "root": 58.006,
+     "loop_start": 13368,
+     "loop_end": 44452,
+     "oneshot": false,
+     "offsets": [
+      1358994,
+      1403449,
+      1425678
+     ],
+     "lens": [
+      44452,
+      22226,
+      11113
+     ]
+    },
+    {
+     "file": "VCSL/Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_E4_Main_LongBow_rr2.wav",
+     "sha256": "c5a4b89ad35ad4e36979dd0facc2c75b13cb6d6f974c746981f2055cfdfbc859",
+     "root": 64.008,
+     "loop_start": 13464,
+     "loop_end": 40744,
+     "oneshot": false,
+     "offsets": [
+      1436794,
+      1477541,
+      1497916
+     ],
+     "lens": [
+      40744,
+      20372,
+      10186
+     ]
+    },
+    {
+     "file": "VCSL/Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_A#4_Main_LongBow_rr2.wav",
+     "sha256": "7ff17a523bb91a683f7247848e15b8ca98e8fa958e75c9f5977b5c53e9425fcb",
+     "root": 70.012,
+     "loop_start": 15992,
+     "loop_end": 47196,
+     "oneshot": false,
+     "offsets": [
+      1508105,
+      1555304,
+      1578905
+     ],
+     "lens": [
+      47196,
+      23598,
+      11799
+     ]
+    },
+    {
+     "file": "VCSL/Chordophones/Zithers/Psaltery, Bowed and Plucked/LongBow/BowedPsaltery_E5_Main_LongBow_rr2.wav",
+     "sha256": "6a25c73fe9f60187677b1a31b91018f551cb9c1e3cc0478995c6018ab50bbd93",
+     "root": 76.018,
+     "loop_start": 12808,
+     "loop_end": 38584,
+     "oneshot": false,
+     "offsets": [
+      1590707,
+      1629294,
+      1648589
+     ],
+     "lens": [
+      38584,
+      19292,
+      9646
+     ]
+    }
+   ],
+   "overview": [
+    0.094,
+    0.128,
+    0.179,
+    0.187,
+    0.167,
+    0.172,
+    0.289,
+    0.331,
+    0.417,
+    0.454,
+    0.484,
+    0.493,
+    0.512,
+    0.507,
+    0.526,
+    0.49,
+    0.539,
+    0.578,
+    0.632,
+    0.701,
+    0.795,
+    0.804,
+    0.806,
+    0.827,
+    0.818,
+    0.748,
+    0.733,
+    0.66,
+    0.635,
+    0.638,
+    0.615,
+    0.534,
+    0.566,
+    0.585,
+    0.693,
+    0.732,
+    0.747,
+    0.73,
+    0.735,
+    0.78,
+    0.837,
+    0.858,
+    0.933,
+    1.0,
+    0.861,
+    0.653,
+    0.64,
+    0.548
+   ],
+   "loop": [
+    0.33,
+    1.0
+   ]
+  },
+  {
+   "name": "Flute",
+   "short": "Flut",
+   "kind": "sus",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VSCO-2-CE/Woodwinds/Flute/susNV/LDFlute_susNV_C4_v1_1.wav",
+     "sha256": "105a6dbced98de7ae04a317bdd3ba1a5c6b90dc94034439b68cce6635e2781df",
+     "root": 60.001,
+     "loop_start": 11720,
+     "loop_end": 40340,
+     "oneshot": false,
+     "offsets": [
+      1658238,
+      1698581,
+      1718754
+     ],
+     "lens": [
+      40340,
+      20170,
+      10085
+     ]
+    },
+    {
+     "file": "VSCO-2-CE/Woodwinds/Flute/susNV/LDFlute_susNV_E4_v1_1.wav",
+     "sha256": "b609d37fb577e2a0f64f20800fba4bed067151375349bf713c0d4e803f862580",
+     "root": 64.0,
+     "loop_start": 10480,
+     "loop_end": 39604,
+     "oneshot": false,
+     "offsets": [
+      1728842,
+      1768449,
+      1788254
+     ],
+     "lens": [
+      39604,
+      19802,
+      9901
+     ]
+    },
+    {
+     "file": "VSCO-2-CE/Woodwinds/Flute/susNV/LDFlute_susNV_A4_v1_1.wav",
+     "sha256": "c8fd15bb561dbdac6d35ffd9c5e49413131d96f8948d5bdf03d4a03fa344c5c0",
+     "root": 68.999,
+     "loop_start": 14616,
+     "loop_end": 43488,
+     "oneshot": false,
+     "offsets": [
+      1798158,
+      1841649,
+      1863396
+     ],
+     "lens": [
+      43488,
+      21744,
+      10872
+     ]
+    },
+    {
+     "file": "VSCO-2-CE/Woodwinds/Flute/susNV/LDFlute_susNV_E5_v1_1.wav",
+     "sha256": "660df172b551dfd7859dade283cb1e8dd6eac8095ccaabb5b19416caaacdef87",
+     "root": 76.004,
+     "loop_start": 17584,
+     "loop_end": 44620,
+     "oneshot": false,
+     "offsets": [
+      1874271,
+      1918894,
+      1941207
+     ],
+     "lens": [
+      44620,
+      22310,
+      11155
+     ]
+    }
+   ],
+   "overview": [
+    0.03,
+    0.028,
+    0.074,
+    0.192,
+    0.502,
+    0.886,
+    1.0,
+    0.989,
+    0.906,
+    0.844,
+    0.815,
+    0.775,
+    0.792,
+    0.824,
+    0.831,
+    0.809,
+    0.772,
+    0.732,
+    0.721,
+    0.727,
+    0.725,
+    0.745,
+    0.764,
+    0.75,
+    0.729,
+    0.713,
+    0.713,
+    0.702,
+    0.667,
+    0.639,
+    0.647,
+    0.668,
+    0.674,
+    0.684,
+    0.709,
+    0.71,
+    0.708,
+    0.688,
+    0.651,
+    0.626,
+    0.631,
+    0.605,
+    0.575,
+    0.62,
+    0.689,
+    0.735,
+    0.738,
+    0.784
+   ],
+   "loop": [
+    0.265,
+    1.0
+   ]
+  },
+  {
+   "name": "Ocarina",
+   "short": "Ocar",
+   "kind": "sus",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VCSL/Aerophones/Edge-blown Aerophones/Ocarina, Typical/Sustains/Sus/StdOcarina_Sus_B3.wav",
+     "sha256": "31df38c57f589134716542bc798c37a4df9dc2a2022d533079e01504334c70c1",
+     "root": 58.968,
+     "loop_start": 17592,
+     "loop_end": 46412,
+     "oneshot": false,
+     "offsets": [
+      1952365,
+      1998780,
+      2021989
+     ],
+     "lens": [
+      46412,
+      23206,
+      11603
+     ]
+    },
+    {
+     "file": "VCSL/Aerophones/Edge-blown Aerophones/Ocarina, Typical/Sustains/Sus/StdOcarina_Sus_E4.wav",
+     "sha256": "c9b797eb447b6f02a60cd3fcdda79e25a5e80e3a2efc1a751937d194f1dbf4e3",
+     "root": 64.007,
+     "loop_start": 10744,
+     "loop_end": 39756,
+     "oneshot": false,
+     "offsets": [
+      2033595,
+      2073354,
+      2093235
+     ],
+     "lens": [
+      39756,
+      19878,
+      9939
+     ]
+    },
+    {
+     "file": "VCSL/Aerophones/Edge-blown Aerophones/Ocarina, Typical/Sustains/Sus/StdOcarina_Sus_G#4.wav",
+     "sha256": "ab954bfe8cdfab1addf6606263f3c4e81d7d4dd4c5bf515fdb246dcfe78286c5",
+     "root": 67.941,
+     "loop_start": 17048,
+     "loop_end": 45728,
+     "oneshot": false,
+     "offsets": [
+      2103177,
+      2148908,
+      2171775
+     ],
+     "lens": [
+      45728,
+      22864,
+      11432
+     ]
+    },
+    {
+     "file": "VCSL/Aerophones/Edge-blown Aerophones/Ocarina, Typical/Sustains/Sus/StdOcarina_Sus_C#5.wav",
+     "sha256": "7e33a67f7c36ad5f1bbba454b242142fcb1aeac5bb7d7b1be45c15fed16249d6",
+     "root": 73.076,
+     "loop_start": 12632,
+     "loop_end": 41252,
+     "oneshot": false,
+     "offsets": [
+      2183210,
+      2224465,
+      2245094
+     ],
+     "lens": [
+      41252,
+      20626,
+      10313
+     ]
+    }
+   ],
+   "overview": [
+    0.422,
+    0.483,
+    0.536,
+    0.764,
+    0.78,
+    0.817,
+    0.967,
+    0.976,
+    0.924,
+    0.945,
+    1.0,
+    0.994,
+    0.945,
+    0.889,
+    0.862,
+    0.833,
+    0.882,
+    0.887,
+    0.879,
+    0.878,
+    0.847,
+    0.857,
+    0.846,
+    0.846,
+    0.838,
+    0.837,
+    0.886,
+    0.92,
+    0.93,
+    0.891,
+    0.824,
+    0.829,
+    0.9,
+    0.915,
+    0.944,
+    0.938,
+    0.902,
+    0.866,
+    0.864,
+    0.89,
+    0.884,
+    0.89,
+    0.87,
+    0.914,
+    0.922,
+    0.924,
+    0.927,
+    0.918
+   ],
+   "loop": [
+    0.27,
+    1.0
+   ]
+  },
+  {
+   "name": "Air",
+   "short": "Air",
+   "kind": "tex",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VSCO-2-CE/Keys/Organ/Rode_Blower.wav",
+     "sha256": "f02ac90e80c862d3710320fc21392532f91496a07de6f5ee37c44344f9546c34",
+     "root": 60.0,
+     "loop_start": 16464,
+     "loop_end": 86864,
+     "oneshot": false,
+     "offsets": [
+      2255410,
+      2342277,
+      2385712
+     ],
+     "lens": [
+      86864,
+      43432,
+      21716
+     ]
+    }
+   ],
+   "overview": [
+    0.348,
+    0.254,
+    0.25,
+    0.211,
+    0.248,
+    0.273,
+    0.345,
+    0.218,
+    0.148,
+    0.173,
+    0.121,
+    0.242,
+    0.195,
+    0.116,
+    0.238,
+    0.174,
+    0.177,
+    0.139,
+    0.151,
+    0.166,
+    0.142,
+    0.174,
+    0.279,
+    0.164,
+    0.196,
+    0.195,
+    0.252,
+    0.177,
+    0.157,
+    0.118,
+    0.161,
+    0.133,
+    0.188,
+    0.279,
+    0.462,
+    0.818,
+    0.61,
+    0.64,
+    0.378,
+    0.37,
+    0.522,
+    1.0,
+    0.608,
+    0.427,
+    0.3,
+    0.247,
+    0.215,
+    0.142
+   ],
+   "loop": [
+    0.19,
+    1.0
+   ]
+  },
+  {
+   "name": "Ocean",
+   "short": "Ocn",
+   "kind": "tex",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VCSL/Membranophones/Other Membranophones/Ocean Drum/OceanDrum_Sus_2_Mid.wav",
+     "sha256": "6642dbaeef3f4feb94765ecdbd3d0411c623b3a6b3078110201bddd722948d9d",
+     "root": 60.0,
+     "loop_start": 20400,
+     "loop_end": 97200,
+     "oneshot": false,
+     "offsets": [
+      2407431,
+      2504634,
+      2553237
+     ],
+     "lens": [
+      97200,
+      48600,
+      24300
+     ]
+    }
+   ],
+   "overview": [
+    0.575,
+    0.612,
+    0.682,
+    0.644,
+    0.628,
+    0.817,
+    0.58,
+    0.696,
+    0.662,
+    0.776,
+    0.751,
+    0.851,
+    0.815,
+    0.81,
+    0.982,
+    1.0,
+    0.723,
+    0.983,
+    0.747,
+    0.773,
+    0.653,
+    0.716,
+    0.727,
+    0.701,
+    0.664,
+    0.618,
+    0.723,
+    0.893,
+    0.704,
+    0.727,
+    0.842,
+    0.735,
+    0.947,
+    0.764,
+    0.808,
+    0.687,
+    0.699,
+    0.582,
+    0.605,
+    0.681,
+    0.646,
+    0.659,
+    0.772,
+    0.609,
+    0.542,
+    0.802,
+    0.711,
+    0.777
+   ],
+   "loop": [
+    0.21,
+    1.0
+   ]
+  },
+  {
+   "name": "Cymbal Bow",
+   "short": "Cymb",
+   "kind": "tex",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VSCO-2-CE/Percussion/susCymb1-bow-1.wav",
+     "sha256": "181f906018e2cc53a82eb73f209894fa07a4b1fb8718aa5b38ad0e15610489d3",
+     "root": 60.0,
+     "loop_start": 21968,
+     "loop_end": 92368,
+     "oneshot": false,
+     "offsets": [
+      2577540,
+      2669911,
+      2716098
+     ],
+     "lens": [
+      92368,
+      46184,
+      23092
+     ]
+    }
+   ],
+   "overview": [
+    0.376,
+    0.364,
+    0.388,
+    0.505,
+    0.616,
+    0.787,
+    0.882,
+    0.869,
+    0.996,
+    0.813,
+    0.756,
+    0.69,
+    0.502,
+    0.399,
+    0.366,
+    0.461,
+    0.528,
+    0.647,
+    0.634,
+    0.709,
+    0.645,
+    0.632,
+    0.716,
+    0.608,
+    0.745,
+    0.842,
+    0.728,
+    0.654,
+    0.6,
+    0.632,
+    0.747,
+    0.809,
+    0.983,
+    1.0,
+    0.959,
+    0.904,
+    0.873,
+    0.816,
+    0.769,
+    0.842,
+    0.839,
+    0.65,
+    0.506,
+    0.409,
+    0.611,
+    0.786,
+    0.692,
+    0.716
+   ],
+   "loop": [
+    0.238,
+    1.0
+   ]
+  },
+  {
+   "name": "Gong Scrape",
+   "short": "Gong",
+   "kind": "tex",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VSCO-2-CE/Percussion/gongscrape_pp.wav",
+     "sha256": "0166526b453fa54a2d978796f2c4e696a213ac947c9cf2ec105f6af16667bd9e",
+     "root": 60.0,
+     "loop_start": 15536,
+     "loop_end": 79536,
+     "oneshot": false,
+     "offsets": [
+      2739193,
+      2818732,
+      2858503
+     ],
+     "lens": [
+      79536,
+      39768,
+      19884
+     ]
+    }
+   ],
+   "overview": [
+    0.827,
+    0.821,
+    1.0,
+    0.742,
+    0.77,
+    0.646,
+    0.666,
+    0.599,
+    0.511,
+    0.488,
+    0.433,
+    0.439,
+    0.487,
+    0.46,
+    0.452,
+    0.487,
+    0.471,
+    0.445,
+    0.408,
+    0.441,
+    0.404,
+    0.386,
+    0.418,
+    0.317,
+    0.375,
+    0.3,
+    0.322,
+    0.251,
+    0.299,
+    0.204,
+    0.209,
+    0.231,
+    0.211,
+    0.181,
+    0.198,
+    0.178,
+    0.162,
+    0.215,
+    0.186,
+    0.213,
+    0.236,
+    0.327,
+    0.36,
+    0.471,
+    0.54,
+    0.502,
+    0.565,
+    0.516
+   ],
+   "loop": [
+    0.195,
+    1.0
+   ]
+  },
+  {
+   "name": "Chimes",
+   "short": "Chim",
+   "kind": "shot",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VCSL/Idiophones/Struck Idiophones/Hand Chimes/sus_D4_r01_main.wav",
+     "sha256": "ab6598ca5d49f8d19f14b9e5fdfbdb35353ca7cc83e7d4f78946b6faa9371c67",
+     "root": 62.0,
+     "loop_start": 64000,
+     "loop_end": 64000,
+     "oneshot": true,
+     "offsets": [
+      2878390,
+      2942393,
+      2974396
+     ],
+     "lens": [
+      64000,
+      32000,
+      16000
+     ]
+    },
+    {
+     "file": "VCSL/Idiophones/Struck Idiophones/Hand Chimes/sus_A4_r01_main.wav",
+     "sha256": "43604b3b049f3d7c60c6e5c8601d7027045ded1f124debcd65c2ccef723daaa1",
+     "root": 69.0,
+     "loop_start": 64000,
+     "loop_end": 64000,
+     "oneshot": true,
+     "offsets": [
+      2990399,
+      3054402,
+      3086405
+     ],
+     "lens": [
+      64000,
+      32000,
+      16000
+     ]
+    },
+    {
+     "file": "VCSL/Idiophones/Struck Idiophones/Hand Chimes/sus_F#5_r01_main.wav",
+     "sha256": "7bf55316322d46c635be1b1180e0bc8a4988b26e4ebc5cff2d326ecd46b82302",
+     "root": 78.0,
+     "loop_start": 64000,
+     "loop_end": 64000,
+     "oneshot": true,
+     "offsets": [
+      3102408,
+      3166411,
+      3198414
+     ],
+     "lens": [
+      64000,
+      32000,
+      16000
+     ]
+    }
+   ],
+   "overview": [
+    1.0,
+    0.969,
+    0.694,
+    0.621,
+    0.624,
+    0.613,
+    0.593,
+    0.579,
+    0.566,
+    0.556,
+    0.543,
+    0.533,
+    0.519,
+    0.506,
+    0.493,
+    0.479,
+    0.472,
+    0.454,
+    0.445,
+    0.435,
+    0.427,
+    0.42,
+    0.408,
+    0.396,
+    0.386,
+    0.377,
+    0.365,
+    0.351,
+    0.344,
+    0.337,
+    0.329,
+    0.32,
+    0.311,
+    0.307,
+    0.303,
+    0.296,
+    0.291,
+    0.284,
+    0.276,
+    0.273,
+    0.265,
+    0.262,
+    0.253,
+    0.171,
+    0.108,
+    0.059,
+    0.026,
+    0.006
+   ],
+   "loop": null
+  },
+  {
+   "name": "Vibes",
+   "short": "Vibe",
+   "kind": "shot",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VCSL/Idiophones/Struck Idiophones/Vibraphone/Soft Mallets/Vibes_soft_D4_v1_rr1_Main.wav",
+     "sha256": "daedf613863d4de0a383d66b2db6ab9ffd8dc492d16ff7d735cf3b3107046a26",
+     "root": 62.0,
+     "loop_start": 57600,
+     "loop_end": 57600,
+     "oneshot": true,
+     "offsets": [
+      3214417,
+      3272020,
+      3300823
+     ],
+     "lens": [
+      57600,
+      28800,
+      14400
+     ]
+    },
+    {
+     "file": "VCSL/Idiophones/Struck Idiophones/Vibraphone/Soft Mallets/Vibes_soft_A4_v1_rr1_Main.wav",
+     "sha256": "48e942290a982768d7a0038e28a76a99cb666673518b29ebdc55de5e1491025f",
+     "root": 69.0,
+     "loop_start": 57600,
+     "loop_end": 57600,
+     "oneshot": true,
+     "offsets": [
+      3315226,
+      3372829,
+      3401632
+     ],
+     "lens": [
+      57600,
+      28800,
+      14400
+     ]
+    },
+    {
+     "file": "VCSL/Idiophones/Struck Idiophones/Vibraphone/Soft Mallets/Vibes_soft_E5_v1_rr1_Main.wav",
+     "sha256": "d2a9412550115bfdc4e1087cad3cd6e9d8146c1f4a91bf47f60aa7936c5f5dbe",
+     "root": 76.0,
+     "loop_start": 57600,
+     "loop_end": 57600,
+     "oneshot": true,
+     "offsets": [
+      3416035,
+      3473638,
+      3502441
+     ],
+     "lens": [
+      57600,
+      28800,
+      14400
+     ]
+    }
+   ],
+   "overview": [
+    0.919,
+    1.0,
+    0.939,
+    0.864,
+    0.839,
+    0.834,
+    0.821,
+    0.802,
+    0.794,
+    0.779,
+    0.766,
+    0.753,
+    0.74,
+    0.723,
+    0.714,
+    0.697,
+    0.684,
+    0.67,
+    0.658,
+    0.647,
+    0.631,
+    0.62,
+    0.611,
+    0.6,
+    0.588,
+    0.579,
+    0.569,
+    0.556,
+    0.546,
+    0.538,
+    0.527,
+    0.515,
+    0.508,
+    0.501,
+    0.49,
+    0.48,
+    0.471,
+    0.463,
+    0.454,
+    0.446,
+    0.436,
+    0.428,
+    0.34,
+    0.232,
+    0.146,
+    0.08,
+    0.035,
+    0.008
+   ],
+   "loop": null
+  },
+  {
+   "name": "Glock",
+   "short": "Glck",
+   "kind": "shot",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VCSL/Idiophones/Struck Idiophones/Glockenspiel/glock_medium_G5_01.wav",
+     "sha256": "7045c0ef7260e2f1ad11a64406cf7575ed898d1207a91104d33d78caefac63e4",
+     "root": 79.0,
+     "loop_start": 44800,
+     "loop_end": 44800,
+     "oneshot": true,
+     "offsets": [
+      3516844,
+      3561647,
+      3584050
+     ],
+     "lens": [
+      44800,
+      22400,
+      11200
+     ]
+    },
+    {
+     "file": "VCSL/Idiophones/Struck Idiophones/Glockenspiel/glock_medium_C6_01.wav",
+     "sha256": "e942cbf502cf6731df2925945fe3234c876cb63f047d91007b6929887f9e4904",
+     "root": 84.0,
+     "loop_start": 44800,
+     "loop_end": 44800,
+     "oneshot": true,
+     "offsets": [
+      3595253,
+      3640056,
+      3662459
+     ],
+     "lens": [
+      44800,
+      22400,
+      11200
+     ]
+    }
+   ],
+   "overview": [
+    1.0,
+    0.663,
+    0.477,
+    0.373,
+    0.27,
+    0.221,
+    0.192,
+    0.16,
+    0.142,
+    0.122,
+    0.109,
+    0.1,
+    0.092,
+    0.089,
+    0.087,
+    0.084,
+    0.08,
+    0.076,
+    0.073,
+    0.069,
+    0.066,
+    0.064,
+    0.061,
+    0.059,
+    0.057,
+    0.053,
+    0.051,
+    0.049,
+    0.048,
+    0.046,
+    0.045,
+    0.044,
+    0.042,
+    0.04,
+    0.039,
+    0.037,
+    0.036,
+    0.035,
+    0.034,
+    0.032,
+    0.026,
+    0.02,
+    0.014,
+    0.009,
+    0.006,
+    0.003,
+    0.001,
+    0.0
+   ],
+   "loop": null
+  },
+  {
+   "name": "Kalimba",
+   "short": "Kalm",
+   "kind": "shot",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VCSL/Idiophones/Plucked Idiophones/Kalimba, Kenya/Mbira6_Normal_MainSpirit_F#3_k10_vl3_rr2.wav",
+     "sha256": "274fff90bf95d9c39408387117a16a8d7732a42094f5ae6d32b9e26528c7fe24",
+     "root": 54.0,
+     "loop_start": 48000,
+     "loop_end": 48000,
+     "oneshot": true,
+     "offsets": [
+      3673662,
+      3721665,
+      3745668
+     ],
+     "lens": [
+      48000,
+      24000,
+      12000
+     ]
+    },
+    {
+     "file": "VCSL/Idiophones/Plucked Idiophones/Kalimba, Kenya/Mbira6_Normal_MainSpirit_B3_k3_vl3_rr2.wav",
+     "sha256": "d35e8f5773ee989511e376876d9698e0027f44a754eb9e001de01abb29b19808",
+     "root": 59.0,
+     "loop_start": 48000,
+     "loop_end": 48000,
+     "oneshot": true,
+     "offsets": [
+      3757671,
+      3805674,
+      3829677
+     ],
+     "lens": [
+      48000,
+      24000,
+      12000
+     ]
+    },
+    {
+     "file": "VCSL/Idiophones/Plucked Idiophones/Kalimba, Kenya/Mbira6_Normal_MainSpirit_F#4_k14_vl3_rr2.wav",
+     "sha256": "534754f601c2a16577bd26e87b8c8241b5d76c53a01ed196e54bf53f22cea7bc",
+     "root": 66.0,
+     "loop_start": 48000,
+     "loop_end": 48000,
+     "oneshot": true,
+     "offsets": [
+      3841680,
+      3889683,
+      3913686
+     ],
+     "lens": [
+      48000,
+      24000,
+      12000
+     ]
+    }
+   ],
+   "overview": [
+    1.0,
+    0.692,
+    0.348,
+    0.224,
+    0.251,
+    0.221,
+    0.159,
+    0.065,
+    0.067,
+    0.085,
+    0.082,
+    0.073,
+    0.047,
+    0.042,
+    0.045,
+    0.045,
+    0.037,
+    0.035,
+    0.03,
+    0.027,
+    0.028,
+    0.026,
+    0.021,
+    0.022,
+    0.018,
+    0.019,
+    0.017,
+    0.014,
+    0.015,
+    0.014,
+    0.012,
+    0.012,
+    0.011,
+    0.01,
+    0.01,
+    0.009,
+    0.008,
+    0.008,
+    0.007,
+    0.007,
+    0.006,
+    0.004,
+    0.003,
+    0.002,
+    0.001,
+    0.001,
+    0.0,
+    0.0
+   ],
+   "loop": null
+  },
+  {
+   "name": "Organ",
+   "short": "Orgn",
+   "kind": "sus",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VCSL/Aerophones/Edge-blown Aerophones/Pipe Organ/Quiet/NT5_Man3Quiet_A2_rr1.wav",
+     "sha256": "c39ec6c7e26dee6a3661e54a96c4a2a04bce08130864244458a7db1b627b3c93",
+     "root": 45.041,
+     "loop_start": 11504,
+     "loop_end": 40236,
+     "oneshot": false,
+     "offsets": [
+      3925689,
+      3965928,
+      3986049
+     ],
+     "lens": [
+      40236,
+      20118,
+      10059
+     ]
+    },
+    {
+     "file": "VCSL/Aerophones/Edge-blown Aerophones/Pipe Organ/Quiet/NT5_Man3Quiet_A3_rr1.wav",
+     "sha256": "97df359ea6827d9b751cf85de91fb460d8c95871cb98dff0441494bc35ca1cb1",
+     "root": 56.969,
+     "loop_start": 15304,
+     "loop_end": 44592,
+     "oneshot": false,
+     "offsets": [
+      3996111,
+      4040706,
+      4063005
+     ],
+     "lens": [
+      44592,
+      22296,
+      11148
+     ]
+    },
+    {
+     "file": "VCSL/Aerophones/Edge-blown Aerophones/Pipe Organ/Quiet/NT5_Man3Quiet_D#4_rr1.wav",
+     "sha256": "f7547dc90d06e1329420f3e9db4b11d0cb616878357949884dd411ce693fc508",
+     "root": 62.972,
+     "loop_start": 11200,
+     "loop_end": 39736,
+     "oneshot": false,
+     "offsets": [
+      4074156,
+      4113895,
+      4133766
+     ],
+     "lens": [
+      39736,
+      19868,
+      9934
+     ]
+    },
+    {
+     "file": "VCSL/Aerophones/Edge-blown Aerophones/Pipe Organ/Quiet/NT5_Man3Quiet_A4_rr1.wav",
+     "sha256": "9b23b50db700b4b881ddac02ca8d99922d745c3cd9fcc31022b0fa48a2eec31c",
+     "root": 68.997,
+     "loop_start": 17944,
+     "loop_end": 46528,
+     "oneshot": false,
+     "offsets": [
+      4143703,
+      4190234,
+      4213501
+     ],
+     "lens": [
+      46528,
+      23264,
+      11632
+     ]
+    }
+   ],
+   "overview": [
+    0.307,
+    0.485,
+    0.465,
+    0.333,
+    0.413,
+    0.362,
+    0.374,
+    0.619,
+    0.678,
+    0.651,
+    0.684,
+    0.77,
+    0.904,
+    0.981,
+    0.945,
+    0.957,
+    0.883,
+    0.928,
+    0.972,
+    0.941,
+    0.863,
+    0.824,
+    0.851,
+    0.943,
+    0.947,
+    0.919,
+    0.916,
+    0.931,
+    0.907,
+    0.918,
+    0.923,
+    0.88,
+    0.935,
+    0.964,
+    0.96,
+    0.972,
+    0.963,
+    0.955,
+    1.0,
+    0.987,
+    0.979,
+    0.897,
+    0.84,
+    0.864,
+    0.84,
+    0.802,
+    0.829,
+    0.972
+   ],
+   "loop": [
+    0.282,
+    1.0
+   ]
+  },
+  {
+   "name": "FM Piano",
+   "short": "FMP",
+   "kind": "shot",
+   "chord": false,
+   "zones": [
+    {
+     "file": "VCSL/Electrophones/TX81Z/FM Piano/FMPiano_E2_vl2.wav",
+     "sha256": "d738ad3fa006ca3429cef9dc13a7f8d8f27154100c8c6ea8757016d5e46114a9",
+     "root": 40.0,
+     "loop_start": 64000,
+     "loop_end": 64000,
+     "oneshot": true,
+     "offsets": [
+      4225136,
+      4289139,
+      4321142
+     ],
+     "lens": [
+      64000,
+      32000,
+      16000
+     ]
+    },
+    {
+     "file": "VCSL/Electrophones/TX81Z/FM Piano/FMPiano_C3_vl2.wav",
+     "sha256": "6f11eda294358ac5931225e3cf2400dadf0730a1fe092a75457f6e097148fdec",
+     "root": 48.0,
+     "loop_start": 64000,
+     "loop_end": 64000,
+     "oneshot": true,
+     "offsets": [
+      4337145,
+      4401148,
+      4433151
+     ],
+     "lens": [
+      64000,
+      32000,
+      16000
+     ]
+    },
+    {
+     "file": "VCSL/Electrophones/TX81Z/FM Piano/FMPiano_G#3_vl2.wav",
+     "sha256": "6c32c0dea461ea49f4cf3c3439b20f5f94340e387fd0a32d6d5cbaa937a4a04d",
+     "root": 56.0,
+     "loop_start": 64000,
+     "loop_end": 64000,
+     "oneshot": true,
+     "offsets": [
+      4449154,
+      4513157,
+      4545160
+     ],
+     "lens": [
+      64000,
+      32000,
+      16000
+     ]
+    },
+    {
+     "file": "VCSL/Electrophones/TX81Z/FM Piano/FMPiano_E4_vl2.wav",
+     "sha256": "ffdb976f02bc4b1ab8a8eda4f880a46c2505804f35ce07e73fff02b177b54e46",
+     "root": 64.0,
+     "loop_start": 64000,
+     "loop_end": 64000,
+     "oneshot": true,
+     "offsets": [
+      4561163,
+      4625166,
+      4657169
+     ],
+     "lens": [
+      64000,
+      32000,
+      16000
+     ]
+    },
+    {
+     "file": "VCSL/Electrophones/TX81Z/FM Piano/FMPiano_C5_vl2.wav",
+     "sha256": "b5d604f62d61b427214a34bef34974a9cb0bc3ac216b16f1e7ebf6ab27969d40",
+     "root": 72.0,
+     "loop_start": 64000,
+     "loop_end": 64000,
+     "oneshot": true,
+     "offsets": [
+      4673172,
+      4737175,
+      4769178
+     ],
+     "lens": [
+      64000,
+      32000,
+      16000
+     ]
+    }
+   ],
+   "overview": [
+    1.0,
+    0.852,
+    0.713,
+    0.659,
+    0.632,
+    0.6,
+    0.566,
+    0.516,
+    0.471,
+    0.442,
+    0.418,
+    0.399,
+    0.38,
+    0.366,
+    0.348,
+    0.334,
+    0.324,
+    0.312,
+    0.298,
+    0.282,
+    0.267,
+    0.249,
+    0.23,
+    0.213,
+    0.208,
+    0.202,
+    0.2,
+    0.197,
+    0.191,
+    0.186,
+    0.182,
+    0.177,
+    0.172,
+    0.166,
+    0.159,
+    0.15,
+    0.141,
+    0.133,
+    0.128,
+    0.123,
+    0.12,
+    0.116,
+    0.112,
+    0.075,
+    0.047,
+    0.025,
+    0.011,
+    0.003
+   ],
+   "loop": null
+  },
+  {
+   "name": "Aah",
+   "short": "Aah",
+   "kind": "sus",
+   "chord": false,
+   "zones": [
+    {
+     "file": "freesound/764221_CRWDSing_Ahh_Vowel_Sung_Near_F_02_ShaneVincent_G.wav",
+     "sha256": "caab9ba0023d6eaefef5f5b2eb9e69d81aedc9397acc94f688b9a2d9405cf98d",
+     "root": 53.0,
+     "loop_start": 19544,
+     "loop_end": 51544,
+     "oneshot": false,
+     "offsets": [
+      4785181,
+      4836728,
+      4862503
+     ],
+     "lens": [
+      51544,
+      25772,
+      12886
+     ]
+    },
+    {
+     "file": "freesound/211494_choir_aah_wav.wav",
+     "sha256": "4bf255c37cdc941c2bc5e18dd59b2d843193733ef672bdbb9f6a441f38e758d2",
+     "root": 68.0,
+     "loop_start": 17048,
+     "loop_end": 49048,
+     "oneshot": false,
+     "offsets": [
+      4875392,
+      4924443,
+      4948970
+     ],
+     "lens": [
+      49048,
+      24524,
+      12262
+     ]
+    }
+   ],
+   "overview": [
+    0.11,
+    0.579,
+    0.836,
+    0.751,
+    0.631,
+    0.738,
+    0.787,
+    0.711,
+    0.937,
+    0.716,
+    0.891,
+    0.829,
+    0.821,
+    0.795,
+    0.917,
+    0.73,
+    0.742,
+    0.731,
+    0.582,
+    0.856,
+    0.778,
+    0.875,
+    0.814,
+    1.0,
+    0.914,
+    0.813,
+    0.75,
+    0.983,
+    0.834,
+    0.813,
+    0.496,
+    0.257,
+    0.105,
+    0.052,
+    0.018,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.004,
+    0.036,
+    0.205,
+    0.723,
+    0.778,
+    0.738
+   ],
+   "loop": [
+    0.348,
+    1.0
+   ]
+  },
+  {
+   "name": "Ooh",
+   "short": "Ooh",
+   "kind": "sus",
+   "chord": false,
+   "zones": [
+    {
+     "file": "freesound/413713_Voice_Choir_OOOH_wav.wav",
+     "sha256": "5cc2cffb7ab329d6719e87bb1c118ca6896b71a2d5b1cc24e185e9146137623e",
+     "root": 47.645,
+     "loop_start": 22136,
+     "loop_end": 57020,
+     "oneshot": false,
+     "offsets": [
+      4961235,
+      5018258,
+      5046771
+     ],
+     "lens": [
+      57020,
+      28510,
+      14255
+     ]
+    }
+   ],
+   "overview": [
+    0.078,
+    0.123,
+    0.192,
+    0.198,
+    0.262,
+    0.291,
+    0.29,
+    0.311,
+    0.185,
+    0.188,
+    0.172,
+    0.2,
+    0.246,
+    0.301,
+    0.386,
+    0.264,
+    0.409,
+    0.583,
+    0.674,
+    0.629,
+    0.68,
+    0.713,
+    0.804,
+    0.862,
+    0.955,
+    1.0,
+    0.974,
+    0.865,
+    0.584,
+    0.484,
+    0.443,
+    0.459,
+    0.43,
+    0.344,
+    0.244,
+    0.173,
+    0.207,
+    0.271,
+    0.313,
+    0.4,
+    0.438,
+    0.498,
+    0.517,
+    0.534,
+    0.607,
+    0.719,
+    0.733,
+    0.678
+   ],
+   "loop": [
+    0.388,
+    1.0
+   ]
+  },
+  {
+   "name": "Sung Chord",
+   "short": "Chrd",
+   "kind": "sus",
+   "chord": true,
+   "zones": [
+    {
+     "file": "freesound/274121_Choir_of_Voices_Single_Chord.wav",
+     "sha256": "3e7b686adeaf1eac8288c18ecee732072d6dab50ebf0f8e8e5fb4e3861354c1f",
+     "root": 64.0,
+     "loop_start": 17032,
+     "loop_end": 49032,
+     "oneshot": false,
+     "offsets": [
+      5061029,
+      5110064,
+      5134583
+     ],
+     "lens": [
+      49032,
+      24516,
+      12258
+     ]
+    }
+   ],
+   "overview": [
+    0.114,
+    0.194,
+    0.201,
+    0.275,
+    0.44,
+    0.438,
+    0.439,
+    0.484,
+    0.459,
+    0.684,
+    0.715,
+    0.748,
+    0.727,
+    0.785,
+    0.654,
+    0.644,
+    0.795,
+    0.749,
+    0.789,
+    0.84,
+    0.69,
+    0.794,
+    0.796,
+    0.851,
+    0.861,
+    0.935,
+    0.957,
+    0.702,
+    0.67,
+    0.738,
+    0.75,
+    0.793,
+    0.968,
+    1.0,
+    0.792,
+    0.941,
+    0.753,
+    0.768,
+    0.524,
+    0.868,
+    0.84,
+    0.744,
+    0.724,
+    0.735,
+    0.86,
+    0.868,
+    0.724,
+    0.801
+   ],
+   "loop": [
+    0.347,
+    1.0
+   ]
+  },
+  {
+   "name": "Dream Chord",
+   "short": "Drm",
+   "kind": "sus",
+   "chord": true,
+   "zones": [
+    {
+     "file": "freesound/558416_Mystery_dream_vocal_chord.wav",
+     "sha256": "0d5a238ab3e12e631b3f9266332fd2f1f25f53b375ea14c2010e824e4ac21c69",
+     "root": 52.0,
+     "loop_start": 22032,
+     "loop_end": 60432,
+     "oneshot": false,
+     "offsets": [
+      5146844,
+      5207279,
+      5237498
+     ],
+     "lens": [
+      60432,
+      30216,
+      15108
+     ]
+    }
+   ],
+   "overview": [
+    0.207,
+    0.223,
+    0.214,
+    0.192,
+    0.161,
+    0.242,
+    0.36,
+    0.395,
+    0.477,
+    0.562,
+    0.397,
+    0.43,
+    0.564,
+    0.552,
+    0.419,
+    0.442,
+    0.549,
+    0.734,
+    0.703,
+    0.652,
+    0.703,
+    0.778,
+    0.927,
+    0.865,
+    0.76,
+    0.83,
+    0.993,
+    1.0,
+    0.956,
+    0.88,
+    0.709,
+    0.884,
+    0.846,
+    0.961,
+    0.775,
+    0.871,
+    0.919,
+    0.644,
+    0.787,
+    0.797,
+    0.46,
+    0.695,
+    0.707,
+    0.622,
+    0.689,
+    0.541,
+    0.637,
+    0.625
+   ],
+   "loop": [
+    0.365,
+    1.0
+   ]
+  },
+  {
+   "name": "Breath",
+   "short": "Brth",
+   "kind": "tex",
+   "chord": false,
+   "zones": [
+    {
+     "file": "freesound/554906_Male_Breath_Scared_Frozen_Loop_Stereo_wav.wav",
+     "sha256": "e01c7ac350bc361c9e6d4217366e4d62384acb8de1111431fb04f734f3da06af",
+     "root": 60.0,
+     "loop_start": 15592,
+     "loop_end": 79592,
+     "oneshot": false,
+     "offsets": [
+      5252609,
+      5332204,
+      5372003
+     ],
+     "lens": [
+      79592,
+      39796,
+      19898
+     ]
+    }
+   ],
+   "overview": [
+    0.101,
+    0.174,
+    0.227,
+    0.588,
+    0.771,
+    1.0,
+    0.826,
+    0.794,
+    0.613,
+    0.918,
+    0.271,
+    0.317,
+    0.05,
+    0.014,
+    0.021,
+    0.011,
+    0.003,
+    0.005,
+    0.005,
+    0.248,
+    0.357,
+    0.395,
+    0.491,
+    0.485,
+    0.479,
+    0.437,
+    0.226,
+    0.224,
+    0.164,
+    0.064,
+    0.026,
+    0.03,
+    0.02,
+    0.024,
+    0.019,
+    0.003,
+    0.002,
+    0.002,
+    0.002,
+    0.002,
+    0.043,
+    0.105,
+    0.399,
+    0.591,
+    0.817,
+    0.741,
+    0.682,
+    0.921
+   ],
+   "loop": [
+    0.196,
+    1.0
+   ]
+  }
+ ],
+ "types": [
+  {
+   "name": "Glass Air",
+   "short": "GlAr",
+   "a": 0,
+   "b": 6
+  },
+  {
+   "name": "Bowed Glass",
+   "short": "BwGl",
+   "a": 1,
+   "b": 0
+  },
+  {
+   "name": "Aah Ooh",
+   "short": "AhOh",
+   "a": 16,
+   "b": 17
+  },
+  {
+   "name": "Choir Glass",
+   "short": "ChGl",
+   "a": 17,
+   "b": 0
+  },
+  {
+   "name": "Digi Strings",
+   "short": "DStr",
+   "a": 2,
+   "b": 3
+  },
+  {
+   "name": "Breath Flute",
+   "short": "BrFl",
+   "a": 4,
+   "b": 5
+  },
+  {
+   "name": "Hollow Vox",
+   "short": "HVox",
+   "a": 5,
+   "b": 16
+  },
+  {
+   "name": "Air Wash",
+   "short": "AirW",
+   "a": 6,
+   "b": 7
+  },
+  {
+   "name": "Metal Shimmer",
+   "short": "MShm",
+   "a": 8,
+   "b": 9
+  },
+  {
+   "name": "Chime Bells",
+   "short": "ChBl",
+   "a": 10,
+   "b": 11
+  },
+  {
+   "name": "Glock Kalimba",
+   "short": "GlKa",
+   "a": 12,
+   "b": 13
+  },
+  {
+   "name": "Organ Air",
+   "short": "OrAr",
+   "a": 14,
+   "b": 20
+  },
+  {
+   "name": "FM Keys",
+   "short": "FMKy",
+   "a": 15,
+   "b": 11
+  },
+  {
+   "name": "Sung Chords",
+   "short": "SChd",
+   "a": 18,
+   "b": 19
+  }
+ ]
+}
