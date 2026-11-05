@@ -94,7 +94,8 @@ LIB_URL = {"VCSL": "https://github.com/sgossner/VCSL", "VSCO-2-CE": "https://git
 FS_KNOWN = [274121, 679486]
 # world instruments (CC0, original WAVs; D-50 factory-sound recordings excluded on purpose)
 FS_WORLD = [159550, 499726, 500765, 500723, 785871, 416606, 416605, 148850, 167088, 569838, 479213, 223956, 535950,
-            339970, 754604]
+            339970, 754604,
+            783935]   # 783935: Breath Choir (replaced 554906, a gasping breath loop)
 FS_QUERIES = ["sustained aah", "ooh single note", "choir sustain", "vocal pad", "breath loop",
               "female aah sustain", "male ooh sustain", "choir aah"]
 FS_FIELDS = "id,name,username,license,duration,tags,url,type,samplerate,channels,bitdepth,ac_note_name,ac_note_midi"

@@ -89,7 +89,8 @@ SETS = [
     ("Ooh", "Ooh", "sus", [(FS + "413713_Voice_Choir_OOOH_wav.wav", "C3")], dict(attack=0.5, loop=1.0)),
     ("Sung Chord", "SChd", "sus", [(FS + "274121_Choir_of_Voices_Single_Chord.wav", "E4")], dict(attack=0.5, loop=1.0, chord=True)),
     ("Dream Chord", "Drm", "sus", [(FS + "558416_Mystery_dream_vocal_chord.wav", "E3")], dict(attack=0.5, loop=1.2, chord=True)),
-    ("Breath Loop", "BrLp", "tex", [(FS + "554906_Male_Breath_Scared_Frozen_Loop_Stereo_wav.wav", "C4")], dict(start=0.3, loop=2.0)),
+    # a steady, airy breathing-choir pad (replaces a gasping breath loop that sounded like a horror effect)
+    ("Breath Choir", "BrCh", "sus", [(FS + "783935_MUSCMisc_Breathing_Choir_Pad_Floating_Pan_1_C4_E.wav", "C4")], dict(attack=1.0, loop=2.0)),
     # world instruments. A zone may name a slice of a longer file: (file, root, start s, end s)
     ("Shakuhachi", "Shak", "sus", [(FS + "159550_Skakuhachi_12_Samples_wav.wav", n, a, b)
                                    for n, a, b in (("G#3", 0.03, 6.9), ("F4", 17.84, 25.1), ("C#5", 33.51, 37.7), ("A5", 58.06, 63.6))],

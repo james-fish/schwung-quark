@@ -27,8 +27,8 @@
 extern plugin_api_v2_t *move_plugin_init_v2(const host_api_v1_t *host);
 
 static int g_fail;
-/* PCM types appended before the User slots since 0.4.5 (the old-state test shifts by this) */
-#define PCM_TYPES_ADDED Q_PCM_NUM_TYPES
+/* Type Off appended before the User slots since 0.4.5 (the old-state test shifts by this) */
+#define PCM_TYPES_ADDED 1
 extern int q_pcm_pick(int set, int era, int key);
 #define CHECK(c, ...) do { if (!(c)) { printf("FAIL: " __VA_ARGS__); printf("\n"); g_fail++; } } while (0)
 
@@ -879,29 +879,28 @@ int main(int argc, char **argv) {
         CHECK(bad_pick == 0, "every key maps to a zone of its set in every Era (%d bad)", bad_pick);
     }
 
-    /* ---- PCM types: every type in every Era sounds, stays finite, and Variation really crossfades
-     * (A alone and B alone differ); Lo-Fi is grittier than Clean on a high note ---- */
+    /* ---- Layer sets: every set as A (B = the next set) in every Era sounds with Type Off, stays
+     * finite, and Blend really crossfades (A alone and B alone differ); Lo-Fi is grittier than Clean ---- */
     {
         static int16_t pb[256];
         const char *ps[][2] = {{"preset", "0"}, {"key_mode", "3"}, {"flt_type", "0"}, {"rv_amt", "0"}, {"fx_amt", "0"},
-                               {"sh_amt", "0"}, {"ens_amt", "0"}, {"tx_spread", "0.3"}, {"tx_detune", "0.2"}, {"vintage", "0"},
+                               {"sh_amt", "0"}, {"ens_amt", "0"}, {"vintage", "0"}, {"tx_type", "Off"}, {"pl_lvl", "0.7"},
                                {"tx_anim", "0"}, {"tx_a", "0"}, {"tx_s", "1"}, {"tx_depth", "0"}, {"tx_vol", "0.8"}};
         int silent = 0, nans = 0, same = 0;
         double hf[3] = {0, 0, 0};
-        for (int t = 0; t < Q_PCM_NUM_TYPES; t++)
+        for (int t = 0; t < Q_PCM_NUM_SETS; t++)
             for (int era = 0; era < 3; era++) {
                 double e2[2] = {0, 0};
                 for (int side = 0; side < 2; side++) {
                     for (size_t k = 0; k < sizeof ps / sizeof ps[0]; k++) api->set_param(in, ps[k][0], ps[k][1]);
                     char tv[16];
-                    snprintf(tv, sizeof tv, "%d", Q_NUM_TEX_BUILTIN - Q_PCM_NUM_TYPES + t);
-                    api->set_param(in, "tx_type", tv);
-                    snprintf(tv, sizeof tv, "%d", era);
-                    api->set_param(in, "pcm_era", tv);
-                    api->set_param(in, "tx_var", side ? "1" : "0");
-                    /* B: the next set along, so every set is heard as A and as B */
+                    snprintf(tv, sizeof tv, "%d", 1 + t);
+                    api->set_param(in, "pl_wave", tv);
                     snprintf(tv, sizeof tv, "%d", 1 + (t + 1) % Q_PCM_NUM_SETS);
-                    api->set_param(in, "pcm_b", tv);
+                    api->set_param(in, "pl_b", tv);
+                    snprintf(tv, sizeof tv, "%d", era);
+                    api->set_param(in, "pl_era", tv);
+                    api->set_param(in, "pl_blend", side ? "1" : "0");
                     api->set_param(in, "all_notes_off", "1");
                     for (int i = 0; i < 400; i++) api->render_block(in, pb, 128);
                     int keys[3] = {36, 60, 84};
@@ -917,27 +916,24 @@ int main(int argc, char **argv) {
                         }
                     }
                     for (int k = 0; k < 3; k++) midi(api, in, 0x80, keys[k], 0);
-                    if (e < 1e-3) { silent++; printf("  pcm type %d era %d var %d is silent\n", t, era, side); }
+                    if (e < 1e-3) { silent++; printf("  layer set %d era %d blend %d is silent\n", t, era, side); }
                     e2[side] = e;
                     if (t == 1 && side == 0) hf[era] = d1 / (e + 1e-12);
                 }
                 if (fabs(e2[0] - e2[1]) < 1e-6 * (e2[0] + e2[1])) same++;
             }
-        /* a high note on Bowed Glass, all Eras: the grit measure is HF energy over total */
-        printf("pcm types: %d types x 3 Eras rendered; HF share Clean %.4f 90s %.4f Lo-Fi %.4f\n", Q_PCM_NUM_TYPES, hf[0], hf[1], hf[2]);
-        CHECK(!silent && !nans, "every PCM type sounds in every Era, no NaN (%d silent, %d NaN)", silent, nans);
-        CHECK(same == 0, "Variation crossfades two different sets on every PCM type");
-        /* PCM B Off: Variation is the start point. Variation 1 skips the attack, so the first block
-         * of a note is louder (straight into the loop) than with the attack from the top */
+        printf("layer sets: %d sets x 3 Eras rendered (Type Off); HF share Clean %.4f 90s %.4f Lo-Fi %.4f\n", Q_PCM_NUM_SETS, hf[0], hf[1], hf[2]);
+        CHECK(!silent && !nans, "every Layer set sounds in every Era, no NaN (%d silent, %d NaN)", silent, nans);
+        CHECK(same == 0, "Layer Blend crossfades two different sets");
+        CHECK(hf[2] > hf[0], "Lo-Fi Era is grittier than Clean");
+        /* Start: 1 skips the attack, so the first block of a note is louder than with the attack */
         {
             double first[2];
             for (int side = 0; side < 2; side++) {
                 for (size_t k = 0; k < sizeof ps / sizeof ps[0]; k++) api->set_param(in, ps[k][0], ps[k][1]);
-                char tv[16];
-                snprintf(tv, sizeof tv, "%d", Q_NUM_TEX_BUILTIN - Q_PCM_NUM_TYPES);   /* Wine Glass: a slow attack */
-                api->set_param(in, "tx_type", tv);
-                api->set_param(in, "pcm_b", "0");
-                api->set_param(in, "tx_var", side ? "1" : "0");
+                api->set_param(in, "pl_wave", "Wine Glass");   /* a slow attack */
+                api->set_param(in, "pl_b", "Off");
+                api->set_param(in, "pl_start", side ? "1" : "0");
                 api->set_param(in, "all_notes_off", "1");
                 for (int i = 0; i < 400; i++) api->render_block(in, pb, 128);
                 midi(api, in, 0x90, 64, 110);
@@ -946,12 +942,25 @@ int main(int argc, char **argv) {
                 midi(api, in, 0x80, 64, 0);
                 first[side] = e;
             }
-            printf("pcm start point (PCM B off): first 60 ms, start 0 %.3g vs start 1 %.3g\n", first[0], first[1]);
-            CHECK(first[1] > 2.0 * first[0], "PCM B Off: Variation moves the start point past the attack");
+            printf("layer start: first 60 ms, start 0 %.3g vs start 1 %.3g\n", first[0], first[1]);
+            CHECK(first[1] > 2.0 * first[0], "Layer Start moves the start point past the attack");
         }
-        CHECK(hf[2] > hf[0], "Lo-Fi Era is grittier than Clean");
+        /* Type Off with the Layer Off is silent; Motion on Variation moves the Blend with Type Off */
+        {
+            for (size_t k = 0; k < sizeof ps / sizeof ps[0]; k++) api->set_param(in, ps[k][0], ps[k][1]);
+            api->set_param(in, "pl_wave", "Off");
+            api->set_param(in, "all_notes_off", "1");
+            for (int i = 0; i < 100; i++) api->render_block(in, pb, 128);
+            midi(api, in, 0x90, 60, 110);
+            double e = 0;
+            for (int i = 0; i < 100; i++) { api->render_block(in, pb, 128); for (int j = 0; j < 256; j++) e += (double)pb[j] * pb[j]; }
+            midi(api, in, 0x80, 60, 0);
+            CHECK(e == 0.0, "Type Off with Layer Off is silent (%g)", e);
+        }
         api->set_param(in, "tx_type", "0");
-        api->set_param(in, "pcm_era", "0");
+        api->set_param(in, "pl_wave", "Off");
+        api->set_param(in, "pl_b", "Off");
+        api->set_param(in, "pl_era", "0");
         api->set_param(in, "flt_type", "1");
         api->set_param(in, "all_notes_off", "1");
     }
@@ -969,7 +978,7 @@ int main(int argc, char **argv) {
         #define PL_RENDER(type, wave, mode, era, keys0, skip, len, E, HF) do { \
             for (size_t k_ = 0; k_ < sizeof ps / sizeof ps[0]; k_++) api->set_param(in, ps[k_][0], ps[k_][1]); \
             api->set_param(in, "tx_type", type); api->set_param(in, "pl_wave", wave); \
-            api->set_param(in, "pl_mode", mode); api->set_param(in, "pcm_era", era); \
+            api->set_param(in, "pl_mode", mode); api->set_param(in, "pl_era", era); \
             api->set_param(in, "all_notes_off", "1"); \
             for (int i_ = 0; i_ < 400; i_++) api->render_block(in, pb, 128); \
             for (int k_ = 0; k_ < 3; k_++) midi(api, in, 0x90, (keys0) + 4 * k_, 110); \
@@ -985,7 +994,7 @@ int main(int argc, char **argv) {
         } while (0)
         int nans = 0, same = 0, runs = 0;
         double e, hf, eoff, hoff;
-        const char *types[] = {"Strings", "Poly Saw", "FM Bells", "Aah"};
+        const char *types[] = {"Strings", "Poly Saw", "FM Bells", "Off"};
         const char *modes[] = {"Loop", "Shot", "Air", "Ping"};
         const char *eras[] = {"Clean", "90s", "Lo-Fi"};
         for (int t = 0; t < 4; t++) {
@@ -1003,8 +1012,8 @@ int main(int argc, char **argv) {
         ps[2][1] = "2";
         double e_loop, e_air, h_loop, h_air, e_main;
         PL_RENDER("Strings", "Off", "Loop", "Clean", 84, 0, 200, e_main, hoff);
-        PL_RENDER("Strings", "Breath Loop", "Loop", "Clean", 84, 0, 200, e_loop, h_loop);
-        PL_RENDER("Strings", "Breath Loop", "Air", "Clean", 84, 0, 200, e_air, h_air);
+        PL_RENDER("Strings", "Breath Choir", "Loop", "Clean", 84, 0, 200, e_loop, h_loop);
+        PL_RENDER("Strings", "Breath Choir", "Air", "Clean", 84, 0, 200, e_air, h_air);
         printf("pcm layer: closed filter, main %.3g, Layer Loop %.3g, Layer Air %.3g (HF share %.3f)\n", e_main, e_loop, e_air, h_air);
         CHECK(e_air > 100.0 * (e_loop + e_main + 1e-9), "Layer Air skips the voice filter");
         /* Ping (once, after the filter) ends; Air (looped) keeps going. Aah's zone for E5: well under 6 s */

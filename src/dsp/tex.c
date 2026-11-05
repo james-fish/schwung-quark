@@ -9,18 +9,16 @@
  *                  played note's Nyquist), linear interpolation in the frame and between frames, and an
  *                  optional detuned unison partner (Spread).
  *  FM              carrier + mod 1 (Variation = index, with feedback) + mod 2 (a decaying "tine").
- *  PCM             multisample playback from the read-only ROM (rom.bin, built by tools/build_rom.py):
- *                  each type is one set, and Variation crossfades it into the set PCM B names (PCM B
- *                  Off: Variation sets where each note starts, from the full attack to straight into
- *                  the loop). At note-on each set picks
- *                  its zone (the lowest root at or above the note, so most notes transpose down);
- *                  per control tick a mip (32 / 16 / 8 kHz) so the read stays band-limited; the
- *                  attack plays once, then a plain wrap inside the loop (seams crossfaded offline).
- *                  PCM Era: Clean = Hermite on the right mip; 90s = linear one mip down (aliases) on
+ *  Off             no oscillator: the voice is only its Layer.
+ *  Atmos Layer     multisample playback from the read-only ROM (rom.bin, built by tools/build_rom.py),
+ *                  added to any of the above: set A blended into set B (equal power), its own tune and
+ *                  start, looped or once through, mixed in before the filter or (Air / Ping) after it.
+ *                  It shares the voice's amp envelope, pitch path and pan. At note-on each set picks
+ *                  its zone (the lowest root at or above the note, so most notes transpose down); per
+ *                  control tick a mip (32 / 16 / 8 kHz) so the read stays band-limited; the attack
+ *                  plays once, then a plain wrap inside the loop (seams crossfaded offline).
+ *                  Era: Clean = Hermite on the right mip; 90s = linear one mip down (aliases) on
  *                  every 2nd zone; Lo-Fi = drop-sample two mips down, 12-bit, every 3rd zone.
- *  PCM Layer       one more ROM set under any of the above (PCM Layer page knobs): its own pitch,
- *                  fine and start, looped or once through, mixed in before the filter or (Air /
- *                  Ping) after it. It shares the voice's amp envelope, pitch path and pan.
  *
  * Every voice then goes through an optional TPT state-variable filter (LP12/LP24/BP/HP) and the amp
  * ADSR. Animate is one global LFO; Depth routes the per-voice Mod Env to Variation.
@@ -357,56 +355,31 @@ static inline int pcm_mip(float inc, int era) {
     return k < Q_PCM_MIPS - 1 ? k : Q_PCM_MIPS - 1;
 }
 
-static void pcm_voice_init(QInstance *q, QTexVoice *v) {
-    int type = q_clampi((int)(q->ps[P_TX_TYPE] + 0.5f), 0, Q_NUM_TEX_TYPES - 1);
-    v->pa = v->pa2 = v->pb = v->pb2 = 0.0;
-    v->ptype = -1;
-    if (Q_TEX_FAMILY[type] != 3) return;
-    int ix = Q_TEX_INDEX[type], era = q_clampi((int)(q->ps[P_PCM_ERA] + 0.5f), 0, 2);
-    int key = v->note + q_clampi((int)lroundf(q->ps[P_TX_TR]), -24, 24);
-    int bset = q_clampi((int)(q->ps[P_PCM_B] + 0.5f), 0, Q_PCM_NUM_SETS) - 1;
-    v->ptype = ix;
-    v->pbset = bset;
-    v->za = q_pcm_pick(quark_pcm_types[ix].a, era, key);
-    v->zb = bset >= 0 ? q_pcm_pick(bset, era, key) : -1;
-    if (bset < 0) {
-        /* no B: Variation is the start point, 0 = the whole attack .. 1 = straight into the loop
-         * (a one-shot: up to half way in). Multiples of 4 keep every mip on the same sample. */
-        const QPcmZone *z = &quark_pcm_zones[v->za];
-        float var = q_clamp(q->ps[P_TX_VAR], 0.0f, 1.0f);
-        int span = z->oneshot ? z->loop_end / 2 : z->loop_start;
-        v->pa = v->pa2 = (double)(((int)(var * (float)span)) & ~3);
-    }
-}
-
-/* the Layer at Lvl 1: the ROM is levelled to -16 dBFS RMS, so this puts it level with the main types */
+/* the Layer at Lvl 1: the ROM is levelled to -16 dBFS RMS, so this puts it level with the synth types */
 #define Q_PL_GAIN 2.8f
-/* the PCM types (two reads with a partner, scaled by pg): about level with the other families */
-#define Q_PCM_GAIN 1.8f
 
-/* PCM Layer: one more set under any Atmos Type, its zone picked for the note plus Layer Pitch.
- * Start skips into the sample the way PCM B Off's Variation does; Shot / Ping (and a one-shot set)
- * play once and stop at their end. */
 /* Layer Tune is one knob: +-50 = cents, beyond that whole semitones (51 = +1 st .. 74 = +24 st) */
 static inline float pl_tune_semis(float t) {
     int v = q_clampi((int)lroundf(t), -74, 74), a = v < 0 ? -v : v;
     return a <= 50 ? 0.01f * (float)v : (float)((v < 0 ? -1 : 1) * (a - 50));
 }
 
-static void layer_init(QInstance *q, QTexVoice *v) {
-    int set = q_clampi((int)(q->ps[P_PL_WAVE] + 0.5f), 0, Q_PCM_NUM_SETS) - 1;
-    v->lset = set;
-    v->lz = -1;
-    v->lg = -1.0f;   /* snap the level on the first tick, so the attack is not faded in */
-    v->lfade = 1.0f;
+/* the Layer: sets A and B, each its zone for the note plus Layer Tune. Start skips into the sample
+ * (up to the loop start; a one-shot up to half way); Shot / Ping (and a one-shot set) play once. */
+static void layer_side_init(QInstance *q, QTexVoice *v, int s) {
+    int set = q_clampi((int)(q->ps[s ? P_PL_B : P_PL_WAVE] + 0.5f), 0, Q_PCM_NUM_SETS) - 1;
+    v->lset[s] = set;
+    v->lz[s] = -1;
+    v->lg[s] = -1.0f;   /* snap the level on the first tick, so the attack is not faded in */
+    v->lfade[s] = 1.0f;
     if (set < 0) return;
-    int era = q_clampi((int)(q->ps[P_PCM_ERA] + 0.5f), 0, 2), mode = q_clampi((int)(q->ps[P_PL_MODE] + 0.5f), 0, 3);
+    int era = q_clampi((int)(q->ps[P_PL_ERA] + 0.5f), 0, 2), mode = q_clampi((int)(q->ps[P_PL_MODE] + 0.5f), 0, 3);
     int key = v->note + q_clampi((int)lroundf(q->ps[P_TX_TR]), -24, 24) + (int)lroundf(pl_tune_semis(q->ps[P_PL_TUNE]));
-    v->lz = q_pcm_pick(set, era, key);
-    const QPcmZone *z = &quark_pcm_zones[v->lz];
-    v->lonce = z->oneshot || mode == 1 || mode == 3;
+    v->lz[s] = q_pcm_pick(set, era, key);
+    const QPcmZone *z = &quark_pcm_zones[v->lz[s]];
+    v->lonce[s] = z->oneshot || mode == 1 || mode == 3;
     int span = z->oneshot ? z->loop_end / 2 : z->loop_start;
-    v->lpos = (double)(((int)(q_clamp(q->ps[P_PL_START], 0.0f, 1.0f) * (float)span)) & ~3);
+    v->lpos[s] = (double)(((int)(q_clamp(q->ps[P_PL_START], 0.0f, 1.0f) * (float)span)) & ~3);
 }
 
 /* one read of zone z at mip-0 position p from mip k. The ROM carries 3 guard samples after each mip
@@ -426,14 +399,6 @@ static inline float pcm_read(const QPcmZone *z, double p, int k, int era) {
     float xm = (float)d[i > 0 ? i - 1 : 0], x2 = (float)d[i + 2];
     float c1 = 0.5f * (x1 - xm), c2 = xm - 2.5f * x0 + 2.0f * x1 - 0.5f * x2, c3 = 0.5f * (x2 - xm) + 1.5f * (x0 - x1);
     return (((c3 * f + c2) * f + c1) * f + x0) * (1.0f / 32768.0f);
-}
-
-/* advance a position by inc; loops wrap, one-shots stop at their end */
-static inline double pcm_step(const QPcmZone *z, double p, double inc) {
-    p += inc;
-    if (z->oneshot) return p < (double)z->loop_end ? p : (double)z->loop_end;
-    if (p >= (double)z->loop_end) p -= (double)(z->loop_end - z->loop_start);
-    return p;
 }
 
 static void voice_start(QInstance *q, QTexVoice *v, int key, int note, float vel) {
@@ -490,9 +455,9 @@ static void voice_start(QInstance *q, QTexVoice *v, int key, int note, float vel
         v->wpos = -1.0f;   /* snap on the first control tick */
         for (int j = 0; j < 7; j++) v->g[j] = -1.0f;
     }
-    /* PCM: every note plays its attack from the top, from the zones for this note */
-    pcm_voice_init(q, v);
-    layer_init(q, v);
+    /* Layer: every note plays its attack from the top, from the zones for this note */
+    layer_side_init(q, v, 0);
+    layer_side_init(q, v, 1);
     /* FM: restart the modulators so every note's attack has the same bite */
     if (Q_TEX_FAMILY[q_clampi((int)q->ps[P_TX_TYPE], 0, Q_NUM_TEX_TYPES - 1)] == 2) {
         v->ph2 = 0.0f;
@@ -580,7 +545,7 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
     int dest = q_clampi((int)(P[P_AN_DEST] + 0.5f), 0, Q_AN_DEST_N - 1);
     int src_w = Q_AN_SRC[dest][0], src_p = Q_AN_SRC[dest][1], src_f = Q_AN_SRC[dest][2];
     int src_n = Q_AN_SRC[dest][3], src_a = Q_AN_SRC[dest][4];
-    int wheel_dst = q_clampi((int)(P[P_WHEEL] + 0.5f), 0, 3);
+    int wheel_dst = q_clampi((int)(P[P_WHEEL] + 0.5f), 0, 4);
     int ticks = (n + Q_CTRL - 1) / Q_CTRL;
     float flav = P[P_VINTAGE], spread = P[P_TX_SPREAD], velsens = P[P_VEL];
     float sus_t = P[P_TX_S], sus_m = P[P_ME_S];
@@ -629,9 +594,15 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
     float kill_c = 1.0f - expf(-1.0f / (0.0015f * sr));
     const float *fmr = Q_FM[fam == 2 ? ix : 0];
     float pcm_rate = (float)Q_PCM_SR / sr;
-    int pcm_era = q_clampi((int)(P[P_PCM_ERA] + 0.5f), 0, 2);
-    /* PCM Layer: Loop / Shot mix in before the filter, Air / Ping after it (breath stays bright) */
-    int pl_set = q_clampi((int)(P[P_PL_WAVE] + 0.5f), 0, Q_PCM_NUM_SETS) - 1;
+    int pcm_era = q_clampi((int)(P[P_PL_ERA] + 0.5f), 0, 2);
+    /* Layer: Loop / Shot mix in before the filter, Air / Ping after it (breath stays bright) */
+    int pl_set[2] = {q_clampi((int)(P[P_PL_WAVE] + 0.5f), 0, Q_PCM_NUM_SETS) - 1,
+                     q_clampi((int)(P[P_PL_B] + 0.5f), 0, Q_PCM_NUM_SETS) - 1};
+    int src_b = Q_AN_SRC[dest][5];
+    /* Blend: its knob, Motion's Layer Blend target, the wheel; with Type Off (no oscillator for
+     * Variation to move) Variation's modulation moves the Blend too: Motion, Var Env, the wheel */
+    float blend_base = P[P_PL_BLEND] + (wheel_dst == 4 ? q->wheel * 0.6f : 0.0f) +
+                       (fam == 3 && wheel_dst == 3 ? q->wheel * 0.6f : 0.0f);
     int pl_post = q_clampi((int)(P[P_PL_MODE] + 0.5f), 0, 3) >= 2;
     float pl_semi = pl_tune_semis(P[P_PL_TUNE]);
     float pl_lvl = q_clamp(P[P_PL_LVL], 0.0f, 1.0f) * Q_PL_GAIN;
@@ -724,26 +695,7 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
                 v->inc2 = partner ? v->inc * exp2f(pc / 1200.0f) : 0.0f;
                 v->mip = have_wave ? q_wave_mip(&wv, whz * (1.0f + pc * 0.0006f), sr) : 0;
             } else if (fam == 3) {
-                if (v->ptype != ix) pcm_voice_init(q, v);   /* the type changed under a held note */
-                int bset = q_clampi((int)(P[P_PCM_B] + 0.5f), 0, Q_PCM_NUM_SETS) - 1;
-                if (bset != v->pbset) {                     /* PCM B changed: B joins (from its top) or leaves */
-                    v->pbset = bset;
-                    v->zb = bset >= 0 ? q_pcm_pick(bset, pcm_era, v->note + q_clampi((int)lroundf(P[P_TX_TR]), -24, 24)) : -1;
-                    v->pb = v->pb2 = 0.0;
-                }
-                /* mip-0 samples per output sample: the ROM's rate against ours, from each zone's root */
-                float pc = spread * 14.0f + detune * detune * 20.0f * v->bloom, pr = partner ? exp2f(pc / 1200.0f) : 0.0f;
-                float semis = pitch;
-                v->inc = pcm_rate * exp2f((semis - quark_pcm_zones[v->za].root) * (1.0f / 12.0f));
-                v->incb = v->zb >= 0 ? pcm_rate * exp2f((semis - quark_pcm_zones[v->zb].root) * (1.0f / 12.0f)) : 0.0f;
-                v->inc2 = v->inc * pr;
-                v->incb2 = v->incb * pr;
-                v->mip = pcm_mip(v->inc * (pr > 1.0f ? pr : 1.0f), pcm_era);
-                v->mipb = pcm_mip(v->incb * (pr > 1.0f ? pr : 1.0f), pcm_era);
-                /* Variation: an equal-power crossfade from set A to set B (no B: A alone, Variation was
-                 * the start point at note-on) */
-                v->ga = v->zb >= 0 ? cosf(var * (Q_PI * 0.5f)) : 1.0f;
-                v->gb = v->zb >= 0 ? sinf(var * (Q_PI * 0.5f)) : 0.0f;
+                /* Off: no oscillator */
             } else {
                 v->inc = hz / sr;
                 v->inc2 = v->inc * fmr[0];
@@ -757,23 +709,33 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
                 v->tine *= tine_c;
                 v->idx2 = fmr[3] * lim2 * (fmr[4] > 0.0f ? v->tine : 1.0f);
             }
-            /* ---- control: PCM Layer ---- */
-            if (pl_set != v->lset) layer_init(q, v);   /* Layer changed under a held note: start it from the top */
-            float lg_t = 0.0f;
-            if (v->lz >= 0) {
-                const QPcmZone *lzz = &quark_pcm_zones[v->lz];
-                v->linc = pcm_rate * exp2f((pitch + pl_semi - lzz->root) * (1.0f / 12.0f));
-                v->lmip = pcm_mip(v->linc, pcm_era);
-                if (v->lonce) {
-                    float left = ((float)lzz->loop_end - (float)v->lpos) / v->linc - (float)m;
-                    v->lfade = q_clamp(left / pl_fade_n, 0.0f, 1.0f);
+            /* ---- control: Layer ---- */
+            float blend = blend_base + anim * 0.5f * an_pick(src_b, an, an2) +
+                          (fam == 3 ? anim * 0.5f * m_w + P[P_TX_DEPTH] * v->mod : 0.0f);
+            blend = q_clamp(blend, 0.0f, 1.0f);
+            int lrun = 0;
+            float lg0[2], dlg[2];
+            for (int s = 0; s < 2; s++) {
+                if (pl_set[s] != v->lset[s]) layer_side_init(q, v, s);   /* changed under a held note: from the top */
+                float lg_t = 0.0f;
+                if (v->lz[s] >= 0) {
+                    const QPcmZone *lzz = &quark_pcm_zones[v->lz[s]];
+                    v->linc[s] = pcm_rate * exp2f((pitch + pl_semi - lzz->root) * (1.0f / 12.0f));
+                    v->lmip[s] = pcm_mip(v->linc[s], pcm_era);
+                    if (v->lonce[s]) {
+                        float left = ((float)lzz->loop_end - (float)v->lpos[s]) / v->linc[s] - (float)m;
+                        v->lfade[s] = q_clamp(left / pl_fade_n, 0.0f, 1.0f);
+                    }
+                    /* equal-power A > B; one side alone plays at full level and Blend does nothing */
+                    float g = v->lz[s ^ 1] < 0 ? 1.0f : s ? sinf(blend * (Q_PI * 0.5f)) : cosf(blend * (Q_PI * 0.5f));
+                    lg_t = pl_lvl * g * v->lfade[s];
+                    lrun |= 1 << s;
                 }
-                lg_t = pl_lvl * v->lfade;
+                if (v->lg[s] < 0.0f) v->lg[s] = lg_t;
+                lg0[s] = v->lg[s];
+                dlg[s] = (lg_t - lg0[s]) * inv_m;
+                v->lg[s] = lg_t;
             }
-            if (v->lg < 0.0f) v->lg = lg_t;
-            float lg0 = v->lg, dlg = (lg_t - lg0) * inv_m;
-            int lrun = v->lz >= 0 && (lg0 > 1e-5f || lg_t > 1e-5f);
-            v->lg = lg_t;
             /* ---- control: filter ---- */
             if (ftype > 0) {
                 float cn = cut_base + anim * 36.0f * m_f +
@@ -856,31 +818,7 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
                 v->ph2 = ph2;
                 v->wpos = wp;
             } else if (fam == 3) {
-                const QPcmZone *za = &quark_pcm_zones[v->za], *zb = &quark_pcm_zones[v->zb >= 0 ? v->zb : v->za];
-                double qa = v->pa, qa2 = v->pa2, qb = v->pb, qb2 = v->pb2;
-                double ia = v->inc, ia2 = v->inc2, ib = v->incb, ib2 = v->incb2;
-                float ga = v->ga, gb = v->gb;
-                int ka = v->mip, kb = v->mipb, useA = ga > 0.002f, useB = gb > 0.002f, two = ia2 > 0.0, hasB = v->zb >= 0;
-                float pg = two ? 0.62f : 1.0f;
-                for (int i = 0; i < m; i++) {
-                    float x = 0.0f;
-                    if (useA) {
-                        float a = pcm_read(za, qa, ka, pcm_era);
-                        if (two) a += pcm_read(za, qa2, ka, pcm_era);
-                        x += ga * a;
-                    }
-                    if (useB) {
-                        float b = pcm_read(zb, qb, kb, pcm_era);
-                        if (two) b += pcm_read(zb, qb2, kb, pcm_era);
-                        x += gb * b;
-                    }
-                    /* both sets keep moving, so a Variation sweep never restarts either one */
-                    qa = pcm_step(za, qa, ia);
-                    if (two) qa2 = pcm_step(za, qa2, ia2);
-                    if (hasB) { qb = pcm_step(zb, qb, ib); if (two) qb2 = pcm_step(zb, qb2, ib2); }
-                    buf[i] = x * pg * Q_PCM_GAIN;
-                }
-                v->pa = qa; v->pa2 = qa2; v->pb = qb; v->pb2 = qb2;
+                memset(buf, 0, sizeof(float) * (size_t)m);   /* Off: the Layer alone */
             } else {
                 float ph = v->ph, p2 = v->ph2, p3 = v->ph3, fbm = v->fbm, i1 = v->idx1;
                 float fb = fmr[5] * 0.25f, i2 = v->idx2 * (1.0f / Q_TAU);
@@ -897,26 +835,31 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
                 v->ph = ph; v->ph2 = p2; v->ph3 = p3; v->fbm = fbm; v->idx1 = i1;
             }
 
+            /* both sides keep moving (even silent at Blend 0 / 1), so a Blend sweep never restarts one */
             float lbuf[Q_CTRL];
             if (lrun) {
-                const QPcmZone *lzz = &quark_pcm_zones[v->lz];
-                double lp = v->lpos, li = v->linc;
-                int lk = v->lmip, once = v->lonce;
-                float g = lg0;
-                float *dst = pl_post ? lbuf : buf;
-                for (int i = 0; i < m; i++) {
-                    float x = g * pcm_read(lzz, lp, lk, pcm_era);
-                    if (pl_post) dst[i] = x; else dst[i] += x;
-                    g += dlg;
-                    lp += li;
-                    if (lp >= (double)lzz->loop_end) lp = once ? (double)lzz->loop_end : lp - (double)(lzz->loop_end - lzz->loop_start);
+                memset(lbuf, 0, sizeof(float) * (size_t)m);
+                for (int s = 0; s < 2; s++) {
+                    if (!(lrun >> s & 1)) continue;
+                    const QPcmZone *lzz = &quark_pcm_zones[v->lz[s]];
+                    double lp = v->lpos[s], li = v->linc[s], end = (double)lzz->loop_end;
+                    double wrap = (double)(lzz->loop_end - lzz->loop_start);
+                    int lk = v->lmip[s], once = v->lonce[s];
+                    float g = lg0[s], dg = dlg[s];
+                    if (g > 1e-5f || g + dg * (float)m > 1e-5f) {
+                        for (int i = 0; i < m; i++) {
+                            lbuf[i] += g * pcm_read(lzz, lp, lk, pcm_era);
+                            g += dg;
+                            lp += li;
+                            if (lp >= end) lp = once ? end : lp - wrap;
+                        }
+                    } else {
+                        lp += li * (double)m;
+                        while (lp >= end) { if (once) { lp = end; break; } lp -= wrap; }
+                    }
+                    v->lpos[s] = lp;
                 }
-                v->lpos = lp;
-            } else if (v->lz >= 0) {
-                v->lpos += v->linc * (double)m;   /* silent (Lvl 0): keep its place */
-                if (v->lpos >= (double)quark_pcm_zones[v->lz].loop_end)
-                    v->lpos = v->lonce ? (double)quark_pcm_zones[v->lz].loop_end
-                                       : (double)quark_pcm_zones[v->lz].loop_start;
+                if (!pl_post) for (int i = 0; i < m; i++) buf[i] += lbuf[i];
             }
 
             if (use_drv && dpos == 0) q_drive_run(&drv, buf, m, &v->dx, &v->dF, &v->dlp);

@@ -42,7 +42,7 @@ for (const p of chain.filter((p) => p.card_script)) {
     for (const [ft, tt, ls] of [[0, 0, 0], [3, 7, 5], [7, 15, 40], [9, 9, 87], [1, 60, 2], [2, 94, 30]]) {
       const values = baseValues();
       values.fx_type = ft; values.tx_type = tt; values.ln_shape = ls;
-      values.pl_wave = (tt + ls) % 33;
+      values.pl_wave = (tt + ls) % 33; values.pl_b = (ft * 5) % 33;
       values[p.key] = x;
       const ctx = mockCtx(p.card_w, p.card_h);
       try {
@@ -63,7 +63,7 @@ for (const kind of Object.keys(kinds)) {
         const values = baseValues();
         values.tx_type = t; values.tx_var = v; values.ln_shape = t; values.ln_var = v;
         values.tx_drive = v; values.tx_drvpos = t % 3; values.tx_detune = v; values.tx_bloom = 1 - v;
-        values.pl_wave = t % 34; values.pl_start = v; values.pl_mode = t % 4; values.pcm_era = t % 3;
+        values.pl_wave = t % 34; values.pl_start = v; values.pl_mode = t % 4; values.pl_era = t % 3; values.pl_b = (t * 7) % 34; values.pl_blend = v;
         try { kinds[kind](mockCtx(w, h), { values, group: { keys: [] } }); }
         catch (e) { fails++; console.log("widget", kind, w, h, t, v, e.message); }
       }

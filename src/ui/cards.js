@@ -59,8 +59,8 @@
         var fam = Q.M.texTypes[Math.round(type)].family;
         ctx.print(1, top + 1, Q.familyName(type), 1);
         ctx.print(1, top + 11, Q.fit(ctx, key === "tx_type" ? Q.variationText(values) : Q.byKey.tx_type.opts[Math.round(type)], 46), 1);
-        var pb = Q.val(values, "pcm_b");
-        Q.plot(ctx, function (t) { return Q.texWave(type, va, t, pb); }, 50, top, W - 52, bh - 4, fam === 0 ? 1 : 2);
+        if (fam === 3) { ctx.print(50, top + 1, Q.plSet(values) ? "+ Layer only" : "silent: no", 1); if (!Q.plSet(values)) ctx.print(50, top + 11, "Layer set", 1); return; }
+        Q.plot(ctx, function (t) { return Q.texWave(type, va, t); }, 50, top, W - 52, bh - 4, fam === 0 ? 1 : 2);
         bar(ctx, 50, H - 5, W - 52, va, false);
         return;
       }
@@ -268,30 +268,23 @@
         }
         return;
       }
-      case "pcm_b": {
-        /* PCM B: the Atmos PCM set (top) and the set Variation fades into (bottom), as level outlines */
-        var tt = Q.M.texTypes[Math.max(0, Math.min(Q.M.texTypes.length - 1, Math.round(Q.val(values, "tx_type"))))];
-        var bi = Math.round(Q.val(values, "pcm_b")) - 1, rows = [];
-        if (tt.family === 3) rows.push(Q.M.pcmSets[Q.M.pcmTypes[tt.index]]);
-        else { ctx.print(1, top + 1, "Atmos Type is", 1); ctx.print(1, top + 11, "not PCM", 1); return; }
-        if (bi >= 0) rows.push(Q.M.pcmSets[bi]);
-        else if (tt.family === 3) { ctx.print(1, top + bh - 8, "Var = start", 1); }
-        var rh2 = Math.floor(bh / 2);
-        rows.forEach(function (st, r) {
-          var y0 = top + r * rh2, ov = st.overview;
-          for (var xo = 0; xo < W - 4; xo++) {
-            var e = ov[Math.min(ov.length - 1, Math.floor(xo / (W - 4) * ov.length))];
-            var hh = Math.max(1, Math.round(e * (rh2 - 2)));
-            if (xo % 2 === 0) ctx.fillRect(2 + xo, y0 + Math.round((rh2 - hh) / 2), 1, hh, 1);
-          }
-          if (st.loop) ctx.fillRect(2 + Math.round(st.loop[0] * (W - 5)), y0, 1, rh2 - 1, 1);
+      case "pl_b": case "pl_blend": {
+        /* Layer A (top) and B (bottom), named, each outline as tall as its share of the Blend */
+        var la2 = Q.plSet(values, 0), lb2 = Q.plSet(values, 1), bl2 = Math.max(0, Math.min(1, Q.val(values, "pl_blend")));
+        var rh3 = Math.floor(bh / 2), sides = [[la2, "A", Math.cos(bl2 * Math.PI / 2)], [lb2, "B", Math.sin(bl2 * Math.PI / 2)]];
+        sides.forEach(function (sd, r) {
+          var y0 = top + r * rh3;
+          ctx.print(1, y0 + Math.floor((rh3 - 7) / 2), sd[1], 1);
+          if (!sd[0]) { Q.dotted(ctx, 9, y0 + Math.floor(rh3 / 2), W - 10); return; }
+          var g = !la2 || !lb2 ? 1 : sd[2];
+          Q.pcmOutline(ctx, sd[0], 9, y0 + 1, W - 10, Math.max(1, Math.round((rh3 - 2) * Math.max(0.15, g))), 2);
         });
         return;
       }
       case "pl_wave": {
         /* the Layer set's outline, its loop bracket and where Start puts the note */
-        var ps = Q.plSet(values);
-        if (!ps) { ctx.print(1, top + 1, "Layer Off", 1); Q.dotted(ctx, 0, top + Math.floor(bh / 2), W); return; }
+        var ps = Q.plSet(values, 0);
+        if (!ps) { ctx.print(1, top + 1, "Layer A Off", 1); Q.dotted(ctx, 0, top + Math.floor(bh / 2), W); return; }
         var big = false, ox = big ? 1 : 46, ow = W - ox - 1;
         if (!big) {
           ctx.print(1, top + 1, ps.zones + (ps.zones === 1 ? " zone" : " zones"), 1);
@@ -345,8 +338,8 @@
         }
         return;
       }
-      case "pcm_era": {
-        var er = Math.max(0, Math.min(2, Math.round(Q.val(values, "pcm_era"))));
+      case "pl_era": {
+        var er = Math.max(0, Math.min(2, Math.round(Q.val(values, "pl_era"))));
         ctx.print(1, top + 1, Q.fit(ctx, Q.eraText[er], W - 2), 1);
         ctx.print(1, top + 11, ["all zones", "every 2nd zone", "every 3rd zone"][er], 1);
         Q.plot(ctx, function (t) { return Q.eraWave(er, t); }, 76, top + 9, W - 77, bh - 9, 1);

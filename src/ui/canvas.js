@@ -11,10 +11,13 @@
  *                as Drive rises), a sine through it, and PRE / POST / AMP.
  *  custom:qdet   Atmos Detune + Bloom: the notes of a chord as lines that start together and fan out
  *                to their detune offsets over the Bloom time.
- *  custom:qpcm   PCM Layer (its own cell) and Layer Start + Mode (one group): the Layer set's level
- *                outline, a bracket over its loop, a Start tick and a Mode glyph (a loop arrow or a
- *                one-shot bar; boxed for the post-filter modes). Off: a dotted flat line.
- *  custom:qera   PCM Era: a sine drawn the way that Era reads the ROM (smooth / coarse / stepped).
+ *                With Type Off the wave is a dotted line; a "+" in the corner says a Layer sounds on top.
+ *  custom:qlab   Layer A + B + Blend: the two sets' level outlines, the louder one solid, a Blend
+ *                tick, and the Layer's "+" (added on top of the Type).
+ *  custom:qpcm   Layer Start + Mode: the sounding set's outline, a bracket over its loop, a Start
+ *                tick and a Mode glyph (a loop arrow or a one-shot bar; boxed for the post-filter
+ *                modes). Off: a dotted flat line.
+ *  custom:qera   Layer Era: a sine drawn the way that Era reads the ROM (smooth / coarse / stepped).
  *  custom:qflt   Atmos Cutoff + Resonance: the response of the selected Filter Type (read from the
  *                page's values), including the combs' teeth, Dual BP's two bands and Morph's blend.
  *
@@ -24,19 +27,27 @@
   /* BEGIN GENERATED */
   /* END GENERATED */
 
+  /* the "+" that marks the Layer: samples added on top of the Atmos Type (5x5 at x, y) */
+  function plus(ctx, x, y) {
+    ctx.fillRect(x, y, 5, 5, 0);
+    ctx.fillRect(x, y + 2, 5, 1, 1);
+    ctx.fillRect(x + 2, y, 1, 5, 1);
+  }
+
   function drawWave(ctx, o) {
     var W = ctx.width, H = ctx.height, v = o.values || {};
     var type = Q.val(v, "tx_type"), va = Q.val(v, "tx_var");
     var fam = Q.M.texTypes[Math.max(0, Math.min(Q.M.texTypes.length - 1, Math.round(type)))].family;
     var wh = Math.max(6, H - 4);
-    var pb = Q.val(v, "pcm_b");
-    Q.plot(ctx, function (t) { return Q.texWave(type, va, t, pb); }, 0, 0, W, wh, fam === 0 ? 1 : 2);
+    if (fam === 3) Q.dotted(ctx, 0, Math.floor(wh / 2), W);   /* Off: no oscillator */
+    else Q.plot(ctx, function (t) { return Q.texWave(type, va, t); }, 0, 0, W, wh, fam === 0 ? 1 : 2);
+    if (Q.plSet(v)) plus(ctx, 0, 0);   /* a Layer sounds on top */
     /* variation tick + family dots */
     var by = H - 2;
     Q.dotted(ctx, 0, by, W);
     var mx = Math.round(Math.max(0, Math.min(1, va)) * (W - 1));
     ctx.fillRect(Math.max(0, mx - 1), by - 1, 3, 3, 1);
-    for (var i = 0; i <= fam; i++) ctx.fillRect(W - 2 - i * 3, 0, 2, 2, 1);
+    for (var i = 0; i <= Math.min(fam, 2); i++) if (fam < 3) ctx.fillRect(W - 2 - i * 3, 0, 2, 2, 1);
   }
 
   function drawLine(ctx, o) {
@@ -147,9 +158,29 @@
     if (gw) modeGlyph(ctx, W - 8, Math.max(2, Math.floor((H - 5) / 2)), mode);
   }
 
+  /* Layer A + B + Blend (one group): A's outline on top, B's below, each solid while it is the louder
+   * side and sparse while it is the quieter; a tick on the baseline marks Blend. One side Off: the
+   * other alone, full height. */
+  function drawLab(ctx, o) {
+    var W = ctx.width, H = ctx.height, v = o.values || {};
+    var a = Q.plSet(v, 0), b = Q.plSet(v, 1), bl = Math.max(0, Math.min(1, Q.val(v, "pl_blend")));
+    var x0 = 7, w = W - x0, h = H - 3;
+    plus(ctx, 0, 0);
+    if (!a && !b) { Q.dotted(ctx, x0, Math.floor(h / 2), w); return; }
+    if (!a || !b) Q.pcmOutline(ctx, a || b, x0, 0, w, h, 1);
+    else {
+      var rh = Math.floor(h / 2);
+      Q.pcmOutline(ctx, a, x0, 0, w, rh - 1, bl <= 0.5 ? 1 : 3);
+      Q.pcmOutline(ctx, b, x0, rh, w, rh - 1, bl > 0.5 ? 1 : 3);
+      var by = H - 2, mx = x0 + Math.round(bl * (w - 1));
+      Q.dotted(ctx, x0, by, w);
+      ctx.fillRect(Math.max(x0, mx - 1), by - 1, 3, 3, 1);
+    }
+  }
+
   function drawEra(ctx, o) {
     var W = ctx.width, H = ctx.height, v = o.values || {};
-    var era = Math.max(0, Math.min(2, Math.round(Q.val(v, "pcm_era"))));
+    var era = Math.max(0, Math.min(2, Math.round(Q.val(v, "pl_era"))));
     Q.plot(ctx, function (t) { return Q.eraWave(era, t); }, 0, 0, W, H - 1, 1);
   }
 
@@ -162,6 +193,7 @@
       "custom:qflt": drawFilter,
       "custom:qpcm": drawPcm,
       "custom:qera": drawEra,
+      "custom:qlab": drawLab,
     },
   };
 })();

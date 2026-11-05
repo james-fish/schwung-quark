@@ -82,8 +82,7 @@ var Q = (function () {
   /* detune offset in cents for chord voice i (mirrors DET_PAT in tex.c) */
   var DET_PAT = [0.62, -0.85, 0.33, -0.48, 1.0, -0.2, 0.78, -0.66, 0.15, -1.0, 0.5, -0.36];
   function detCents(i, det) { return det * det * 45 * DET_PAT[i % 12]; }
-  /* pcmB: the PCM B value (0 = Off, else set index + 1); only PCM types use it */
-  function texWave(type, v, t, pcmB) {
+  function texWave(type, v, t) {
     var tt = M.texTypes[Math.max(0, Math.min(M.texTypes.length - 1, Math.round(type)))];
     t -= Math.floor(t);
     if (tt.family === 0) {
@@ -94,15 +93,7 @@ var Q = (function () {
       return norm ? out / Math.sqrt(norm) * 0.7 : 0;
     }
     if (tt.family === 1) return bankWave(tt.index, v, t);
-    if (tt.family === 3) {
-      /* PCM: the set's level outline (from the ROM, the zone nearest E4) blended with PCM B's by
-       * Variation, drawn as a waveform under that envelope; no B: one outline */
-      var bi = Math.round(Number(pcmB) || 0) - 1, oa = M.pcmSets[M.pcmTypes[tt.index]].overview;
-      var ob = bi >= 0 && M.pcmSets[bi] ? M.pcmSets[bi].overview : oa;
-      var w = bi >= 0 ? Math.max(0, Math.min(1, v)) : 0, at = t * (oa.length - 1), i0 = Math.floor(at), fr = at - i0;
-      var ea = oa[i0] + ((oa[i0 + 1] || 0) - oa[i0]) * fr, eb = ob[i0] + ((ob[i0 + 1] || 0) - ob[i0]) * fr;
-      return 0.95 * ((1 - w) * ea + w * eb) * Math.sin(2 * Math.PI * t * 23);
-    }
+    if (tt.family === 3) return 0;   /* Off: no oscillator */
     var fm = M.fm[tt.index], tau = 2 * Math.PI;
     var m1 = Math.sin(tau * t * fm[0]) * v * fm[1], m2 = Math.sin(tau * t * fm[2]) * fm[3] * 0.5;
     return Math.sin(tau * t + m1 + m2);
@@ -139,7 +130,7 @@ var Q = (function () {
   }
   function familyName(type) {
     var tt = M.texTypes[Math.max(0, Math.min(M.texTypes.length - 1, Math.round(type)))];
-    return ["STRINGS", "WAVETABLE", "FM", "PCM"][tt.family];
+    return ["STRINGS", "WAVETABLE", "FM", "OFF"][tt.family];
   }
   function variationText(values) {
     var type = Math.round(val(values, "tx_type")), v = val(values, "tx_var");
@@ -154,12 +145,7 @@ var Q = (function () {
     }
     if (tt.family === 1) return isAmino(tt.index) ? "Wave " + (1 + Math.round(v * (M.amWaves - 1))) + "/" + M.amWaves :
       chordFrames(tt.index) ? chordFrames(tt.index)[Math.round(Math.max(0, Math.min(1, v)) * 7)] : "Frame " + (1 + v * 7).toFixed(1) + "/8";
-    if (tt.family === 3) {
-      var na = M.pcmSets[M.pcmTypes[tt.index]].name, b2 = Math.round(val(values, "pcm_b")) - 1;
-      if (b2 < 0 || !M.pcmSets[b2]) return "Start " + pct(v);
-      var nb = M.pcmSets[b2].name;
-      return v < 0.03 ? na : v > 0.97 ? nb : na + ">" + nb + " " + pct(v);
-    }
+    if (tt.family === 3) return "unused, Type Off";
     return "FM index " + (v * M.fm[tt.index][1]).toFixed(2);
   }
 
@@ -218,7 +204,12 @@ var Q = (function () {
       case "pl_tune": { var tu = plTune(x), n = tu.st || tu.ct; return (n > 0 ? "+" : "") + n + (tu.st ? " st" : " ct"); }
       case "pl_lvl": return plSet(values) ? pct(x) : "Layer Off";
       case "pl_start": return x < 0.005 ? "Attack" : pct(x);
-      case "pcm_era": return p.opts[Math.round(x)];
+      case "pl_era": return p.opts[Math.round(x)];
+      case "pl_blend": {
+        var la = plSet(values, 0), lb = plSet(values, 1);
+        if (!la || !lb) return la || lb ? "needs A + B" : "Layer Off";
+        return x < 0.03 ? "A" : x > 0.97 ? "B" : "A>B " + pct(x);
+      }
       case "tx_dtone": return fmtHz(700 * Math.pow(2, 5 * x));
       case "tx_detune": return "±" + (x * x * 45).toFixed(1) + " ct";
       case "tx_bloom": return x < 0.005 ? "Instant" : fmtS(0.05 + 15 * x * x);
@@ -395,9 +386,10 @@ var Q = (function () {
     var v = Math.round(Number(x) || 0), a = Math.abs(v), s = v < 0 ? -1 : 1;
     return a <= 50 ? { st: 0, ct: v } : { st: s * Math.min(24, a - 50), ct: 0 };
   }
-  /* the Layer's set (null when Off) */
-  function plSet(values) {
-    var i = Math.round(val(values, "pl_wave")) - 1;
+  /* a Layer set: side 0 = A, 1 = B; no side = the one that sounds first (A, else B); null = Off */
+  function plSet(values, side) {
+    if (side === undefined) return plSet(values, 0) || plSet(values, 1);
+    var i = Math.round(val(values, side ? "pl_b" : "pl_wave")) - 1;
     return i >= 0 && M.pcmSets[i] ? M.pcmSets[i] : null;
   }
   /* where Start puts the note in the set's outline, 0..1 (mirrors layer_init: up to the loop start,

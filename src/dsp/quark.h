@@ -69,13 +69,11 @@ typedef struct {
     float dx, dF, dlp;             /* drive: ADAA state + tone one-pole */
     /* PCM family: read positions in mip-0 samples (double: no drift over long loops) for set A and B,
      * main + partner; the zone of each set for this note; the type they belong to */
-    double pa, pa2, pb, pb2;
-    float incb, incb2, ga, gb;
-    int za, zb, mipb, ptype, pbset;    /* zb < 0: no B (PCM B Off) */
-    /* PCM Layer: one more ROM read under any Atmos Type */
-    double lpos;
-    float linc, lg, lfade;
-    int lz, lmip, lset, lonce;         /* lz < 0: Layer Off; lonce: plays once (Shot / Ping / a one-shot set) */
+    /* Atmos Layer: [0] = A, [1] = B; lz < 0 = that side Off; lonce = plays once (Shot / Ping / a
+     * one-shot set); lg = its smoothed gain (Level x Blend x the end fade), < 0 = snap */
+    double lpos[2];
+    float linc[2], lg[2], lfade[2];
+    int lz[2], lmip[2], lonce[2], lset[2];
 } QTexVoice;
 
 /* ---- lines ---------------------------------------------------------------------------------- */

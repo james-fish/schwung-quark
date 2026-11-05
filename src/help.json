@@ -202,25 +202,26 @@
    ]
   },
   {
-   "title": "Atmos PCM",
+   "title": "Atmos Layer",
    "lines": [
-    "Layer: a sample set",
-    "under any Atmos Type.",
-    "Lvl, Pitch, Fine",
-    "(detune to thicken),",
-    "Start (skip attack).",
+    "Samples on top of the",
+    "Atmos Type (+). Type",
+    "Off: the Layer is the",
+    "whole sound, and",
+    "Motion / Var Env on",
+    "Variation move Blend.",
+    "A, B: two sets; Blend",
+    "fades A into B.",
+    "Tune: +-50 ct detune,",
+    "then semitones.",
+    "Start skips the attack.",
     "Mode: Loop/Shot go",
     "through the filter,",
-    "Air/Ping skip it.",
+    "Air/Ping skip it;",
     "Shot/Ping play once.",
-    "Era: Clean = full",
-    "quality; 90s = half",
-    "rate, aliasing; Lo-Fi",
-    "= quarter, 12-bit.",
-    "PCM B: the set a PCM",
-    "type's Variation",
-    "fades into; Off =",
-    "Variation is start."
+    "Era: Clean, 90s (half",
+    "rate, aliased), Lo-Fi",
+    "(quarter, 12-bit)."
    ]
   }
  ]

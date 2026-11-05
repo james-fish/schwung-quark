@@ -4465,15 +4465,6 @@
  },
  {
   "provider": "Freesound",
-  "url": "https://freesound.org/people/Nox_Sound/sounds/554906/",
-  "author": "Nox_Sound",
-  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
-  "use": "Choir / vocal",
-  "file": "freesound/554906_Male_Breath_Scared_Frozen_Loop_Stereo_wav.wav",
-  "sha256": "e01c7ac350bc361c9e6d4217366e4d62384acb8de1111431fb04f734f3da06af"
- },
- {
-  "provider": "Freesound",
   "url": "https://freesound.org/people/--DeletedUser--/sounds/159550/",
   "author": "--DeletedUser--",
   "license": "http://creativecommons.org/publicdomain/zero/1.0/",
@@ -4606,5 +4597,14 @@
   "use": "Choir / vocal",
   "file": "freesound/754604_Free_Style_Sitar.wav",
   "sha256": "1ea685249f12579928acfc34e54600d60c914fdeb6f3115243690f8f4e65732a"
+ },
+ {
+  "provider": "Freesound",
+  "url": "https://freesound.org/people/newlocknew/sounds/783935/",
+  "author": "newlocknew",
+  "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+  "use": "Choir / vocal",
+  "file": "freesound/783935_MUSCMisc_Breathing_Choir_Pad_Floating_Pan_1_C4_E.wav",
+  "sha256": "43d236652c2e160a7de0fd494c27d56f213fd8b00b33273a7e135c3530108a97"
  }
 ]
