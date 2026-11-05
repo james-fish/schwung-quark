@@ -543,7 +543,8 @@ PL_MODES, PL_MODES_S = ["Loop", "Shot", "Air", "Ping"], ["Loop", "Shot", "Air", 
 LAB = lambda r: {"group": "plab", "role": r, "kind": "custom:qlab"}
 E("pl_wave", "Layer A", "LyrA", 0, PL_SETS, PL_SETS_S, viz=LAB("a"), card=CARD)
 E("pl_b", "Layer B", "LyrB", 0, PL_SETS, PL_SETS_S, viz=LAB("b"), card=CARD)
-F("pl_blend", "Layer Blend", "Blend", 0.0, viz=LAB("blend"), live=True, card=CARD)
+# no card: the row already shows both names, both outlines and the Blend tick
+F("pl_blend", "Layer Blend", "Blend", 0.0, viz=LAB("blend"), live=True)
 F("pl_lvl", "Layer Level", "Lvl", 0.5)
 # Tune: one bidirectional knob, +-50 cents of detune in the middle, then semitones out to +-24
 I("pl_tune", "Layer Tune", "Tune", 0, -74, 74, card=CARD)

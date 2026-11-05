@@ -274,23 +274,10 @@
         }
         return;
       }
-      case "pl_b": case "pl_blend": {
-        /* Layer A (top) and B (bottom), named, each outline as tall as its share of the Blend */
-        var la2 = Q.plSet(values, 0), lb2 = Q.plSet(values, 1), bl2 = Math.max(0, Math.min(1, Q.val(values, "pl_blend")));
-        var rh3 = Math.floor(bh / 2), sides = [[la2, "A", Math.cos(bl2 * Math.PI / 2)], [lb2, "B", Math.sin(bl2 * Math.PI / 2)]];
-        sides.forEach(function (sd, r) {
-          var y0 = top + r * rh3;
-          ctx.print(1, y0 + Math.floor((rh3 - 7) / 2), sd[1], 1);
-          if (!sd[0]) { Q.dotted(ctx, 9, y0 + Math.floor(rh3 / 2), W - 10); return; }
-          var g = !la2 || !lb2 ? 1 : sd[2];
-          Q.pcmOutline(ctx, sd[0], 9, y0 + 1, W - 10, Math.max(1, Math.round((rh3 - 2) * Math.max(0.15, g))), 2);
-        });
-        return;
-      }
-      case "pl_wave": {
-        /* the Layer set's outline, its loop bracket and where Start puts the note */
-        var ps = Q.plSet(values, 0);
-        if (!ps) { ctx.print(1, top + 1, "Layer A Off", 1); Q.dotted(ctx, 0, top + Math.floor(bh / 2), W); return; }
+      case "pl_wave": case "pl_b": {
+        /* the Layer set's outline (A or B), its loop bracket and where Start puts the note */
+        var ps = Q.plSet(values, key === "pl_b" ? 1 : 0);
+        if (!ps) { ctx.print(1, top + 1, key === "pl_b" ? "Layer B Off" : "Layer A Off", 1); Q.dotted(ctx, 0, top + Math.floor(bh / 2), W); return; }
         var big = false, ox = big ? 1 : 46, ow = W - ox - 1;
         if (!big) {
           ctx.print(1, top + 1, ps.zones + (ps.zones === 1 ? " zone" : " zones"), 1);
