@@ -84,9 +84,12 @@ SETS = [
                               for n in ("A2", "A3", "D#4", "A4")], dict(attack=0.35, loop=0.9)),
     ("Digi E.Piano", "DEP", "shot", [(V + "Electrophones/TX81Z/FM Piano/FMPiano_%s_vl2.wav" % n, n) for n in ("E2", "C3", "G#3", "E4", "C5")],
      dict(length=2.0)),
-    ("Aah", "Aah", "sus", [(FS + "764221_CRWDSing_Ahh_Vowel_Sung_Near_F_02_ShaneVincent_G.wav", "F3"),
-                           (FS + "211494_choir_aah_wav.wav", "G#4")], dict(attack=0.5, loop=1.0)),
-    ("Ooh", "Ooh", "sus", [(FS + "413713_Voice_Choir_OOOH_wav.wav", "C3")], dict(attack=0.5, loop=1.0)),
+    # Aah: the steady F3 of one take (its first 1.8 s is a breathy lead-in; the old G#4 zone was a short
+    # phrase - A3, C#4, A4 - that looped out of tune). Ooh drifts +-30 ct: loop its steadiest stretch and
+    # tune from the whole loop, not the first 0.25 s.
+    ("Aah", "Aah", "sus", [(FS + "764221_CRWDSing_Ahh_Vowel_Sung_Near_F_02_ShaneVincent_G.wav", "F3", 1.85, 7.3)],
+     dict(attack=0.4, loop=1.6, tune_win=1.6)),
+    ("Ooh", "Ooh", "sus", [(FS + "413713_Voice_Choir_OOOH_wav.wav", "C3")], dict(attack=1.7, loop=1.2, tune_win=1.2)),
     ("Sung Chord", "SChd", "sus", [(FS + "274121_Choir_of_Voices_Single_Chord.wav", "E4")], dict(attack=0.5, loop=1.0, chord=True)),
     ("Dream Chord", "Drm", "sus", [(FS + "558416_Mystery_dream_vocal_chord.wav", "E3")], dict(attack=0.5, loop=1.2, chord=True)),
     # a steady, airy breathing-choir pad (replaces a gasping breath loop that sounded like a horror effect)
@@ -96,8 +99,11 @@ SETS = [
                                    for n, a, b in (("G#3", 0.03, 6.9), ("F4", 17.84, 25.1), ("C#5", 33.51, 37.7), ("A5", 58.06, 63.6))],
      dict(attack=0.4, loop=1.0)),
     ("Shaku Breath", "ShBr", "tex", [(FS + "500765_shakuhachi_blow_23.wav", "C4")], dict(start=4.0, loop=2.0)),
-    ("Sitar", "Sitr", "shot", [(FS + "754604_Free_Style_Sitar.wav", "D#4", 0.0, 2.68), (FS + "754604_Free_Style_Sitar.wav", "G#4", 11.63, 13.55)],
-     dict(length=1.9)),
+    # single clean notes out of a free-style take (the older slices ran on into the next phrase), the
+    # decay flattened after the pluck so the jawari buzz loops as a steady drone
+    ("Sitar", "Sitr", "sus", [(FS + "754604_Free_Style_Sitar.wav", n, a, b)
+                              for n, a, b in (("F3", 32.48, 33.93), ("A#3", 30.44, 31.12), ("A#4", 21.20, 22.10))],
+     dict(attack=0.22, loop=0.3, flatten=True)),
     ("Tanpura", "Tanp", "shot", [(FS + "416606_Tanpura_note_A_sharp_wav.wav", "A#2"), (FS + "416605_Tanpura_note_C_sharp_wav.wav", "C#3")],
      dict(length=2.8)),
     ("Dan Tranh", "DanT", "shot", [(V + "Chordophones/Zithers/Dan Tranh/Vibrato/%s_vib_mf_1.wav" % n, n) for n in ("B2", "F#3", "C#4", "G#4")],
@@ -283,7 +289,7 @@ def build_zone(kind, opt, path, root, t0=None, t1=None):
             per = None
         else:
             a0 = int(opt["attack"] * SR)
-            mid = x[a0:a0 + int(0.25 * SR)]
+            mid = x[a0:a0 + int(opt.get("tune_win", 0.25) * SR)]
             per = None
             if not opt.get("chord"):
                 per, pc = period_of(mid, f0)
@@ -291,6 +297,15 @@ def build_zone(kind, opt, path, root, t0=None, t1=None):
                 if abs(tune) > 45 or pc < 0.5:
                     print("   %s: pitch unsure (%+.0f ct, r=%.2f) - left at the named root" % (os.path.basename(path), tune, pc))
                     tune, per = 0.0, None
+        if opt.get("flatten"):
+            # a plucked tone decays: level everything after the attack to the attack's end (gain <= 8x)
+            # so the loop holds steady instead of pumping at the seam
+            w = int(0.03 * SR)
+            r = np.sqrt(np.convolve(x * x, np.ones(w) / w, "same")) + 1e-6
+            r = np.convolve(r, np.ones(4 * w) / (4 * w), "same")
+            g = np.ones_like(x)
+            g[a0:] = np.minimum(r[a0] / r[a0:], 8.0)
+            x = x * g
         L = int(opt["loop"] * SR)
         a1 = a0 + int(0.25 * SR)
         need = a1 + L + int(0.05 * SR)
