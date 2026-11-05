@@ -80,6 +80,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
+## Sample ROM (CC0)
+
+The Atmos Layer sets (`tools/data/rom/rom.bin`) are built by `tools/build_rom.py` from recordings released
+under CC0 1.0 (public domain). No attribution is required; the sources are listed so every recording can be
+traced. Full manifest with checksums: `tools/data/rom/SOURCES.json`.
+
+- VCSL - Versilian Community Sample Library, Versilian Studios (https://github.com/sgossner/VCSL)
+- VSCO 2 Community Edition, Versilian Studios (https://github.com/sgossner/VSCO-2-CE)
+- Freesound (https://freesound.org), CC0 uploads:
+  - Aah: https://freesound.org/people/ShangusBurger/sounds/764221/, by ShangusBurger
+  - Ooh: https://freesound.org/people/Uzbazur/sounds/413713/, by Uzbazur
+  - Sung Chord: https://freesound.org/people/bone666138/sounds/274121/, by bone666138
+  - Dream Chord: https://freesound.org/people/skylarjulian/sounds/558416/, by skylarjulian
+  - Breath Choir: https://freesound.org/people/newlocknew/sounds/783935/, by newlocknew
+  - Shakuhachi: https://freesound.org/people/--DeletedUser--/sounds/159550/, by --DeletedUser--
+  - Shaku Breath: https://freesound.org/people/PhonosUPF/sounds/500765/, by PhonosUPF
+  - Sitar: https://freesound.org/people/FuzzyTuesday/sounds/754604/, by FuzzyTuesday
+  - Tanpura: https://freesound.org/people/luckylittleraven/sounds/416606/, by luckylittleraven
+  - Tanpura: https://freesound.org/people/luckylittleraven/sounds/416605/, by luckylittleraven
+  - Duduk: https://freesound.org/people/blood_of_a_pomegranate/sounds/479213/, by blood_of_a_pomegranate
+  - Erhu: https://freesound.org/people/tarane468/sounds/569838/, by tarane468
+  - Sarangi: https://freesound.org/people/--DeletedUser--/sounds/167088/, by --DeletedUser--
+  - Koto: https://freesound.org/people/--DeletedUser--/sounds/223956/, by --DeletedUser--
+  - Singing Bowl: https://freesound.org/people/mttvn/sounds/535950/, by mttvn
+
 ## Schwung (MIT)
 
 `src/dsp/plugin_api.h` is from Schwung (https://github.com/charlesvestal/schwung), Copyright (c) 2025-2026

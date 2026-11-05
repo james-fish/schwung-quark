@@ -86,8 +86,6 @@ var QUARK_CHORDS = {
   "Driven Drone": {"c": "F#sus2/4", "s": "Liquid Soul", "n": [42, 54, 56, 59, 61, 66]},
   "Vosim Bloom": {"c": "Bbmadd9", "s": "Impressionist", "n": [46, 60, 61, 65, 70]},
   "Metal Drone": {"c": "Ebm", "s": "Neo Soul Minor", "n": [39, 54, 58]},
-  "Granite Pulse": {"c": "G#m7", "s": "Cinematic", "n": [44, 56, 59, 63, 66]},
-  "Comb Spinner": {"c": "D7sus2", "s": "Future Bounce", "n": [50, 57, 60, 64, 72]},
   "Air Wash Drone": {"c": "Ebsus2/4/Ab", "s": "Lush Pads", "n": [56, 65, 70, 75]},
   "Metal Cathedral": {"c": "F#m9", "s": "Cinematic", "n": [42, 54, 56, 57, 61, 64]},
   "Sitar Dawn": {"c": "Dm7(11)", "s": "Chill House", "n": [50, 55, 57, 60, 62, 65]},

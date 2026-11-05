@@ -2,7 +2,7 @@
 
 **Quark** is a two-layer synth module for [Schwung](https://github.com/charlesvestal/schwung) on Ableton Move. It pairs a big, warm **Atmos** engine with a punchy **Melody** synth — complete with a chord-following arpeggiator, multi-FX and a shimmer reverb.
 
-Whether you're after classic string-machine swells, 90s rompler chord stabs, glassy FM keys or evolving ambient drones, Quark has you covered — all running natively on the Move at a tiny CPU cost. 🚀
+Whether you're after classic string-machine swells, 90s rompler chord stabs, glassy FM keys, sampled choirs or evolving ambient drones, Quark has you covered — all running natively on the Move at a tiny CPU cost. 🚀
 
 ---
 
@@ -12,6 +12,7 @@ Whether you're after classic string-machine swells, 90s rompler chord stabs, gla
 - 🌊 **89 wavetables** — Quark's own 10 tables, 5 brand-new **chord stacks**, and all 74 [Amino](THIRD_PARTY_NOTICES.md) tables.
 - 📂 **Your own wavetables** — drop Serum/Vital-style WAV files on your Move and play them on both layers.
 - 🎹 **Chord stacks** — a whole voicing in one key: **Fifths**, **Minor 9**, **Major 9**, **Dom 11** and **Fourths**. Turn **Variation** to stack the intervals up — perfect for 90s rompler stabs, ambient pads and DnB chords.
+- 🎙️ **Sampled Layer: 32 instruments** — choirs, wine glass, bowed vibes, flutes, organ, sitar, shakuhachi, koto, duduk, erhu and more, under the synth or on their own. Blend two sets (by knob, Motion or the mod wheel), play them Clean, 90s or Lo-Fi, start into the sample, and loop them or let them ring once. All recordings are CC0.
 - 🔔 **6 FM voices** — E.Piano, Bells, Keys, Glass, Metal and FM Pad.
 - 🎚️ **11 filter types** — LP12/24, HP, BP, Dual BP, Notch, two Combs and a Morph filter.
 - 🔥 **Drive, Detune & Bloom** — saturate pre/post filter or across the whole chord, and let chords drift gently out of tune over time.
@@ -21,7 +22,7 @@ Whether you're after classic string-machine swells, 90s rompler chord stabs, gla
 - 🎼 **Chord-following arp** — Melody can arpeggiate whatever the Atmos are holding, with 10 types, 40 patterns, 40 rhythms and smart randomisation.
 - 🌌 **FX** — chorus, flanger, phaser, tremolo, drive, delays and tape echo, plus a shimmer reverb that can freeze.
 - 📼 **Vintage** — one knob of analog-style drift for pitch, filter, envelopes and level.
-- 💾 **88 factory presets**, grouped by sound (pads, voices, chords, keys, bells, arps, splits, bass and lead, drones) — a quarter of them pair the Atmos with a matching Melody part.
+- 💾 **86 factory presets**, grouped by sound (pads, voices, chords, keys, bells, arps, splits, bass and lead, drones) — a quarter of them pair the Atmos with a matching Melody part.
 
 ---
 
