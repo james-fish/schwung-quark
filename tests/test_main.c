@@ -963,7 +963,7 @@ int main(int argc, char **argv) {
         const char *ps[][2] = {{"preset", "0"}, {"key_mode", "3"}, {"flt_type", "0"}, {"rv_amt", "0"}, {"fx_amt", "0"},
                                {"sh_amt", "0"}, {"ens_amt", "0"}, {"tx_spread", "0"}, {"tx_detune", "0"}, {"vintage", "0"},
                                {"tx_anim", "0"}, {"tx_a", "0"}, {"tx_s", "1"}, {"tx_r", "0"}, {"tx_depth", "0"}, {"tx_vol", "0.8"},
-                               {"flt_key", "0"}, {"pl_lvl", "1"}, {"pl_start", "0"}, {"pl_pitch", "0"}, {"pl_fine", "0"},
+                               {"flt_key", "0"}, {"pl_lvl", "1"}, {"pl_start", "0"}, {"pl_tune", "0"},
                                {"flt_cut", "0.9"}};
         /* render a 3-note chord: energy over [skip, skip + len) blocks, and its HF share */
         #define PL_RENDER(type, wave, mode, era, keys0, skip, len, E, HF) do { \
@@ -999,7 +999,7 @@ int main(int argc, char **argv) {
         }
         CHECK(!nans && !same, "PCM Layer sounds under every family, Mode and Era (%d of %d unchanged, %d NaN)", same, runs, nans);
         /* the main sound shut out by a closed LP24: Loop is filtered away too, Air comes through bright */
-        ps[21][1] = "0";
+        ps[20][1] = "0";
         ps[2][1] = "2";
         double e_loop, e_air, h_loop, h_air, e_main;
         PL_RENDER("Strings", "Off", "Loop", "Clean", 84, 0, 200, e_main, hoff);
@@ -1016,12 +1016,12 @@ int main(int argc, char **argv) {
         /* level: the Layer alone at Lvl 1 (Air past the closed filter) against the plain Strings chord */
         double e_str;
         ps[2][1] = "0";
-        ps[21][1] = "0.9";
+        ps[20][1] = "0.9";
         PL_RENDER("Strings", "Off", "Loop", "Clean", 60, 250, 200, e_str, hoff);
         double lv[3];
         const char *lsets[3] = {"Aah", "Section Strings", "Organ Blower"};
         ps[2][1] = "2";
-        ps[21][1] = "0";
+        ps[20][1] = "0";
         for (int k = 0; k < 3; k++) PL_RENDER("Strings", lsets[k], "Air", "Clean", 60, 250, 200, lv[k], hoff);
         double rel = 10.0 * log10((lv[0] + lv[1] + lv[2]) / 3.0 / (e_str + 1e-12));
         printf("pcm layer level at Lvl 1 vs Strings: %+.1f dB (Aah %+.1f, Strings %+.1f, Blower %+.1f)\n", rel,

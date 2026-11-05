@@ -121,8 +121,7 @@ const QParam quark_params[P_COUNT] = {
     {"an_mode", 'e', 0.0f, 2.0f, 0.0f, 3, O_an_mode},
     {"pl_wave", 'e', 0.0f, 32.0f, 0.0f, 33, O_pl_wave},
     {"pl_lvl", 'f', 0.0f, 1.0f, 0.5f, 0, 0},
-    {"pl_pitch", 'i', -24.0f, 24.0f, 0.0f, 0, 0},
-    {"pl_fine", 'i', -50.0f, 50.0f, 0.0f, 0, 0},
+    {"pl_tune", 'i', -74.0f, 74.0f, 0.0f, 0, 0},
     {"pl_start", 'f', 0.0f, 1.0f, 0.0f, 0, 0},
     {"pl_mode", 'e', 0.0f, 3.0f, 0.0f, 4, O_pl_mode},
 };

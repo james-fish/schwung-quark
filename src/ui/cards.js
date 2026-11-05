@@ -273,7 +273,7 @@
         var tt = Q.M.texTypes[Math.max(0, Math.min(Q.M.texTypes.length - 1, Math.round(Q.val(values, "tx_type"))))];
         var bi = Math.round(Q.val(values, "pcm_b")) - 1, rows = [];
         if (tt.family === 3) rows.push(Q.M.pcmSets[Q.M.pcmTypes[tt.index]]);
-        else { ctx.print(1, top + 1, "Atmos Type is", 1); ctx.print(1, top + 11, "not PCM", 1); }
+        else { ctx.print(1, top + 1, "Atmos Type is", 1); ctx.print(1, top + 11, "not PCM", 1); return; }
         if (bi >= 0) rows.push(Q.M.pcmSets[bi]);
         else if (tt.family === 3) { ctx.print(1, top + bh - 8, "Var = start", 1); }
         var rh2 = Math.floor(bh / 2);
@@ -288,11 +288,11 @@
         });
         return;
       }
-      case "pl_wave": case "pl_start": {
+      case "pl_wave": {
         /* the Layer set's outline, its loop bracket and where Start puts the note */
         var ps = Q.plSet(values);
         if (!ps) { ctx.print(1, top + 1, "Layer Off", 1); Q.dotted(ctx, 0, top + Math.floor(bh / 2), W); return; }
-        var big = key === "pl_start", ox = big ? 1 : 46, ow = W - ox - 1;
+        var big = false, ox = big ? 1 : 46, ow = W - ox - 1;
         if (!big) {
           ctx.print(1, top + 1, ps.zones + (ps.zones === 1 ? " zone" : " zones"), 1);
           ctx.print(1, top + 11, ps.loop ? "loops" : "one-shot", 1);
@@ -307,9 +307,9 @@
         ctx.fillRect(Math.max(0, sx2 - 1), big ? top : H - 4, big ? 3 : 3, big ? bh : 3, 1);
         return;
       }
-      case "pl_pitch": case "pl_fine": {
-        /* the interval to the main voice, and how fast the two beat at A4 (one second drawn) */
-        var st2 = Math.round(Q.val(values, "pl_pitch")), ct2 = Math.round(Q.val(values, "pl_fine"));
+      case "pl_tune": {
+        /* the interval to the main voice, or (inside +-50 ct) how fast the two beat at A4 (one second drawn) */
+        var tu2 = Q.plTune(Q.val(values, "pl_tune")), st2 = tu2.st, ct2 = tu2.ct;
         var IV = ["unison", "min 2nd", "maj 2nd", "min 3rd", "maj 3rd", "4th", "tritone", "5th", "min 6th", "maj 6th", "min 7th", "maj 7th"];
         var a12 = ((st2 % 12) + 12) % 12, oc = Math.floor(Math.abs(st2) / 12);
         var ivn = st2 === 0 ? "unison" : (st2 < 0 ? "-" : "+") + (a12 === 0 ? oc + " oct" : IV[st2 < 0 ? (12 - a12) % 12 : a12] + (oc ? "+" + oc + "oc" : ""));
@@ -338,8 +338,8 @@
           if (pi < 2) Q.dotted(ctx, px4 + w4 + 2, y4 + 3, 10);
           if ((md < 2 && pi === 0) || (md >= 2 && pi === 1)) {
             var jx = px4 + w4 + 7;
-            ctx.fillRect(jx, y4 + 4, 1, bh - 16 > 2 ? bh - 16 : 3, 1);
-            ctx.fillRect(jx - 1, y4 + 4, 3, 1, 1);
+            ctx.fillRect(jx - 1, y4 + 9, 3, 1, 1);   /* the Layer joins here, from below */
+            ctx.fillRect(jx, y4 + 9, 1, Math.max(1, H - y4 - 10), 1);
           }
           px4 += w4 + 14;
         }

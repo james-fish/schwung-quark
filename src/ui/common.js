@@ -196,7 +196,7 @@ var Q = (function () {
       case "ln_glide": return fmtS(1.2 * x * x);
       case "rv_decay": return x > 0.995 ? "Freeze" : fmtS(0.35 * Math.pow(80, x));
       case "rv_tone": return fmtHz(1200 * Math.pow(13, x));
-      case "rv_size": return pct(x) + " · pre " + Math.round(1000 * revPre(x)) + " ms";
+      case "rv_size": return pct(x) + ", pre " + Math.round(1000 * revPre(x)) + " ms";
       case "ln_spread": return Math.abs(x) < 0.02 ? "Centre" : (x < 0 ? "Random " : "Steps ") + pct(Math.abs(x));
       case "ln_dly": return x < 0.003 ? "Off" : pct(x);
       case "sh_pitch": return p.opts[Math.round(x)] + " st";
@@ -215,7 +215,7 @@ var Q = (function () {
         }
         return pct(x);
       case "tx_drive": return x < 0.003 ? "Off" : "+" + (20 * Math.log10(1 + 24 * x * x)).toFixed(1) + " dB";
-      case "pl_pitch": case "pl_fine": return (x > 0 ? "+" : "") + Math.round(x) + (key === "pl_fine" ? " ct" : " st");
+      case "pl_tune": { var tu = plTune(x), n = tu.st || tu.ct; return (n > 0 ? "+" : "") + n + (tu.st ? " st" : " ct"); }
       case "pl_lvl": return plSet(values) ? pct(x) : "Layer Off";
       case "pl_start": return x < 0.005 ? "Attack" : pct(x);
       case "pcm_era": return p.opts[Math.round(x)];
@@ -386,8 +386,15 @@ var Q = (function () {
   }
 
   /* ---- PCM Layer ---- */
-  var ERA_TEXT = ["32k · hermite", "16k · lin · alias", "8k · drop · 12bit"];
-  var PL_MODE_TEXT = ["loop · pre-filter", "once · pre-filter", "loop · post-filter", "once · post-filter"];
+  /* (the Move font has no middle dot: plain ASCII only in card text) */
+  var ERA_TEXT = ["32k, smooth", "16k, aliased", "8k, 12-bit"];
+  var PL_MODE_TEXT = ["Loops, filtered", "Once, filtered", "Loops, unfiltered", "Once, unfiltered"];
+  /* Layer Tune: one knob, +-50 = cents, beyond that semitones (51 = +1 st .. 74 = +24 st);
+   * mirrors pl_tune_split in tex.c */
+  function plTune(x) {
+    var v = Math.round(Number(x) || 0), a = Math.abs(v), s = v < 0 ? -1 : 1;
+    return a <= 50 ? { st: 0, ct: v } : { st: s * Math.min(24, a - 50), ct: 0 };
+  }
   /* the Layer's set (null when Off) */
   function plSet(values) {
     var i = Math.round(val(values, "pl_wave")) - 1;
@@ -419,7 +426,7 @@ var Q = (function () {
   }
 
   return {
-    plSet: plSet, plStartFrac: plStartFrac, pcmOutline: pcmOutline, eraWave: eraWave, eraText: ERA_TEXT, plModeText: PL_MODE_TEXT,
+    plTune: plTune, plSet: plSet, plStartFrac: plStartFrac, pcmOutline: pcmOutline, eraWave: eraWave, eraText: ERA_TEXT, plModeText: PL_MODE_TEXT,
     M: M, byKey: byKey, byName: byName, val: val, num: num, hz: hz, envTime: envTime, texWave: texWave,
     lineWave: lineWave, lineIsWave: lineIsWave, bankWave: bankWave, driveCurve: driveCurve, detCents: detCents, fmtS: fmtS, envTimeS: envTime, familyName: familyName, lfoShape: lfoShape, variationText: variationText, describe: describe,
     ctrlLabel: ctrlLabel, fxCtrlName: fxCtrlName, line: line, plot: plot, tw: tw, fit: fit, dotted: dotted, envShape: envShape,

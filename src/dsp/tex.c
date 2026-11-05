@@ -387,6 +387,12 @@ static void pcm_voice_init(QInstance *q, QTexVoice *v) {
 /* PCM Layer: one more set under any Atmos Type, its zone picked for the note plus Layer Pitch.
  * Start skips into the sample the way PCM B Off's Variation does; Shot / Ping (and a one-shot set)
  * play once and stop at their end. */
+/* Layer Tune is one knob: +-50 = cents, beyond that whole semitones (51 = +1 st .. 74 = +24 st) */
+static inline float pl_tune_semis(float t) {
+    int v = q_clampi((int)lroundf(t), -74, 74), a = v < 0 ? -v : v;
+    return a <= 50 ? 0.01f * (float)v : (float)((v < 0 ? -1 : 1) * (a - 50));
+}
+
 static void layer_init(QInstance *q, QTexVoice *v) {
     int set = q_clampi((int)(q->ps[P_PL_WAVE] + 0.5f), 0, Q_PCM_NUM_SETS) - 1;
     v->lset = set;
@@ -395,7 +401,7 @@ static void layer_init(QInstance *q, QTexVoice *v) {
     v->lfade = 1.0f;
     if (set < 0) return;
     int era = q_clampi((int)(q->ps[P_PCM_ERA] + 0.5f), 0, 2), mode = q_clampi((int)(q->ps[P_PL_MODE] + 0.5f), 0, 3);
-    int key = v->note + q_clampi((int)lroundf(q->ps[P_TX_TR]), -24, 24) + q_clampi((int)lroundf(q->ps[P_PL_PITCH]), -24, 24);
+    int key = v->note + q_clampi((int)lroundf(q->ps[P_TX_TR]), -24, 24) + (int)lroundf(pl_tune_semis(q->ps[P_PL_TUNE]));
     v->lz = q_pcm_pick(set, era, key);
     const QPcmZone *z = &quark_pcm_zones[v->lz];
     v->lonce = z->oneshot || mode == 1 || mode == 3;
@@ -627,7 +633,7 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
     /* PCM Layer: Loop / Shot mix in before the filter, Air / Ping after it (breath stays bright) */
     int pl_set = q_clampi((int)(P[P_PL_WAVE] + 0.5f), 0, Q_PCM_NUM_SETS) - 1;
     int pl_post = q_clampi((int)(P[P_PL_MODE] + 0.5f), 0, 3) >= 2;
-    float pl_semi = (float)q_clampi((int)lroundf(P[P_PL_PITCH]), -24, 24) + 0.01f * q_clamp(P[P_PL_FINE], -50.0f, 50.0f);
+    float pl_semi = pl_tune_semis(P[P_PL_TUNE]);
     float pl_lvl = q_clamp(P[P_PL_LVL], 0.0f, 1.0f) * Q_PL_GAIN;
     float pl_fade_n = 0.012f * sr;   /* a once-through layer fades over its last 12 ms */
     QWave wv;

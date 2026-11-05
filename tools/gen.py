@@ -543,9 +543,9 @@ PL_MODES, PL_MODES_S = ["Loop", "Shot", "Air", "Ping"], ["Loop", "Shot", "Air", 
 E("pl_wave", "PCM Layer", "Layer", 0, ["Off"] + [st["name"] for st in ROM["sets"]], ["Off"] + [st["short"] for st in ROM["sets"]],
   viz={"kind": "custom:qpcm"}, card=CARD)
 F("pl_lvl", "Layer Level", "Lvl", 0.5)
-I("pl_pitch", "Layer Pitch", "Pitch", 0, -24, 24, unit="st", card=CARD)
-I("pl_fine", "Layer Fine", "Fine", 0, -50, 50, unit="ct", card=CARD)
-F("pl_start", "Layer Start", "Start", 0.0, viz={"group": "pl", "role": "start", "kind": "custom:qpcm"}, card=CARD)
+# Tune: one bidirectional knob, +-50 cents of detune in the middle, then semitones out to +-24
+I("pl_tune", "Layer Tune", "Tune", 0, -74, 74, card=CARD)
+F("pl_start", "Layer Start", "Start", 0.0, viz={"group": "pl", "role": "start", "kind": "custom:qpcm"})
 E("pl_mode", "Layer Mode", "Mode", 0, PL_MODES, PL_MODES_S, viz={"group": "pl", "role": "mode", "kind": "custom:qpcm"},
   card=CARD)
 
@@ -571,7 +571,7 @@ PAGES = [
     ("pdrive", "Atmos Drive", ["tx_drive", "tx_drvpos", "tx_dtone", "tx_spread", "tx_detune", "tx_bloom", "tx_latch", "flt_key"]),
     ("pmotion", "Atmos Motion", ["an_shape", "an_rate", "tx_anim", "an_dest", "an_lfo2", "an_mode", "ens_amt", "ens_type"]),
     # the PCM Layer (any Atmos Type), then the two PCM-wide knobs
-    ("pcm", "Atmos PCM", ["pl_wave", "pl_lvl", "pl_pitch", "pl_fine", "pl_start", "pl_mode", "pcm_era", "pcm_b"]),
+    ("pcm", "Atmos PCM", ["pl_wave", "pl_lvl", "pl_tune", "pl_start", "pl_mode", "pcm_era", "pcm_b", None]),
     ("mono", "Melody", ["ln_shape", "ln_var", "ln_det", "ln_int", "ln_a", "ln_d", "ln_sus", "ln_mode"]),
     ("mtone", "Melody Filter", ["ln_cut", "ln_res", "ln_wenv", "ln_fenv", "ln_glide", "ln_spread", "ln_dly", "ln_dtime"]),
     ("arp", "Melody Arp", ["arp_mode", "arp_src", "arp_rate", "arp_oct", "arp_gate", "arp_swing", "arp_hold", "arp_rhy"]),
@@ -838,7 +838,7 @@ PRESETS += [
                         flt_cut=0.5, flt_res=0.2, tx_a=0.4, tx_r=0.6, ens_amt=0.7, rv_amt=0.4, rv_decay=0.7,
                         pl_wave=1 + PCMSET["Breath Loop"], pl_mode=2, pl_lvl=0.45)),
     ("Chime Strings", dict(tx_type=T["Strings"], tx_var=0.2, tx_anim=0.15, tx_a=0.3, tx_r=0.6, ens_amt=0.85,
-                           pl_wave=1 + PCMSET["Hand Chimes"], pl_mode=3, pl_lvl=0.55, pl_pitch=12,
+                           pl_wave=1 + PCMSET["Hand Chimes"], pl_mode=3, pl_lvl=0.55, pl_tune=62,
                            rv_amt=0.4, rv_decay=0.75)),
     ("Kalimba Bells", dict(tx_type=T["FM Bells"], tx_var=0.3, tx_depth=0.25, me_d=0.6, tx_a=0.0, tx_d=0.65, tx_s=0.2,
                            tx_r=0.55, ens_amt=0.35, pl_wave=1 + PCMSET["Kalimba"], pl_mode=1, pl_lvl=0.6,
@@ -847,7 +847,7 @@ PRESETS += [
                             pl_wave=1 + PCMSET["Shaku Breath"], pl_mode=2, pl_lvl=0.4, pl_start=0.3,
                             sh_amt=0.45, sh_pitch=5, rv_amt=0.5, rv_decay=0.82)),
     ("Lo-Fi Choir Stack", dict(tx_type=T["Choir"], tx_var=0.5, tx_anim=0.25, an_rate=0.15, tx_a=0.4, tx_r=0.6, ens_amt=0.9,
-                               pl_wave=1 + PCMSET["Aah"], pl_mode=0, pl_lvl=0.6, pl_fine=8, pcm_era=2, tx_vol=0.6,
+                               pl_wave=1 + PCMSET["Aah"], pl_mode=0, pl_lvl=0.6, pl_tune=8, pcm_era=2, tx_vol=0.6,
                                flt_type=1, flt_cut=0.7, rv_amt=0.45, rv_decay=0.75, vintage=0.4)),
     ("Sitar Drone", dict(tx_type=T["Organ"], tx_var=0.3, tx_a=0.25, tx_s=1.0, tx_r=0.5, ens_amt=0.5, ens_type=1,
                          pl_wave=1 + PCMSET["Sitar"], pl_mode=3, pl_lvl=0.65, tx_latch=1, tx_vol=0.45,

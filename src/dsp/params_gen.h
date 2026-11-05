@@ -102,8 +102,7 @@ enum {
     P_AN_MODE,
     P_PL_WAVE,
     P_PL_LVL,
-    P_PL_PITCH,
-    P_PL_FINE,
+    P_PL_TUNE,
     P_PL_START,
     P_PL_MODE,
     P_COUNT

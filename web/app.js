@@ -535,16 +535,14 @@
       for (var i2 = 0; i2 < 128; i2 += 2) full.setPixel(i2, 8, 1);
       groupsOf(pg.knobs).forEach(function (c) { drawCell(c, pg.knobs, values); });
       // card overlay while a carded knob is being turned
-      if (t && now - t.at < 1200 && byKey[t.key]) {
+      if (t && now - t.at < 1200 && byKey[t.key] && chainHasCard(t.key)) {
         var cw = 104, ch = 40, cx = 12, cy = 14;
         full.fillRect(cx - 2, cy - 2, cw + 4, ch + 4, 0);
         full.fillRect(cx - 2, cy - 2, cw + 4, 1, 1); full.fillRect(cx - 2, cy + ch + 1, cw + 4, 1, 1);
         full.fillRect(cx - 2, cy - 2, 1, ch + 4, 1); full.fillRect(cx + cw + 1, cy - 2, 1, ch + 4, 1);
         var cctx = makeCtx(cx, cy, cw, ch);
-        var hasCard = chainHasCard(t.key);
         try {
-          if (hasCard) quark_card(cctx, { name: byKey[t.key].name, value: Q.describe(t.key, values), raw: vals[t.key], values: values, w: cw, h: ch, nowMs: now });
-          else { cctx.print(1, 0, byKey[t.key].name, 1); cctx.print(1, 16, Q.describe(t.key, values), 1); }
+          quark_card(cctx, { name: byKey[t.key].name, value: Q.describe(t.key, values), raw: vals[t.key], values: values, w: cw, h: ch, nowMs: now });
         } catch (e) { console.warn(e); }
       }
     }
@@ -793,7 +791,7 @@
     ["tx_type", "tx_anim", "tx_depth", "tx_a", "tx_d", "tx_s", "tx_r", "ens_amt", "ens_type",
      "ln_shape", "ln_var", "ln_a", "ln_d", "ln_sus", "ln_spread", "ln_dly", "ln_dtime", "fx_type", "fx_ctrl", "fx_amt", "sh_pitch", "sh_amt",
      "rv_decay", "rv_amt", "tx_drive", "tx_drvpos", "tx_detune", "tx_bloom", "tx_latch", "ln_wenv", "arp_mode", "arp_src",
-     "arp_oct", "arp_hold", "pcm_era", "pcm_b", "pl_wave", "pl_lvl", "pl_pitch", "pl_fine", "pl_start", "pl_mode"].forEach(function (k) { mount(k); });
+     "arp_oct", "arp_hold", "pcm_era", "pcm_b", "pl_wave", "pl_lvl", "pl_tune", "pl_start", "pl_mode"].forEach(function (k) { mount(k); });
     mount("tx_var", "beige");
     mount("tx_vol", "white"); mount("ln_vol", "white"); mount("vol", "white"); mount("vintage", "beige");
     var sel = document.getElementById("preset");
