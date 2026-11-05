@@ -145,6 +145,8 @@ static void state_set(QInstance *q, const char *js) {
     s = s ? strchr(s, '{') : js;
     if (!s) return;
     const char *pend = strchr(s, '}');   /* the values are numbers, so the first } closes "p" */
+    float old_det = -1.0f;
+    int old_int = 0;
     if (!pend) pend = s + strlen(s);
     while (s < pend) {
         const char *k0 = strchr(s, '"');
@@ -159,6 +161,15 @@ static void state_set(QInstance *q, const char *js) {
         key[kl] = 0;
         while (*s == ' ' || *s == ':') s++;
         int i = find_param(key), per = 1;
+        /* 0.4 Melody Detune (cents) and Interval (semitones) are one Tune knob now: an interval wins */
+        if (i < 0 && (strcmp(key, "ln_det") == 0 || strcmp(key, "ln_int") == 0)) {
+            char *e2 = 0;
+            float x = strtof(s, &e2);
+            if (key[3] == 'd') old_det = ver < 2 ? x * 50.0f : x;
+            else old_int = (int)lroundf(x);
+            if (e2 != s) s = e2;
+            continue;
+        }
         /* 0.4 and older saved octaves; transpose is in semitones now */
         if (i < 0 && (strcmp(key, "tx_oct") == 0 || strcmp(key, "ln_oct") == 0)) {
             i = key[0] == 't' ? P_TX_TR : P_LN_TR;
@@ -168,11 +179,12 @@ static void state_set(QInstance *q, const char *js) {
             char *end = 0;
             float v = strtof(s, &end);
             if (ver < 2 && i == P_KEY_MODE && v >= 1.5f) v += 1.0f;
-            if (ver < 2 && i == P_LN_DET) v *= 50.0f;
             if (end != s) set_value(q, i, v * (float)per);
             s = end ? end : s;
         }
     }
+    if (old_int != 0) set_value(q, P_LN_TUNE, (float)((old_int < 0 ? -50 : 50) + old_int));
+    else if (old_det >= 0.0f) set_value(q, P_LN_TUNE, old_det);
     /* user tables by name; a missing file falls back to the parameter's default */
     for (int layer = 0; layer < 2; layer++) {
         int pi = layer ? P_LN_SHAPE : P_TX_TYPE, b = layer ? Q_NUM_LINE_BUILTIN : Q_NUM_TEX_BUILTIN;

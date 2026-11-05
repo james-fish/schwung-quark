@@ -178,7 +178,6 @@ var Q = (function () {
       case "an_rate": return (0.03 * Math.pow(333, x)).toFixed(2) + " Hz";
       case "vib_rate": return (3 + 6 * x).toFixed(1) + " Hz";
       case "tx_spread": return "±" + (x * 9).toFixed(1) + " ct";
-      case "ln_det": return Math.round(x) + " ct";
       case "ln_glide": return fmtS(1.2 * x * x);
       case "rv_decay": return x > 0.995 ? "Freeze" : fmtS(0.35 * Math.pow(80, x));
       case "rv_tone": return fmtHz(1200 * Math.pow(13, x));
@@ -201,7 +200,7 @@ var Q = (function () {
         }
         return pct(x);
       case "tx_drive": return x < 0.003 ? "Off" : "+" + (20 * Math.log10(1 + 24 * x * x)).toFixed(1) + " dB";
-      case "pl_tune": { var tu = plTune(x), n = tu.st || tu.ct; return (n > 0 ? "+" : "") + n + (tu.st ? " st" : " ct"); }
+      case "pl_tune": case "ln_tune": { var tu = plTune(x), n = tu.st || tu.ct; return (n > 0 ? "+" : "") + n + (tu.st ? " st" : " ct"); }
       case "pl_lvl": return plSet(values) ? pct(x) : "Layer Off";
       case "pl_start": return x < 0.005 ? "Attack" : pct(x);
       case "pl_era": return p.opts[Math.round(x)];
@@ -212,7 +211,7 @@ var Q = (function () {
       }
       case "tx_dtone": return fmtHz(700 * Math.pow(2, 5 * x));
       case "tx_detune": return "±" + (x * x * 45).toFixed(1) + " ct";
-      case "tx_bloom": return x < 0.005 ? "Instant" : fmtS(0.05 + 15 * x * x);
+      case "tx_bloom": return x < 0.005 ? "Instant" : fmtS(15 * x * x);
       case "fx_ctrl":
         if (fxt <= 1) return (0.08 * Math.pow(60, x)).toFixed(2) + " Hz";
         if (fxt <= 3) return (0.03 * Math.pow(100, x)).toFixed(2) + " Hz";

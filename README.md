@@ -36,13 +36,14 @@ Pages are laid out so you always know where you are: **Presets** first, then all
 | 3 | Atmos Filter | Cutoff | Resonance | Filter Type | Filter Env | Mod A | Mod D | Mod S | Mod R |
 | 4 | Atmos Drive | Drive | Position | Tone | Spread | Detune | Bloom | Atmos Latch | Keytrack |
 | 5 | Atmos Motion | Shape | Rate | Motion | Target | LFO 2 Rate | LFO Mode | Ensemble | Ens Type |
-| 6 | **Melody** | Shape | Variation | Detune | Interval | Attack | Decay | Env Mode | Melody Mode |
-| 7 | Melody Filter | Cutoff | Resonance | Var Env | Filter Env | Glide | Spread | Delay | Delay Time |
-| 8 | Melody Arp | Type | Source | Rate | Octaves | Gate | Swing | Latch | Rhythm |
-| 9 | Arp Variation | Pattern | Drop | Velocity | Vel Rand | Gate Rand | Oct Rand | Note Rand | Loop |
-| 10 | **Mix & Effect** | Atmos Vol | Melody Vol | Atmos Route | Melody Route | FX Type | FX Ctrl | FX Ctrl 2 | FX Amount |
-| 11 | Reverb | Decay | Size | Tone | Amount | Shimmer Pitch | Shimmer Amt | Vintage | Volume |
-| 12 | Play | Atmos Transpose | Melody Transpose | Key Mode | Split | Velocity | Mod Wheel | Vibrato | Vib Rate |
+| 6 | Atmos Layer | Layer A | Layer B | Blend | Level | Tune | Start | Mode | Era |
+| 7 | **Melody** | Shape | Variation | Tune | | Attack | Decay | Env Mode | Melody Mode |
+| 8 | Melody Filter | Cutoff | Resonance | Var Env | Filter Env | Glide | Spread | Delay | Delay Time |
+| 9 | Melody Arp | Type | Source | Rate | Octaves | Gate | Swing | Latch | Rhythm |
+| 10 | Arp Variation | Pattern | Drop | Velocity | Vel Rand | Gate Rand | Oct Rand | Note Rand | Loop |
+| 11 | **Mix & Effect** | Atmos Vol | Melody Vol | Atmos Route | Melody Route | FX Type | FX Ctrl | FX Ctrl 2 | FX Amount |
+| 12 | Reverb | Decay | Size | Tone | Amount | Shimmer Pitch | Shimmer Amt | Vintage | Volume |
+| 13 | Play | Atmos Transpose | Melody Transpose | Key Mode | Split | Velocity | Mod Wheel | Vibrato | Vib Rate |
 
 💡 **Tip:** Cutoff and Resonance sit on knobs 1–2 on *both* filter pages, so your hands always know where to go.
 

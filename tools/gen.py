@@ -488,8 +488,9 @@ F("ln_cut", "Melody Cutoff", "Cut", 0.75, viz={"group": "lf", "role": "cutoff", 
 F("ln_res", "Melody Resonance", "Res", 0.15, viz={"group": "lf", "role": "resonance", "kind": "filter"})
 F("ln_fenv", "Melody Filter Env", "FEnv", 0.3, -1.0, 1.0)
 F("ln_wenv", "Melody Var Env", "VrEnv", 0.0, -1.0, 1.0)
-I("ln_det", "Melody Detune", "Detun", 11, 0, 50, unit="ct")
-I("ln_int", "Melody Interval", "Intvl", 0, -24, 24, unit="st")
+# Tune: oscillator 2 against 1, one bidirectional knob like Layer Tune (+-50 cents, then semitones);
+# 0.4 states' Detune + Interval fold into it (quark.c)
+I("ln_tune", "Melody Tune", "Tune", 11, -74, 74, card=CARD)
 F("ln_glide", "Melody Glide", "Glide", 0.0)
 E("ln_sus", "Melody Envelope", "EnvMd", 1, ENV_MODES, ENV_MODES_S, access="readwrite")
 # Mono arp
@@ -576,7 +577,7 @@ PAGES = [
     ("pmotion", "Atmos Motion", ["an_shape", "an_rate", "tx_anim", "an_dest", "an_lfo2", "an_mode", "ens_amt", "ens_type"]),
     # samples: added to any Atmos Type, or the whole sound with Type Off
     ("pcm", "Atmos Layer", ["pl_wave", "pl_b", "pl_blend", "pl_lvl", "pl_tune", "pl_start", "pl_mode", "pl_era"]),
-    ("mono", "Melody", ["ln_shape", "ln_var", "ln_det", "ln_int", "ln_a", "ln_d", "ln_sus", "ln_mode"]),
+    ("mono", "Melody", ["ln_shape", "ln_var", "ln_tune", None, "ln_a", "ln_d", "ln_sus", "ln_mode"]),
     ("mtone", "Melody Filter", ["ln_cut", "ln_res", "ln_wenv", "ln_fenv", "ln_glide", "ln_spread", "ln_dly", "ln_dtime"]),
     ("arp", "Melody Arp", ["arp_mode", "arp_src", "arp_rate", "arp_oct", "arp_gate", "arp_swing", "arp_hold", "arp_rhy"]),
     ("arp2", "Arp Variation", ["arp_pat", "arp_drop", "arp_vel", "arp_vrnd", "arp_grnd", "arp_ornd", "arp_nrnd", "arp_loop"]),
@@ -648,18 +649,18 @@ PRESETS = [
     ("Strings + Bass", dict(tx_type=T["Strings"], tx_var=0.2, ens_amt=0.85, tx_a=0.38, tx_r=0.5, ln_vol=0.7,
                             ln_shape=0, ln_var=0.0, ln_tr=-12, key_mode=1, split=55, ln_cut=0.5, ln_res=0.25,
                             ln_fenv=0.35, ln_a=0.0, ln_d=0.35, ln_sus=0, ln_mode=1, rv_amt=0.25)),
-    ("Mono Lead", dict(tx_vol=0.0, ln_vol=0.8, ln_shape=2, ln_var=0.7, ln_det=15, ln_cut=0.7, ln_res=0.2,
+    ("Mono Lead", dict(tx_vol=0.0, ln_vol=0.8, ln_shape=2, ln_var=0.7, ln_tune=15, ln_cut=0.7, ln_res=0.2,
                         ln_fenv=0.2, ln_a=0.08, ln_d=0.5, ln_glide=0.25, ln_mode=1, key_mode=4,
                         fx_type=FX["Delay"], fx_amt=0.3, fx_ctrl=0.6, rv_amt=0.3)),
     ("Sync Arp", dict(tx_type=T["Vintage"], tx_var=0.3, tx_vol=0.5, ens_amt=0.8, tx_a=0.4, tx_r=0.5, ln_vol=0.65,
-                      ln_shape=3, ln_var=0.0, ln_int=12, ln_cut=0.65, ln_res=0.3, ln_fenv=0.4, ln_a=0.0,
+                      ln_shape=3, ln_var=0.0, ln_tune=62, ln_cut=0.65, ln_res=0.3, ln_fenv=0.4, ln_a=0.0,
                       ln_d=0.3, ln_sus=0, ln_mode=2, arp_mode=1, arp_oct=1, arp_rate=4,
                       fx_type=FX["Ping Pong"], fx_amt=0.25, fx_ctrl=0.55, rv_amt=0.3)),
     ("Pulse Bass", dict(tx_vol=0.0, ln_vol=0.85, ln_shape=1, ln_var=0.2, ln_tr=-12, ln_cut=0.45, ln_res=0.3,
                         ln_fenv=0.45, ln_a=0.0, ln_d=0.3, ln_sus=1, ln_mode=1, key_mode=4, rv_amt=0.1,
                         ln_fx=1)),
     ("Layered Dream", dict(tx_type=T["Strings"], tx_var=0.65, tx_anim=0.2, ens_amt=0.8, ens_type=2, tx_a=0.4,
-                          tx_r=0.55, ln_vol=0.45, ln_shape=1, ln_var=0.55, ln_int=12, ln_a=0.25, ln_d=0.55,
+                          tx_r=0.55, ln_vol=0.45, ln_shape=1, ln_var=0.55, ln_tune=62, ln_a=0.25, ln_d=0.55,
                           ln_sus=1, ln_mode=2, ln_cut=0.6, rv_amt=0.4, rv_decay=0.7, sh_amt=0.2)),
 ]
 LS = {n: i for i, n in enumerate(LINE_SHAPES)}
@@ -671,7 +672,7 @@ PRESETS += [
     ("Fuzz Strings", dict(tx_type=T["Strings"], tx_var=0.3, tx_drive=0.45, tx_drvpos=0, tx_dtone=0.6, flt_type=2,
                           flt_cut=0.62, flt_res=0.25, tx_detune=0.25, ens_amt=0.75, tx_a=0.3, tx_r=0.45, rv_amt=0.3)),
     ("Chord Pluck Arp", dict(tx_type=T["Vintage"], tx_var=0.35, tx_vol=0.55, ens_amt=0.8, tx_a=0.45, tx_r=0.6,
-                             ln_vol=0.6, ln_shape=LS["Pluck"], ln_var=0.15, ln_wenv=0.71, ln_det=4, ln_cut=0.72,
+                             ln_vol=0.6, ln_shape=LS["Pluck"], ln_var=0.15, ln_wenv=0.71, ln_tune=4, ln_cut=0.72,
                              ln_res=0.2, ln_fenv=0.35, ln_a=0.0, ln_d=0.32, ln_sus=0, ln_mode=2, ln_tr=12, key_mode=3,
                              arp_mode=3, arp_src=1, arp_oct=1, arp_rate=4, arp_drop=0.15, arp_vrnd=0.3, fx_type=FX["Ping Pong"], fx_amt=0.25,
                              fx_ctrl=0.55, rv_amt=0.35)),
@@ -687,7 +688,7 @@ PRESETS += [
                          rv_amt=0.5, rv_decay=0.85, sh_amt=0.25, sh_pitch=5)),
     ("Grit Bass", dict(tx_vol=0.0, ln_vol=0.85, ln_shape=LS["Crushed"], ln_var=0.3, ln_wenv=-1.0, ln_tr=-12,
                        ln_cut=0.5, ln_res=0.3, ln_fenv=0.4, ln_a=0.0, ln_d=0.35, ln_sus=1, ln_mode=1, key_mode=4,
-                       ln_det=5, rv_amt=0.1, ln_fx=1)),
+                       ln_tune=5, rv_amt=0.1, ln_fx=1)),
     # chord stacks: one key, a whole voicing (Variation picks it)
     ("Rompler Fifths", dict(tx_type=T["Fifths"], tx_var=0.57, tx_anim=0.1, an_dest=2, an_rate=0.15, ens_amt=0.6,
                             tx_a=0.3, tx_r=0.6, flt_type=2, flt_cut=0.72, flt_res=0.15, fx_type=FX["Chorus"],
@@ -759,7 +760,7 @@ PRESETS += [
                              rv_decay=0.75)),
     # Pads + a Mono part: stacked keys play both
     ("Sub Swell Strings", dict(tx_type=T["Strings"], tx_var=0.25, tx_anim=0.15, ens_amt=0.85, tx_a=0.4, tx_r=0.55,
-                               rv_amt=0.3, ln_vol=0.55, ln_shape=LS["Sub"], ln_var=0.1, ln_tr=-12, ln_det=0,
+                               rv_amt=0.3, ln_vol=0.55, ln_shape=LS["Sub"], ln_var=0.1, ln_tr=-12, ln_tune=0,
                                ln_cut=0.45, ln_res=0.1, ln_fenv=0.15, ln_a=0.3, ln_d=0.6, ln_sus=1, ln_mode=1,
                                ln_fx=1)),
     ("Glass Arp Cascade", dict(tx_type=T["Glass WT"], tx_var=0.4, tx_anim=0.3, an_rate=0.2, tx_a=0.45, tx_r=0.6,
@@ -773,11 +774,11 @@ PRESETS += [
                                ln_var=0.15, ln_tr=-12, ln_cut=0.4, ln_res=0.3, ln_fenv=0.5, ln_a=0.0, ln_d=0.32,
                                ln_sus=1, ln_mode=0, ln_fx=1, rv_amt=0.25)),
     ("Brass Lead Stack", dict(tx_type=T["Brass"], tx_var=0.45, me_a=0.3, me_d=0.5, me_s=0.4, tx_a=0.25, tx_r=0.35,
-                              ens_amt=0.4, tx_vol=0.7, ln_vol=0.45, ln_shape=0, ln_var=0.0, ln_tr=12, ln_det=15,
+                              ens_amt=0.4, tx_vol=0.7, ln_vol=0.45, ln_shape=0, ln_var=0.0, ln_tr=12, ln_tune=15,
                               ln_cut=0.62, ln_res=0.2, ln_fenv=0.35, ln_a=0.1, ln_d=0.55, ln_sus=1, ln_mode=1,
                               ln_glide=0.2, ln_dly=0.2, fx_type=FX["Chorus"], fx_amt=0.2, rv_amt=0.3)),
     ("Choir Whistle", dict(tx_type=T["Choir"], tx_var=0.5, tx_anim=0.25, an_rate=0.18, ens_amt=0.9, tx_a=0.45,
-                           tx_r=0.6, ln_vol=0.4, ln_shape=LS["Theremin"], ln_var=0.3, ln_tr=12, ln_det=2,
+                           tx_r=0.6, ln_vol=0.4, ln_shape=LS["Theremin"], ln_var=0.3, ln_tr=12, ln_tune=2,
                            ln_cut=0.7, ln_fenv=0.1, ln_a=0.2, ln_d=0.6, ln_sus=1, ln_mode=1, ln_glide=0.35,
                            ln_spread=0.3, vib=0.2, rv_amt=0.45, rv_decay=0.75)),
     ("Minor 9 Pluck Arp", dict(tx_type=T["Minor 9"], tx_var=0.43, tx_anim=0.2, an_dest=AD["Var+Filter"],
@@ -806,7 +807,7 @@ PRESETS += [
                             flt_cut=0.45,
                             flt_res=0.2, flt_env=0.35, me_a=0.6, me_d=0.7, me_s=0.6, me_r=0.6, ens_type=0, ens_amt=0.8,
                             tx_detune=0.3, tx_bloom=0.5, rv_amt=0.4, rv_decay=0.7, key_mode=1, split=48,
-                            ln_vol=0.55, ln_shape=LS["Sub"], ln_var=0.0, ln_det=0, ln_cut=0.4, ln_a=0.02, ln_d=0.5,
+                            ln_vol=0.55, ln_shape=LS["Sub"], ln_var=0.0, ln_tune=0, ln_cut=0.4, ln_a=0.02, ln_d=0.5,
                             ln_sus=1, ln_mode=1, ln_glide=0.15, ln_fx=1)),
     # Lo-Fi Era, Var Env sweeping flute into ocarina per note, a tape echo
     ("Breath Machine", dict(**SAMP("Concert Flute", "Ocarina", 2, 0.1), tx_depth=0.7, me_a=0.5, me_d=0.8, me_s=0.4,
@@ -842,7 +843,7 @@ PRESETS += [
     ("Sung Chord Stab", dict(**SAMP("Sung Chord", "Dream Chord", 1, 0.25), wheel=4, tx_a=0.0, tx_d=0.5, tx_s=0.55,
                              tx_r=0.5, tx_vol=1.0, flt_type=2, flt_cut=0.6, flt_env=0.3, me_a=0.0, me_d=0.4,
                              fx_type=FX["Delay"], fx_amt=0.3, fx_ctrl=0.6, fx_tone=0.4, ens_amt=0.5, rv_amt=0.45,
-                             rv_decay=0.75, ln_vol=0.4, ln_shape=LS["Sub"], ln_var=0.0, ln_tr=-12, ln_det=0,
+                             rv_decay=0.75, ln_vol=0.4, ln_shape=LS["Sub"], ln_var=0.0, ln_tr=-12, ln_tune=0,
                              ln_cut=0.35, ln_a=0.0, ln_d=0.45, ln_sus=1, ln_mode=1, ln_fx=1)),
     # world: the shakuhachi fading into its own breath per voice, Clean, a slow LP sweep
     ("Shakuhachi Mist", dict(**SAMP("Shakuhachi", "Shaku Breath", 0, 0.15), wheel=4, tx_anim=0.45,
@@ -917,25 +918,25 @@ PRESETS += [
     # splits: a mono saw bass below C3 (dry), a glass pad above
     ("Saw Bass + Glass", dict(tx_type=T["Glass WT"], tx_var=0.4, tx_anim=0.3, an_rate=0.2, tx_a=0.35, tx_r=0.6,
                               ens_amt=0.6, ens_type=2, rv_amt=0.35, key_mode=1, split=52, ln_vol=0.7,
-                              ln_shape=LS["Saw"], ln_var=0.0, ln_det=8, ln_cut=0.42, ln_res=0.35, ln_fenv=0.45,
+                              ln_shape=LS["Saw"], ln_var=0.0, ln_tune=8, ln_cut=0.42, ln_res=0.35, ln_fenv=0.45,
                               ln_a=0.0, ln_d=0.35, ln_sus=1, ln_mode=0, ln_glide=0.1, ln_fx=2, wheel=2)),
     # Melody High: strings below middle C, a sync lead with glide and delay above
     ("Strings + Sync Lead", dict(tx_type=T["Vintage"], tx_var=0.4, ens_amt=0.9, ens_type=2, tx_a=0.4, tx_r=0.6,
                                  tx_vol=0.6, rv_amt=0.35, key_mode=2, split=60, ln_vol=0.65, ln_shape=LS["Sync"],
-                                 ln_var=0.45, ln_det=10, ln_cut=0.65, ln_res=0.25, ln_fenv=0.3, ln_a=0.05, ln_d=0.5,
+                                 ln_var=0.45, ln_tune=10, ln_cut=0.65, ln_res=0.25, ln_fenv=0.3, ln_a=0.05, ln_d=0.5,
                                  ln_sus=1, ln_mode=1, ln_glide=0.2, ln_dly=0.3, ln_dtime=7, ln_spread=0.2)),
     # an analog arp on the keys: resonant pulse 16ths, swung, through the Drive effect
-    ("Pulse Arp Drive", dict(tx_vol=0.0, key_mode=4, ln_vol=0.75, ln_shape=LS["Pulse"], ln_var=0.35, ln_det=6,
+    ("Pulse Arp Drive", dict(tx_vol=0.0, key_mode=4, ln_vol=0.75, ln_shape=LS["Pulse"], ln_var=0.35, ln_tune=6,
                              ln_cut=0.5, ln_res=0.45, ln_fenv=0.5, ln_a=0.0, ln_d=0.25, ln_sus=0, ln_mode=2,
                              arp_mode=3, arp_src=0, arp_rate=4, arp_oct=1, arp_gate=0.4, arp_swing=0.15,
                              arp_vrnd=0.2, ln_dly=0.3, ln_dtime=7, fx_type=FX["Drive"], fx_amt=0.35, fx_ctrl=0.4,
                              rv_amt=0.2)),
     # a vowel lead: Var Env sweeps the formant table on every note, glide, the wheel adds vibrato
     ("Formant Lead", dict(tx_vol=0.0, key_mode=4, ln_vol=0.8, ln_shape=LS["Formant B"], ln_var=0.2, ln_wenv=0.55,
-                          ln_det=12, ln_cut=0.7, ln_res=0.15, ln_fenv=0.15, ln_a=0.03, ln_d=0.6, ln_sus=1, ln_mode=1,
+                          ln_tune=12, ln_cut=0.7, ln_res=0.15, ln_fenv=0.15, ln_a=0.03, ln_d=0.6, ln_sus=1, ln_mode=1,
                           ln_glide=0.3, fx_type=FX["Delay"], fx_amt=0.25, fx_ctrl=0.6, rv_amt=0.3)),
     # a squelchy mono bass: high resonance, a big filter envelope, slides on legato notes
-    ("Acid Line", dict(tx_vol=0.0, key_mode=4, ln_vol=0.75, ln_shape=LS["Saw"], ln_var=0.0, ln_det=0, ln_tr=-12,
+    ("Acid Line", dict(tx_vol=0.0, key_mode=4, ln_vol=0.75, ln_shape=LS["Saw"], ln_var=0.0, ln_tune=0, ln_tr=-12,
                        ln_cut=0.3, ln_res=0.75, ln_fenv=0.65, ln_a=0.0, ln_d=0.3, ln_sus=1, ln_mode=1, ln_glide=0.15,
                        ln_fx=0, fx_type=FX["Drive"], fx_amt=0.3, fx_ctrl=0.5, rv_amt=0.1)),
 ]

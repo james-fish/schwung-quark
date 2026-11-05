@@ -205,11 +205,18 @@ int main(int argc, char **argv) {
         char km[32], dt[32];
         api->set_param(in, "state", "{\"v\":1,\"preset\":0,\"p\":{\"key_mode\":3,\"ln_det\":0.3}}");
         api->get_param(in, "key_mode", km, sizeof km);
-        api->get_param(in, "ln_det", dt, sizeof dt);
+        api->get_param(in, "ln_tune", dt, sizeof dt);
         CHECK(atoi(km) == 4 && atoi(dt) == 15, "v1 state: Key Mode + Mono Detune migrate (got %s, %s)", km, dt);
         api->set_param(in, "state", "{\"v\":1,\"preset\":0,\"p\":{\"key_mode\":1}}");
         api->get_param(in, "key_mode", km, sizeof km);
         CHECK(atoi(km) == 1, "v1 state: Split stays Mono Low (got %s)", km);
+        /* 0.4 Melody Detune + Interval fold into Tune: the interval wins, else the cents */
+        api->set_param(in, "state", "{\"v\":2,\"preset\":0,\"p\":{\"ln_det\":4,\"ln_int\":-7}}");
+        api->get_param(in, "ln_tune", dt, sizeof dt);
+        CHECK(atoi(dt) == -57, "v2 state: Interval -7 -> Melody Tune -57 (got %s)", dt);
+        api->set_param(in, "state", "{\"v\":2,\"preset\":0,\"p\":{\"ln_det\":23,\"ln_int\":0}}");
+        api->get_param(in, "ln_tune", dt, sizeof dt);
+        CHECK(atoi(dt) == 23, "v2 state: Detune 23 -> Melody Tune 23 (got %s)", dt);
         /* a 0.4 state's preset index points into the 0.4 bank (21 was Sync Arp); v3 names it */
         char pn[64];
         api->set_param(in, "state", "{\"v\":2,\"preset\":21,\"p\":{}}");
@@ -1071,7 +1078,7 @@ int main(int argc, char **argv) {
         api->set_param(in, "preset", "0");
         const char *ms[][2] = {{"key_mode", "4"}, {"ln_vol", "0.8"}, {"rv_amt", "0"}, {"fx_amt", "0"}, {"sh_amt", "0"},
                                {"ln_fenv", "0"}, {"ln_wenv", "0"}, {"vel", "0"}, {"ln_sus", "1"}, {"ln_a", "0"},
-                               {"ln_var", "0"}, {"vintage", "0"}, {"ln_cut", "0.8"}, {"ln_dly", "0"}, {"ln_det", "0"}, {"ln_d", "0.1"}};
+                               {"ln_var", "0"}, {"vintage", "0"}, {"ln_cut", "0.8"}, {"ln_dly", "0"}, {"ln_tune", "0"}, {"ln_d", "0.1"}};
         for (size_t k = 0; k < sizeof ms / sizeof ms[0]; k++) api->set_param(in, ms[k][0], ms[k][1]);
         static int16_t vb[256];
         double e[2];
@@ -1164,7 +1171,7 @@ int main(int argc, char **argv) {
             api->set_param(u, "tx_vol", "0");   /* no Pads tail at 220 Hz ending the wait early */
             for (int i = 0; i < 400; i++) api->render_block(u, (int16_t[256]){0}, 128);
             api->set_param(u, "ln_vol", "0.8");
-            api->set_param(u, "ln_det", "0");
+            api->set_param(u, "ln_tune", "0");
             api->set_param(u, "ln_var", "0");
             api->set_param(u, "ln_shape", tv);
             {

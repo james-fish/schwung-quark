@@ -171,8 +171,7 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
     }
     int sus_mode = P[P_LN_SUS] >= 0.5f;
     float var = P[P_LN_VAR], wenv = P[P_LN_WENV];
-    float det = P[P_LN_DET];   /* cents */
-    float intv = (float)lroundf(P[P_LN_INT]);
+    float tune2 = q_tune_semis(P[P_LN_TUNE]);   /* oscillator 2: cents of detune, or an interval */
     float oct = (float)q_clampi((int)lroundf(P[P_LN_TR]), -24, 24);
     float res = P[P_LN_RES];
     float kres = 3.85f * q_clamp(res, 0.0f, 1.0f);
@@ -245,8 +244,8 @@ void q_lines_render(QInstance *q, float *outl, float *outr, int n) {
             float pitch = v->pitch + oct + q->bend * 2.0f + flav * 0.06f * v->drift +
                           (vib_d * 0.32f * onset + ext_vib) * s_vib;
             float hz1 = q_note_hz(pitch);
-            float cents2 = det + (shape != 1 ? pwm_d * 7.0f * s_pwm : 0.0f);
-            float hz2 = q_note_hz(pitch + intv + cents2 * 0.01f);
+            float cents2 = shape != 1 ? pwm_d * 7.0f * s_pwm : 0.0f;
+            float hz2 = q_note_hz(pitch + tune2 + cents2 * 0.01f);
             if (wt >= 0 && have) { hz1 /= wv.div; hz2 /= wv.div; }   /* chord stacks: table cycle = DIV periods */
             v->inc1 = hz1 / sr;
             v->inc2 = q_clamp(hz2 / sr, 0.0f, 0.45f);

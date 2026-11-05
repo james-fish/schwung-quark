@@ -57,9 +57,15 @@
       case "tx_type": case "tx_var": {
         var type = Q.val(values, "tx_type"), va = Q.val(values, "tx_var");
         var fam = Q.M.texTypes[Math.round(type)].family;
+        if (fam === 3) {
+          /* Off: no oscillator, so say what the voice is instead (the Layer sets, or nothing) */
+          var la = Q.plSet(values, 0), lb = Q.plSet(values, 1);
+          ctx.print(1, top + 1, "No oscillator", 1);
+          ctx.print(1, top + 11, Q.fit(ctx, la || lb ? "Plays " + (la && lb ? la.short + " > " + lb.short : (la || lb).short) : "Silent: no Layer", W - 2), 1);
+          return;
+        }
         ctx.print(1, top + 1, Q.familyName(type), 1);
         ctx.print(1, top + 11, Q.fit(ctx, key === "tx_type" ? Q.variationText(values) : Q.byKey.tx_type.opts[Math.round(type)], 46), 1);
-        if (fam === 3) { ctx.print(50, top + 1, Q.plSet(values) ? "+ Layer only" : "silent: no", 1); if (!Q.plSet(values)) ctx.print(50, top + 11, "Layer set", 1); return; }
         Q.plot(ctx, function (t) { return Q.texWave(type, va, t); }, 50, top, W - 52, bh - 4, fam === 0 ? 1 : 2);
         bar(ctx, 50, H - 5, W - 52, va, false);
         return;
@@ -300,9 +306,10 @@
         ctx.fillRect(Math.max(0, sx2 - 1), big ? top : H - 4, big ? 3 : 3, big ? bh : 3, 1);
         return;
       }
-      case "pl_tune": {
-        /* the interval to the main voice, or (inside +-50 ct) how fast the two beat at A4 (one second drawn) */
-        var tu2 = Q.plTune(Q.val(values, "pl_tune")), st2 = tu2.st, ct2 = tu2.ct;
+      case "pl_tune": case "ln_tune": {
+        /* the interval to the main voice (Melody: oscillator 2 to 1), or (inside +-50 ct) how fast the
+         * two beat at A4 (one second drawn) */
+        var tu2 = Q.plTune(Q.val(values, key)), st2 = tu2.st, ct2 = tu2.ct;
         var IV = ["unison", "min 2nd", "maj 2nd", "min 3rd", "maj 3rd", "4th", "tritone", "5th", "min 6th", "maj 6th", "min 7th", "maj 7th"];
         var a12 = ((st2 % 12) + 12) % 12, oc = Math.floor(Math.abs(st2) / 12);
         var ivn = st2 === 0 ? "unison" : (st2 < 0 ? "-" : "+") + (a12 === 0 ? oc + " oct" : IV[st2 < 0 ? (12 - a12) % 12 : a12] + (oc ? "+" + oc + "oc" : ""));

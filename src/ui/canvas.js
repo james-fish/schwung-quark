@@ -164,17 +164,25 @@
   function drawLab(ctx, o) {
     var W = ctx.width, H = ctx.height, v = o.values || {};
     var a = Q.plSet(v, 0), b = Q.plSet(v, 1), bl = Math.max(0, Math.min(1, Q.val(v, "pl_blend")));
-    var x0 = 7, w = W - x0, h = H - 3;
+    var x0 = 7, h = H - 3;
     plus(ctx, 0, 0);
-    if (!a && !b) { Q.dotted(ctx, x0, Math.floor(h / 2), w); return; }
-    if (!a || !b) Q.pcmOutline(ctx, a || b, x0, 0, w, h, 1);
-    else {
+    if (!a && !b) { Q.dotted(ctx, x0, Math.floor(h / 2), W - x0); return; }
+    /* each set's short name left of its outline, so A and B read without touching a knob */
+    var lw = Math.max(a ? Q.tw(ctx, a.short) : 0, b ? Q.tw(ctx, b.short) : 0) + 3;
+    var named = W - x0 - lw >= 24 && (!a || !b || h >= 14), xo = named ? x0 + lw : x0, w = W - xo;
+    function name(y, t) { if (named) ctx.print(x0, y, t, 1); }   /* too narrow: outlines only */
+    if (!a || !b) {
+      name(Math.max(0, Math.floor((h - 7) / 2)), (a || b).short);
+      Q.pcmOutline(ctx, a || b, xo, 0, w, h, 1);
+    } else {
       var rh = Math.floor(h / 2);
-      Q.pcmOutline(ctx, a, x0, 0, w, rh - 1, bl <= 0.5 ? 1 : 3);
-      Q.pcmOutline(ctx, b, x0, rh, w, rh - 1, bl > 0.5 ? 1 : 3);
-      var by = H - 2, mx = x0 + Math.round(bl * (w - 1));
-      Q.dotted(ctx, x0, by, w);
-      ctx.fillRect(Math.max(x0, mx - 1), by - 1, 3, 3, 1);
+      name(Math.max(0, Math.floor((rh - 7) / 2)), a.short);
+      name(rh + Math.max(0, Math.floor((rh - 7) / 2)), b.short);
+      Q.pcmOutline(ctx, a, xo, 0, w, rh - 1, bl <= 0.5 ? 1 : 3);
+      Q.pcmOutline(ctx, b, xo, rh, w, rh - 1, bl > 0.5 ? 1 : 3);
+      var by = H - 2, mx = xo + Math.round(bl * (w - 1));
+      Q.dotted(ctx, xo, by, w);
+      ctx.fillRect(Math.max(xo, mx - 1), by - 1, 3, 3, 1);
     }
   }
 

@@ -306,6 +306,12 @@ void q_release_all(QInstance *q, int hard);
 /* helpers shared by the DSP files */
 static inline float q_clamp(float x, float lo, float hi) { return x < lo ? lo : (x > hi ? hi : x); }
 static inline int q_clampi(int x, int lo, int hi) { return x < lo ? lo : (x > hi ? hi : x); }
+/* a Tune knob (Layer Tune, Melody Tune) in semitones: +-50 = cents, beyond that whole semitones
+ * (51 = +1 st .. 74 = +24 st) */
+static inline float q_tune_semis(float t) {
+    int v = q_clampi((int)lroundf(t), -74, 74), a = v < 0 ? -v : v;
+    return a <= 50 ? 0.01f * (float)v : (float)((v < 0 ? -1 : 1) * (a - 50));
+}
 
 static inline uint32_t q_rand(uint32_t *s) {
     uint32_t x = *s;

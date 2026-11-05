@@ -358,12 +358,6 @@ static inline int pcm_mip(float inc, int era) {
 /* the Layer at Lvl 1: the ROM is levelled to -16 dBFS RMS, so this puts it level with the synth types */
 #define Q_PL_GAIN 2.8f
 
-/* Layer Tune is one knob: +-50 = cents, beyond that whole semitones (51 = +1 st .. 74 = +24 st) */
-static inline float pl_tune_semis(float t) {
-    int v = q_clampi((int)lroundf(t), -74, 74), a = v < 0 ? -v : v;
-    return a <= 50 ? 0.01f * (float)v : (float)((v < 0 ? -1 : 1) * (a - 50));
-}
-
 /* the Layer: sets A and B, each its zone for the note plus Layer Tune. Start skips into the sample
  * (up to the loop start; a one-shot up to half way); Shot / Ping (and a one-shot set) play once. */
 static void layer_side_init(QInstance *q, QTexVoice *v, int s) {
@@ -374,7 +368,7 @@ static void layer_side_init(QInstance *q, QTexVoice *v, int s) {
     v->lfade[s] = 1.0f;
     if (set < 0) return;
     int era = q_clampi((int)(q->ps[P_PL_ERA] + 0.5f), 0, 2), mode = q_clampi((int)(q->ps[P_PL_MODE] + 0.5f), 0, 3);
-    int key = v->note + q_clampi((int)lroundf(q->ps[P_TX_TR]), -24, 24) + (int)lroundf(pl_tune_semis(q->ps[P_PL_TUNE]));
+    int key = v->note + q_clampi((int)lroundf(q->ps[P_TX_TR]), -24, 24) + (int)lroundf(q_tune_semis(q->ps[P_PL_TUNE]));
     v->lz[s] = q_pcm_pick(set, era, key);
     const QPcmZone *z = &quark_pcm_zones[v->lz[s]];
     v->lonce[s] = z->oneshot || mode == 1 || mode == 3;
@@ -604,7 +598,7 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
     float blend_base = P[P_PL_BLEND] + (wheel_dst == 4 ? q->wheel * 0.6f : 0.0f) +
                        (fam == 3 && wheel_dst == 3 ? q->wheel * 0.6f : 0.0f);
     int pl_post = q_clampi((int)(P[P_PL_MODE] + 0.5f), 0, 3) >= 2;
-    float pl_semi = pl_tune_semis(P[P_PL_TUNE]);
+    float pl_semi = q_tune_semis(P[P_PL_TUNE]);
     float pl_lvl = q_clamp(P[P_PL_LVL], 0.0f, 1.0f) * Q_PL_GAIN;
     float pl_fade_n = 0.012f * sr;   /* a once-through layer fades over its last 12 ms */
     QWave wv;
@@ -620,7 +614,9 @@ void q_tex_render(QInstance *q, float *outl, float *outr, int n) {
     if (use_drv) q_drive_set(&drv, P[P_TX_DRIVE], P[P_TX_DTONE], 1.0f, 0.8f, sr);
     float detune = P[P_TX_DETUNE], det_ct = detune * detune * 45.0f;
     float blm = P[P_TX_BLOOM];
-    float bloom_inc = blm < 0.005f ? 1.0f : (float)Q_CTRL / ((0.05f + 15.0f * blm * blm) * sr);
+    /* 0 .. 15 s, continuous from instant (the knob's low end is a few ms, not a jump to 50) */
+    float blm_n = 15.0f * blm * blm * sr;
+    float bloom_inc = blm_n <= (float)Q_CTRL ? 1.0f : (float)Q_CTRL / blm_n;
     int partner = spread > 0.01f || detune > 0.01f;
     float tine_c = (fam == 2 && fmr[4] > 0.0f) ? expf(-(float)Q_CTRL / (fmr[4] * sr)) : 1.0f;
 
