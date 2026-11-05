@@ -793,7 +793,7 @@
     ["tx_type", "tx_anim", "tx_depth", "tx_a", "tx_d", "tx_s", "tx_r", "ens_amt", "ens_type",
      "ln_shape", "ln_var", "ln_a", "ln_d", "ln_sus", "ln_spread", "ln_dly", "ln_dtime", "fx_type", "fx_ctrl", "fx_amt", "sh_pitch", "sh_amt",
      "rv_decay", "rv_amt", "tx_drive", "tx_drvpos", "tx_detune", "tx_bloom", "tx_latch", "ln_wenv", "arp_mode", "arp_src",
-     "arp_oct", "arp_hold", "pcm_era", "pcm_b"].forEach(function (k) { mount(k); });
+     "arp_oct", "arp_hold", "pcm_era", "pcm_b", "pl_wave", "pl_lvl", "pl_pitch", "pl_fine", "pl_start", "pl_mode"].forEach(function (k) { mount(k); });
     mount("tx_var", "beige");
     mount("tx_vol", "white"); mount("ln_vol", "white"); mount("vol", "white"); mount("vintage", "beige");
     var sel = document.getElementById("preset");

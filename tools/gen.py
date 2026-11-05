@@ -533,11 +533,21 @@ E("tx_latch", "Atmos Latch", "Latch", 0, ONOFF, viz={"kind": "switch"})
 F("an_lfo2", "LFO 2 Rate", "LFO2", 1.0, -4.0, 4.0, card=CARD)
 # PCM Era: how the PCM types are read. Clean = full rate, Hermite, anti-aliased; 90s = the half-rate
 # copy, linear, allowed to alias, every 2nd zone; Lo-Fi = quarter rate, drop-sample, 12-bit, every 3rd
-E("pcm_era", "PCM Era", "Era", 0, ["Clean", "90s", "Lo-Fi"], ["Cln", "90s", "Lo"])
+E("pcm_era", "PCM Era", "Era", 0, ["Clean", "90s", "Lo-Fi"], ["Cln", "90s", "Lo"], viz={"kind": "custom:qera"}, card=CARD)
 # PCM B: the set Variation fades a PCM type into (any set, vector style); Off = Variation is the start point
 E("pcm_b", "PCM B", "PCM B", 0, ["Off"] + [st["name"] for st in ROM["sets"]], ["Off"] + [st["short"] for st in ROM["sets"]],
   card=CARD)
 E("an_mode", "LFO Mode", "LFOMd", 0, AN_MODES, AN_MODES_S, card=CARD)
+# PCM Layer: one more ROM set under any Atmos Type (the rompler attack / breath partial)
+PL_MODES, PL_MODES_S = ["Loop", "Shot", "Air", "Ping"], ["Loop", "Shot", "Air", "Ping"]
+E("pl_wave", "PCM Layer", "Layer", 0, ["Off"] + [st["name"] for st in ROM["sets"]], ["Off"] + [st["short"] for st in ROM["sets"]],
+  viz={"kind": "custom:qpcm"}, card=CARD)
+F("pl_lvl", "Layer Level", "Lvl", 0.5)
+I("pl_pitch", "Layer Pitch", "Pitch", 0, -24, 24, unit="st", card=CARD)
+I("pl_fine", "Layer Fine", "Fine", 0, -50, 50, unit="ct", card=CARD)
+F("pl_start", "Layer Start", "Start", 0.0, viz={"group": "pl", "role": "start", "kind": "custom:qpcm"}, card=CARD)
+E("pl_mode", "Layer Mode", "Mode", 0, PL_MODES, PL_MODES_S, viz={"group": "pl", "role": "mode", "kind": "custom:qpcm"},
+  card=CARD)
 
 KEYS = [p["key"] for p in P]
 assert len(KEYS) == len(set(KEYS)), "duplicate key"
@@ -560,8 +570,8 @@ PAGES = [
     ("ptone", "Atmos Filter", ["flt_cut", "flt_res", "flt_type", "flt_env", "me_a", "me_d", "me_s", "me_r"]),
     ("pdrive", "Atmos Drive", ["tx_drive", "tx_drvpos", "tx_dtone", "tx_spread", "tx_detune", "tx_bloom", "tx_latch", "flt_key"]),
     ("pmotion", "Atmos Motion", ["an_shape", "an_rate", "tx_anim", "an_dest", "an_lfo2", "an_mode", "ens_amt", "ens_type"]),
-    # PCM: Era and B now; the PCM Layer partial joins this page in phase 4 (docs/QUARK_PCM_PLAN.md)
-    ("pcm", "Atmos PCM", ["pcm_era", "pcm_b", None, None, None, None, None, None]),
+    # the PCM Layer (any Atmos Type), then the two PCM-wide knobs
+    ("pcm", "Atmos PCM", ["pl_wave", "pl_lvl", "pl_pitch", "pl_fine", "pl_start", "pl_mode", "pcm_era", "pcm_b"]),
     ("mono", "Melody", ["ln_shape", "ln_var", "ln_det", "ln_int", "ln_a", "ln_d", "ln_sus", "ln_mode"]),
     ("mtone", "Melody Filter", ["ln_cut", "ln_res", "ln_wenv", "ln_fenv", "ln_glide", "ln_spread", "ln_dly", "ln_dtime"]),
     ("arp", "Melody Arp", ["arp_mode", "arp_src", "arp_rate", "arp_oct", "arp_gate", "arp_swing", "arp_hold", "arp_rhy"]),
@@ -823,6 +833,25 @@ PRESETS += [
     ("Sitar Dawn", dict(tx_type=T["Sitar"], pcm_b=1 + PCMSET["Tanpura"], pcm_era=1, tx_var=0.1, tx_depth=0.6, me_a=0.25,
                         me_d=0.8, me_s=0.7, tx_a=0.0, tx_d=0.7, tx_s=0.7, tx_r=0.7, tx_latch=1, flt_type=1, flt_cut=0.8,
                         ens_amt=0.3, rv_amt=0.45, rv_decay=0.8, vintage=0.3)),
+    # PCM Layer under the synth types: the rompler attack / breath partial (pl_wave = 1 + set)
+    ("Breath Pad", dict(tx_type=T["Poly Saw"], tx_var=0.35, tx_anim=0.25, an_rate=0.2, tx_spread=0.5, flt_type=2,
+                        flt_cut=0.5, flt_res=0.2, tx_a=0.4, tx_r=0.6, ens_amt=0.7, rv_amt=0.4, rv_decay=0.7,
+                        pl_wave=1 + PCMSET["Breath Loop"], pl_mode=2, pl_lvl=0.45)),
+    ("Chime Strings", dict(tx_type=T["Strings"], tx_var=0.2, tx_anim=0.15, tx_a=0.3, tx_r=0.6, ens_amt=0.85,
+                           pl_wave=1 + PCMSET["Hand Chimes"], pl_mode=3, pl_lvl=0.55, pl_pitch=12,
+                           rv_amt=0.4, rv_decay=0.75)),
+    ("Kalimba Bells", dict(tx_type=T["FM Bells"], tx_var=0.3, tx_depth=0.25, me_d=0.6, tx_a=0.0, tx_d=0.65, tx_s=0.2,
+                           tx_r=0.55, ens_amt=0.35, pl_wave=1 + PCMSET["Kalimba"], pl_mode=1, pl_lvl=0.6,
+                           fx_type=FX["Ping Pong"], fx_amt=0.2, fx_ctrl=0.55, rv_amt=0.35)),
+    ("Shimmer Breath", dict(tx_type=T["Glass"], tx_var=0.6, tx_anim=0.3, an_rate=0.18, tx_a=0.45, tx_r=0.7, ens_amt=0.6,
+                            pl_wave=1 + PCMSET["Shaku Breath"], pl_mode=2, pl_lvl=0.4, pl_start=0.3,
+                            sh_amt=0.45, sh_pitch=5, rv_amt=0.5, rv_decay=0.82)),
+    ("Lo-Fi Choir Stack", dict(tx_type=T["Choir"], tx_var=0.5, tx_anim=0.25, an_rate=0.15, tx_a=0.4, tx_r=0.6, ens_amt=0.9,
+                               pl_wave=1 + PCMSET["Aah"], pl_mode=0, pl_lvl=0.6, pl_fine=8, pcm_era=2, tx_vol=0.6,
+                               flt_type=1, flt_cut=0.7, rv_amt=0.45, rv_decay=0.75, vintage=0.4)),
+    ("Sitar Drone", dict(tx_type=T["Organ"], tx_var=0.3, tx_a=0.25, tx_s=1.0, tx_r=0.5, ens_amt=0.5, ens_type=1,
+                         pl_wave=1 + PCMSET["Sitar"], pl_mode=3, pl_lvl=0.65, tx_latch=1, tx_vol=0.45,
+                         flt_type=1, flt_cut=0.7, rv_amt=0.45, rv_decay=0.8, vintage=0.3)),
 ]
 for name, d in PRESETS:
     for k in d:
@@ -1245,7 +1274,7 @@ def gen_meta():
         "fm": [FM_TYPES[n] for n in FM_TYPES],
         "wt": wt_previews(),
         "wtQuark": NUM_WT_QUARK,
-        "pcmSets": [{k: st[k] for k in ("name", "short", "kind", "chord", "overview", "loop")} for st in ROM["sets"]],
+        "pcmSets": [dict({k: st[k] for k in ("name", "short", "kind", "chord", "overview", "loop")}, zones=len(st["zones"])) for st in ROM["sets"]],
         "pcmTypes": [t["a"] for t in ROM["types"]],
         "wtUser0": NUM_WT_QUARK + len(AMINO_NAMES),
         "anSrc": AN_SRC,

@@ -26,6 +26,8 @@ static const char *const O_tx_latch[] = {"Off", "On"};
 static const char *const O_pcm_era[] = {"Clean", "90s", "Lo-Fi"};
 static const char *const O_pcm_b[] = {"Off", "Wine Glass", "Bowed Vibes", "Section Strings", "Psaltery", "Concert Flute", "Ocarina", "Organ Blower", "Ocean Drum", "Cymbal Bow", "Gong Scrape", "Hand Chimes", "Soft Vibes", "Glock", "Kalimba", "Pipe Organ", "Digi E.Piano", "Aah", "Ooh", "Sung Chord", "Dream Chord", "Breath Loop", "Shakuhachi", "Shaku Breath", "Sitar", "Tanpura", "Dan Tranh", "Duduk", "Erhu", "Sarangi", "Koto", "Singing Bowl", "Didgeridoo"};
 static const char *const O_an_mode[] = {"Global", "Spread", "Retrig"};
+static const char *const O_pl_wave[] = {"Off", "Wine Glass", "Bowed Vibes", "Section Strings", "Psaltery", "Concert Flute", "Ocarina", "Organ Blower", "Ocean Drum", "Cymbal Bow", "Gong Scrape", "Hand Chimes", "Soft Vibes", "Glock", "Kalimba", "Pipe Organ", "Digi E.Piano", "Aah", "Ooh", "Sung Chord", "Dream Chord", "Breath Loop", "Shakuhachi", "Shaku Breath", "Sitar", "Tanpura", "Dan Tranh", "Duduk", "Erhu", "Sarangi", "Koto", "Singing Bowl", "Didgeridoo"};
+static const char *const O_pl_mode[] = {"Loop", "Shot", "Air", "Ping"};
 
 const QParam quark_params[P_COUNT] = {
     {"tx_type", 'e', 0.0f, 147.0f, 0.0f, 148, O_tx_type},
@@ -117,4 +119,10 @@ const QParam quark_params[P_COUNT] = {
     {"pcm_era", 'e', 0.0f, 2.0f, 0.0f, 3, O_pcm_era},
     {"pcm_b", 'e', 0.0f, 32.0f, 0.0f, 33, O_pcm_b},
     {"an_mode", 'e', 0.0f, 2.0f, 0.0f, 3, O_an_mode},
+    {"pl_wave", 'e', 0.0f, 32.0f, 0.0f, 33, O_pl_wave},
+    {"pl_lvl", 'f', 0.0f, 1.0f, 0.5f, 0, 0},
+    {"pl_pitch", 'i', -24.0f, 24.0f, 0.0f, 0, 0},
+    {"pl_fine", 'i', -50.0f, 50.0f, 0.0f, 0, 0},
+    {"pl_start", 'f', 0.0f, 1.0f, 0.0f, 0, 0},
+    {"pl_mode", 'e', 0.0f, 3.0f, 0.0f, 4, O_pl_mode},
 };

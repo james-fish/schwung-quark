@@ -204,15 +204,23 @@
   {
    "title": "Atmos PCM",
    "lines": [
-    "PCM types (end of",
-    "Atmos Type): sampled",
-    "sets; Variation",
-    "fades set A into B.",
+    "Layer: a sample set",
+    "under any Atmos Type.",
+    "Lvl, Pitch, Fine",
+    "(detune to thicken),",
+    "Start (skip attack).",
+    "Mode: Loop/Shot go",
+    "through the filter,",
+    "Air/Ping skip it.",
+    "Shot/Ping play once.",
     "Era: Clean = full",
     "quality; 90s = half",
-    "rate, aliasing, more",
-    "stretch; Lo-Fi =",
-    "quarter rate, 12-bit."
+    "rate, aliasing; Lo-Fi",
+    "= quarter, 12-bit.",
+    "PCM B: the set a PCM",
+    "type's Variation",
+    "fades into; Off =",
+    "Variation is start."
    ]
   }
  ]

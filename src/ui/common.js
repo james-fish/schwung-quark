@@ -215,6 +215,10 @@ var Q = (function () {
         }
         return pct(x);
       case "tx_drive": return x < 0.003 ? "Off" : "+" + (20 * Math.log10(1 + 24 * x * x)).toFixed(1) + " dB";
+      case "pl_pitch": case "pl_fine": return (x > 0 ? "+" : "") + Math.round(x) + (key === "pl_fine" ? " ct" : " st");
+      case "pl_lvl": return plSet(values) ? pct(x) : "Layer Off";
+      case "pl_start": return x < 0.005 ? "Attack" : pct(x);
+      case "pcm_era": return p.opts[Math.round(x)];
       case "tx_dtone": return fmtHz(700 * Math.pow(2, 5 * x));
       case "tx_detune": return "±" + (x * x * 45).toFixed(1) + " ct";
       case "tx_bloom": return x < 0.005 ? "Instant" : fmtS(0.05 + 15 * x * x);
@@ -381,7 +385,41 @@ var Q = (function () {
     }
   }
 
+  /* ---- PCM Layer ---- */
+  var ERA_TEXT = ["32k · hermite", "16k · lin · alias", "8k · drop · 12bit"];
+  var PL_MODE_TEXT = ["loop · pre-filter", "once · pre-filter", "loop · post-filter", "once · post-filter"];
+  /* the Layer's set (null when Off) */
+  function plSet(values) {
+    var i = Math.round(val(values, "pl_wave")) - 1;
+    return i >= 0 && M.pcmSets[i] ? M.pcmSets[i] : null;
+  }
+  /* where Start puts the note in the set's outline, 0..1 (mirrors layer_init: up to the loop start,
+   * a one-shot up to half way) */
+  function plStartFrac(st, start) {
+    return Math.max(0, Math.min(1, start)) * (st && st.loop ? st.loop[0] : 0.5);
+  }
+  /* a set's level outline as 1-px bars every `step` columns, centred in the box */
+  function pcmOutline(ctx, st, x, y, w, h, step) {
+    var ov = st.overview, s = step || 1;
+    for (var xo = 0; xo < w; xo += s) {
+      var e = ov[Math.min(ov.length - 1, Math.floor(xo / w * ov.length))];
+      var hh = Math.max(1, Math.round(e * h));
+      ctx.fillRect(x + xo, y + Math.floor((h - hh) / 2), 1, hh, 1);
+    }
+  }
+  /* a sine read the way an Era reads the ROM: Clean smooth; 90s coarse linear steps; Lo-Fi held
+   * steps quantised to a few levels (the drawing exaggerates so it reads at cell size) */
+  function eraWave(era, t) {
+    var n = [0, 9, 6][era] || 0;
+    if (!n) return Math.sin(2 * Math.PI * t) * 0.9;
+    var a = t * n, i = Math.floor(a), f = a - i;
+    var y0 = Math.sin(2 * Math.PI * i / n), y1 = Math.sin(2 * Math.PI * (i + 1) / n);
+    if (era === 1) return 0.9 * (y0 + (y1 - y0) * f);
+    return 0.9 * Math.round(y0 * 3) / 3;
+  }
+
   return {
+    plSet: plSet, plStartFrac: plStartFrac, pcmOutline: pcmOutline, eraWave: eraWave, eraText: ERA_TEXT, plModeText: PL_MODE_TEXT,
     M: M, byKey: byKey, byName: byName, val: val, num: num, hz: hz, envTime: envTime, texWave: texWave,
     lineWave: lineWave, lineIsWave: lineIsWave, bankWave: bankWave, driveCurve: driveCurve, detCents: detCents, fmtS: fmtS, envTimeS: envTime, familyName: familyName, lfoShape: lfoShape, variationText: variationText, describe: describe,
     ctrlLabel: ctrlLabel, fxCtrlName: fxCtrlName, line: line, plot: plot, tw: tw, fit: fit, dotted: dotted, envShape: envShape,

@@ -248,7 +248,7 @@ Proposed (Claude Code: refine this into a short UI spec, show me it, then build)
 3. **Engine** — multisample zone lookup at note-on (store zone + mip in `QTexVoice`), Hermite read,
    loop, mip selection at control rate, Variation = set crossfade, Detune/Spread partner phase,
    **Era** (§2.5) read paths. A/B `Cln` vs `90s` on the Move before moving on.
-4. **PCM Layer partial + UI** — params from §2.2 on page 13, pre/post-filter mixing, all families.
+4. **PCM Layer partial + UI** (done 2026-11-05: Atmos PCM page = Layer, Lvl, Pitch, Fine, Start, Mode, Era, PCM B; ROM levelled per zone) — params from §2.2 on page 13, pre/post-filter mixing, all families.
    Write the §2.6 UI spec first and get my OK, then the widgets, cards, browser UI and UI tests.
 5. **Content + presets** — the §2.3 waves, then ~10 presets aimed at 90s ambient / liquid DnB
    (long attack, LP24 slow sweep, Ensemble Deep, shimmer +12, Vintage ~0.3, Bloom on).

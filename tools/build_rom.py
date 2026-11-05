@@ -14,7 +14,7 @@ Per zone: mono mix, resample to 32 kHz (windowed sinc), trim to the onset, then
         crossfaded (linear when the two ends correlate, equal power when they don't)
   tex   unpitched texture: a long loop with a long crossfade
   shot  one-shot (bells, keys): the attack and decay, faded out, no loop
-then fine-tuned (cents, from the loop's period), and levelled per set. Mips 1 and 2 (16 / 8 kHz) are
+then fine-tuned (cents, from the loop's period), and levelled per zone. Mips 1 and 2 (16 / 8 kHz) are
 decimated from the looped signal itself, so they wrap as cleanly as mip 0.
 """
 import hashlib
@@ -332,14 +332,16 @@ def main():
             print("   %-58s root %-4s %+5.1f ct  %.2fs%s" % (os.path.basename(path)[:58], note, z["tune"], len(z["x"]) / SR,
                   "" if z["oneshot"] else "  loop %.2fs match %.2f" % ((z["le"] - z["ls"]) / SR, z["match"])))
             zs.append(z)
-        # level the set: the loops (or the first 0.5 s of a one-shot) to -16 dBFS RMS, no clipping
-        ref = [z["x"][z["ls"]:z["le"]] if not z["oneshot"] else z["x"][:SR // 2] for z in zs]
-        rms = math.sqrt(float(np.mean(np.concatenate(ref) ** 2))) or 1.0
-        g = 10 ** (-16 / 20) / rms
-        g = min(g, 0.98 / max(float(np.max(np.abs(z["x"]))) for z in zs))
+        # level every zone on its own: the loop (or the first 0.5 s of a one-shot) to -16 dBFS RMS,
+        # no clipping. Zones of one set often come from different recordings (Aah's F3 sat 35 dB
+        # under its A4), so one gain per set left holes in the keyboard.
+        for z in zs:
+            ref = z["x"][z["ls"]:z["le"]] if not z["oneshot"] else z["x"][:SR // 2]
+            rms = math.sqrt(float(np.mean(ref ** 2))) or 1.0
+            z["gain"] = min(10 ** (-16 / 20) / rms, 0.98 / (float(np.max(np.abs(z["x"]))) or 1.0))
         zo = []
         for z in sorted(zs, key=lambda q: q["root"]):
-            levels = mips_of(z["x"] * g, z["ls"], z["le"], not z["oneshot"])
+            levels = mips_of(z["x"] * z["gain"], z["ls"], z["le"], not z["oneshot"])
             offs, lens = [], []
             for k, d in enumerate(levels):
                 ls_k, le_k = z["ls"] >> k, z["le"] >> k

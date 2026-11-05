@@ -72,6 +72,10 @@ typedef struct {
     double pa, pa2, pb, pb2;
     float incb, incb2, ga, gb;
     int za, zb, mipb, ptype, pbset;    /* zb < 0: no B (PCM B Off) */
+    /* PCM Layer: one more ROM read under any Atmos Type */
+    double lpos;
+    float linc, lg, lfade;
+    int lz, lmip, lset, lonce;         /* lz < 0: Layer Off; lonce: plays once (Shot / Ping / a one-shot set) */
 } QTexVoice;
 
 /* ---- lines ---------------------------------------------------------------------------------- */

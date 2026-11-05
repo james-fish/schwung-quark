@@ -4,7 +4,8 @@
  * (seconds, Hz, semitones, register names); the body is a small picture of what the knob does.
  * Only knobs whose picture adds something the page does not already show get a card: the Atmos wave
  * and the Melody shape (on their Variation knobs too), the detune fan, the LFOs, the shimmer tail,
- * a picture per arp knob, the keyboard split, and the two FX controls, whose meaning depends on the
+ * a picture per arp knob, the keyboard split, the PCM Layer (set, start, pitch / fine beating, mode
+ * routing) and Era, and the two FX controls, whose meaning depends on the
  * effect (a one-line card naming it). Plain amounts and enums use the cell itself.
  * o.raw may be null: then only the name is drawn.
  */
@@ -285,6 +286,70 @@
           }
           if (st.loop) ctx.fillRect(2 + Math.round(st.loop[0] * (W - 5)), y0, 1, rh2 - 1, 1);
         });
+        return;
+      }
+      case "pl_wave": case "pl_start": {
+        /* the Layer set's outline, its loop bracket and where Start puts the note */
+        var ps = Q.plSet(values);
+        if (!ps) { ctx.print(1, top + 1, "Layer Off", 1); Q.dotted(ctx, 0, top + Math.floor(bh / 2), W); return; }
+        var big = key === "pl_start", ox = big ? 1 : 46, ow = W - ox - 1;
+        if (!big) {
+          ctx.print(1, top + 1, ps.zones + (ps.zones === 1 ? " zone" : " zones"), 1);
+          ctx.print(1, top + 11, ps.loop ? "loops" : "one-shot", 1);
+        }
+        Q.pcmOutline(ctx, ps, ox, top + 2, ow, bh - 6, 2);
+        if (ps.loop) {
+          var lx2 = ox + Math.round(ps.loop[0] * (ow - 1));
+          ctx.fillRect(lx2, top, 1, 3, 1); ctx.fillRect(ox + ow - 1, top, 1, 3, 1); ctx.fillRect(lx2, top, ox + ow - lx2, 1, 1);
+        }
+        var sx2 = ox + Math.round(Q.plStartFrac(ps, Q.val(values, "pl_start")) * (ow - 1));
+        Q.dotted(ctx, ox, H - 3, ow);
+        ctx.fillRect(Math.max(0, sx2 - 1), big ? top : H - 4, big ? 3 : 3, big ? bh : 3, 1);
+        return;
+      }
+      case "pl_pitch": case "pl_fine": {
+        /* the interval to the main voice, and how fast the two beat at A4 (one second drawn) */
+        var st2 = Math.round(Q.val(values, "pl_pitch")), ct2 = Math.round(Q.val(values, "pl_fine"));
+        var IV = ["unison", "min 2nd", "maj 2nd", "min 3rd", "maj 3rd", "4th", "tritone", "5th", "min 6th", "maj 6th", "min 7th", "maj 7th"];
+        var a12 = ((st2 % 12) + 12) % 12, oc = Math.floor(Math.abs(st2) / 12);
+        var ivn = st2 === 0 ? "unison" : (st2 < 0 ? "-" : "+") + (a12 === 0 ? oc + " oct" : IV[st2 < 0 ? (12 - a12) % 12 : a12] + (oc ? "+" + oc + "oc" : ""));
+        ctx.print(1, top + 1, Q.fit(ctx, ivn, 54), 1);
+        var beat = ct2 === 0 || a12 !== 0 ? 0 : 440 * Math.abs(Math.pow(2, ct2 / 1200) - 1);
+        ctx.print(1, top + 11, beat ? beat.toFixed(1) + " beat/s" : "no beat", 1);
+        /* the beat envelope of the two summed partials over one second, mirrored */
+        var bx2 = 58, bw2 = W - bx2 - 1, cy3 = top + Math.floor(bh / 2), am3 = Math.floor(bh / 2) - 1, py3 = null;
+        Q.dotted(ctx, bx2, cy3, bw2);
+        for (var xb = 0; xb < bw2; xb++) {
+          var env = beat ? Math.abs(Math.cos(Math.PI * Math.min(beat, 8) * xb / bw2)) : 1;
+          var yb = Math.round(env * am3);
+          if (py3 !== null) { Q.line(ctx, bx2 + xb - 1, cy3 - py3, bx2 + xb, cy3 - yb); Q.line(ctx, bx2 + xb - 1, cy3 + py3, bx2 + xb, cy3 + yb); }
+          py3 = yb;
+        }
+        return;
+      }
+      case "pl_mode": {
+        var md = Math.max(0, Math.min(3, Math.round(Q.val(values, "pl_mode"))));
+        ctx.print(1, top + 2, Q.plModeText[md], 1);
+        /* the voice path, with the Layer joining before or after the filter */
+        var path = ["OSC", "FLT", "AMP"], px4 = 2, y4 = top + 14;
+        for (var pi = 0; pi < 3; pi++) {
+          ctx.print(px4, y4, path[pi], 1);
+          var w4 = Q.tw(ctx, path[pi]);
+          if (pi < 2) Q.dotted(ctx, px4 + w4 + 2, y4 + 3, 10);
+          if ((md < 2 && pi === 0) || (md >= 2 && pi === 1)) {
+            var jx = px4 + w4 + 7;
+            ctx.fillRect(jx, y4 + 4, 1, bh - 16 > 2 ? bh - 16 : 3, 1);
+            ctx.fillRect(jx - 1, y4 + 4, 3, 1, 1);
+          }
+          px4 += w4 + 14;
+        }
+        return;
+      }
+      case "pcm_era": {
+        var er = Math.max(0, Math.min(2, Math.round(Q.val(values, "pcm_era"))));
+        ctx.print(1, top + 1, Q.fit(ctx, Q.eraText[er], W - 2), 1);
+        ctx.print(1, top + 11, ["all zones", "every 2nd zone", "every 3rd zone"][er], 1);
+        Q.plot(ctx, function (t) { return Q.eraWave(er, t); }, 76, top + 9, W - 77, bh - 9, 1);
         return;
       }
       case "an_shape":

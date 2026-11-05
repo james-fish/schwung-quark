@@ -11,6 +11,10 @@
  *                as Drive rises), a sine through it, and PRE / POST / AMP.
  *  custom:qdet   Atmos Detune + Bloom: the notes of a chord as lines that start together and fan out
  *                to their detune offsets over the Bloom time.
+ *  custom:qpcm   PCM Layer (its own cell) and Layer Start + Mode (one group): the Layer set's level
+ *                outline, a bracket over its loop, a Start tick and a Mode glyph (a loop arrow or a
+ *                one-shot bar; boxed for the post-filter modes). Off: a dotted flat line.
+ *  custom:qera   PCM Era: a sine drawn the way that Era reads the ROM (smooth / coarse / stepped).
  *  custom:qflt   Atmos Cutoff + Resonance: the response of the selected Filter Type (read from the
  *                page's values), including the combs' teeth, Dual BP's two bands and Morph's blend.
  *
@@ -112,6 +116,43 @@
     }
   }
 
+  /* the Mode glyph, 7x5 at (x, y): Loop / Air an arrow curling back, Shot / Ping a bar with a stop;
+   * Air / Ping (after the filter) are boxed */
+  function modeGlyph(ctx, x, y, mode) {
+    if (mode === 0 || mode === 2) {
+      ctx.fillRect(x + 1, y, 5, 1, 1); ctx.fillRect(x + 6, y, 1, 4, 1); ctx.fillRect(x + 1, y + 4, 6, 1, 1);
+      ctx.fillRect(x, y + 3, 1, 3, 1); ctx.fillRect(x + 1, y + 4, 1, 1, 1);
+    } else {
+      ctx.fillRect(x, y + 2, 5, 1, 1); ctx.fillRect(x + 6, y, 1, 5, 1);
+    }
+    if (mode >= 2) { Q.dotted(ctx, x - 1, y - 2, 8); Q.dotted(ctx, x - 1, y + 6, 8); }
+  }
+
+  function drawPcm(ctx, o) {
+    var W = ctx.width, H = ctx.height, v = o.values || {};
+    var st = Q.plSet(v), mode = Math.max(0, Math.min(3, Math.round(Q.val(v, "pl_mode"))));
+    var gw = W >= 40 ? 11 : 0;   /* room for the Mode glyph in a wide (grouped) cell */
+    var w = W - gw, h = H - 3;
+    if (!st) { Q.dotted(ctx, 0, Math.floor(h / 2), w); }
+    else {
+      Q.pcmOutline(ctx, st, 0, 0, w, h, w >= 40 ? 2 : 1);
+      if (st.loop) {   /* loop bracket along the top */
+        var lx = Math.round(st.loop[0] * (w - 1));
+        ctx.fillRect(lx, 0, 1, 3, 1); ctx.fillRect(w - 1, 0, 1, 3, 1); ctx.fillRect(lx, 0, w - lx, 1, 1);
+      }
+    }
+    var by = H - 2, sx = st ? Math.round(Q.plStartFrac(st, Q.val(v, "pl_start")) * (w - 1)) : 0;
+    Q.dotted(ctx, 0, by, w);
+    ctx.fillRect(Math.max(0, sx - 1), by - 1, 3, 3, 1);
+    if (gw) modeGlyph(ctx, W - 8, Math.max(2, Math.floor((H - 5) / 2)), mode);
+  }
+
+  function drawEra(ctx, o) {
+    var W = ctx.width, H = ctx.height, v = o.values || {};
+    var era = Math.max(0, Math.min(2, Math.round(Q.val(v, "pcm_era"))));
+    Q.plot(ctx, function (t) { return Q.eraWave(era, t); }, 0, 0, W, H - 1, 1);
+  }
+
   globalThis.canvas_overlay = {
     widgetKinds: {
       "custom:qwave": drawWave,
@@ -119,6 +160,8 @@
       "custom:qdrive": drawDrive,
       "custom:qdet": drawDetune,
       "custom:qflt": drawFilter,
+      "custom:qpcm": drawPcm,
+      "custom:qera": drawEra,
     },
   };
 })();
