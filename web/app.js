@@ -118,12 +118,14 @@
   }
   function on(key, f) { (listeners[key] = listeners[key] || []).push(f); f(vals[key]); }
   function loadPreset(i) {
+    audRelease();
     presetIndex = (i + M.presets.length) % M.presets.length;
     var pv = M.presets[presetIndex].values;
     P.forEach(function (p, j) { vals[p.key] = pv[j]; });
     if (engine) engine.set("preset", presetIndex);
     P.forEach(function (p) { (listeners[p.key] || []).forEach(function (f) { f(vals[p.key]); }); });
     document.getElementById("preset").value = presetIndex;
+    audPreset();
     redrawGraphics();
   }
 
@@ -676,6 +678,9 @@
     if (k === "[") { page = (page - 1 + GRID.length) % GRID.length; return; }
     if (k === "]") { page = (page + 1) % GRID.length; return; }
     if (e.repeat) return;
+    if (k === "1") { rate("ok"); return; }
+    if (k === "2") { rate("fix"); return; }
+    if (k === "n") { audNext(); return; }
     if (k === "z") { octave = Math.max(1, octave - 1); buildPiano(); return; }
     if (k === "x") { octave = Math.min(8, octave + 1); buildPiano(); return; }
     if (k === "c") { vel = Math.max(1, vel - 20); document.getElementById("vel").value = vel; return; }
@@ -783,7 +788,181 @@
     });
     tickMove();
     drawScope();
+    if (frame % 6 === 0) audTick();
     requestAnimationFrame(loop);
+  }
+
+  /* ------------------------------------------------------------------ audition chords + preset review
+   * Every factory preset has an audition chord (web/chords.js). With Auto on, selecting a preset plays its
+   * chord for AUD_S seconds; Tour walks the bank, AUD_S seconds a preset. Mono patches ("line") get the
+   * chord's tones as an 8th-note line at the bench tempo. Ratings (Approve / Fix + tags + a note) are kept
+   * per preset NAME in localStorage, and Export turns them into a text report + JSON. */
+  var AUD_S = 8, AUD_TAIL = 700;
+  var TAGS = ["Too quiet", "Too loud", "Too bright", "Too dark", "Muddy lows", "Thin", "Harsh / fizzy",
+    "Too much reverb", "Too dry", "Attack too slow", "Release too long", "Static", "Too wobbly", "Sour detune",
+    "Clicks / glitches", "Name doesn't fit", "Too like another", "Chord doesn't suit", "Favourite"];
+  var aud = { held: [], timers: [], auto: true, tour: false, paused: false, until: 0, left: 0, step: null };
+  var RKEY = "quark.review.v1", reviews = {};
+  try { reviews = JSON.parse(localStorage.getItem(RKEY) || "{}") || {}; } catch (e) { reviews = {}; }
+  function saveReviews() { try { localStorage.setItem(RKEY, JSON.stringify(reviews)); } catch (e) { /* sandboxed: memory only */ } }
+  function presetName() { return M.presets[presetIndex].name; }
+  function chordFor(i) { return QUARK_CHORDS[M.presets[i].name] || { c: "Cm9", s: "fallback", n: [48, 55, 58, 62, 63] }; }
+  function audLater(f, ms) { aud.timers.push(setTimeout(f, ms)); }
+  function audRelease() {
+    aud.timers.forEach(clearTimeout); aud.timers = [];
+    if (aud.step) { clearInterval(aud.step); aud.step = null; }
+    aud.held.forEach(function (n) { if (!latched[n]) noteOff(n); }); aud.held = [];
+    aud.until = 0;
+    var b = document.getElementById("audplay"); if (b) b.classList.remove("live");
+  }
+  function whenAudio(f) {
+    if (engine) { f(); return; }
+    if (!starting) document.getElementById("power").click();
+    var tries = 0, t = setInterval(function () { if (engine || ++tries > 100) { clearInterval(t); if (engine) setTimeout(f, 150); } }, 50);
+  }
+  function audPlay() {
+    whenAudio(function () {
+      audRelease();
+      var ch = chordFor(presetIndex), ms = AUD_S * 1000;
+      if (ch.m === "line") {
+        var seq = ch.n.concat(ch.n.slice(1, -1).reverse()), i = 0, st = 30000 / (+document.getElementById("bpm").value || 120);
+        var hit = function () {
+          aud.held.forEach(function (n) { if (!latched[n]) noteOff(n); });
+          var n = seq[i++ % seq.length]; aud.held = [n]; noteOn(n);
+          audLater(function () { if (aud.held[0] === n) { noteOff(n); aud.held = []; } }, st * 0.8);
+        };
+        hit(); aud.step = setInterval(hit, st);
+      } else {
+        ch.n.forEach(function (n) { noteOn(n); }); aud.held = ch.n.slice();
+      }
+      document.getElementById("audplay").classList.add("live");
+      aud.until = performance.now() + ms; aud.left = ms;
+      audLater(audEnd, ms);
+    });
+  }
+  function audEnd() {
+    audRelease();
+    if (aud.tour && !aud.paused) audLater(function () {
+      if (presetIndex + 1 >= M.presets.length) { setTour(false); return; }
+      loadPreset(presetIndex + 1);
+    }, AUD_TAIL);
+  }
+  function audPause() {
+    if (!aud.tour || aud.paused) return;
+    aud.paused = true;
+    aud.timers.forEach(clearTimeout); aud.timers = [];   /* the chord keeps sounding */
+    if (aud.step) { clearInterval(aud.step); aud.step = null; aud.held.forEach(function (n) { noteOff(n); }); aud.held = []; }
+  }
+  function audNext() {
+    aud.paused = false;
+    if (presetIndex + 1 >= M.presets.length && aud.tour) { setTour(false); audRelease(); return; }
+    loadPreset(presetIndex + 1);
+    if (!aud.auto && !aud.tour) audPlay();
+  }
+  function setTour(on) {
+    aud.tour = on; aud.paused = false;
+    document.getElementById("audtour").classList.toggle("on", on);
+    document.getElementById("audtour").textContent = on ? "Stop tour" : "Tour 8 s";
+    if (on) audPlay(); else audRelease();
+  }
+  function audPreset() {
+    if (!document.getElementById("audchord")) return;
+    var ch = chordFor(presetIndex);
+    document.getElementById("audchord").textContent = ch.c;
+    document.getElementById("audset").textContent = ch.s + (ch.m === "line" ? " (as a line)" : "");
+    document.getElementById("audplay").title = "Notes: " + ch.n.map(function (n) { return Q.noteName(n); }).join(" ");
+    showReview();
+    if ((aud.auto || aud.tour) && engine) { aud.paused = false; audLater(audPlay, 60); }
+  }
+  function audTick() {
+    var el = document.getElementById("audtime"), t = "";
+    if (aud.tour && aud.paused) t = "paused - Next to go on";
+    else if (aud.until) t = Math.max(0, (aud.until - performance.now()) / 1000).toFixed(0) + " s" + (aud.tour ? "  " + (presetIndex + 1) + "/" + M.presets.length : "");
+    if (el.textContent !== t) el.textContent = t;
+  }
+  function review() { return reviews[presetName()] || (reviews[presetName()] = { r: "", tags: [], note: "" }); }
+  function tidy(nm) { var v = reviews[nm]; if (v && !v.r && !v.tags.length && !v.note) delete reviews[nm]; }
+  function touchReview(v) { v.t = new Date().toISOString(); v.chord = chordFor(presetIndex).c; tidy(presetName()); saveReviews(); showReview(); markOptions(); }
+  function rate(r) {
+    var v = review();
+    v.r = v.r === r ? "" : r;
+    touchReview(v);
+    if (aud.tour && v.r === "ok") audNext();
+    else if (aud.tour && v.r === "fix") audPause();
+  }
+  function showReview() {
+    var v = reviews[presetName()] || { r: "", tags: [], note: "" };
+    document.getElementById("rok").classList.toggle("sel", v.r === "ok");
+    document.getElementById("rfix").classList.toggle("sel", v.r === "fix");
+    Array.prototype.forEach.call(document.getElementById("rtags").children, function (b) { b.classList.toggle("sel", v.tags.indexOf(b.textContent) >= 0); });
+    var note = document.getElementById("rnote"); if (document.activeElement !== note) note.value = v.note || "";
+    var names = Object.keys(reviews), ok = 0, fix = 0;
+    names.forEach(function (k) { if (reviews[k].r === "ok") ok++; else if (reviews[k].r === "fix") fix++; });
+    document.getElementById("rprog").textContent = (ok + fix) + "/" + M.presets.length + " rated - " + ok + " ok, " + fix + " fix";
+  }
+  function markOptions() {
+    var sel = document.getElementById("preset");
+    M.presets.forEach(function (p, i) {
+      var v = reviews[p.name], m = v && v.r === "ok" ? "✓ " : v && v.r === "fix" ? "✗ " : "";
+      sel.options[i].textContent = (i + 1) + "  " + m + p.name;
+    });
+  }
+  function report() {
+    var lines = [], ok = 0, fix = 0, open = 0;
+    M.presets.forEach(function (p, i) {
+      var v = reviews[p.name]; if (!v) { open++; return; }
+      if (v.r === "ok") ok++; else if (v.r === "fix") fix++; else open++;
+      lines.push((v.r === "ok" ? "OK " : v.r === "fix" ? "FIX" : "-  ") + "  " + (i + 1) + " " + p.name +
+        (v.tags.length ? "  [" + v.tags.join(", ") + "]" : "") + (v.note ? "  - " + v.note : "") + "  (" + (v.chord || chordFor(i).c) + ")");
+    });
+    var head = "Quark preset review " + new Date().toISOString().slice(0, 10) + ": " + ok + " ok, " + fix + " fix, " + open + " not rated";
+    var fixes = lines.filter(function (l) { return l.indexOf("FIX") === 0; }), rest = lines.filter(function (l) { return l.indexOf("FIX") !== 0; });
+    return head + "\n\n" + fixes.concat(fixes.length && rest.length ? [""] : [], rest).join("\n") + "\n";
+  }
+  function buildAudition() {
+    var tg = document.getElementById("rtags");
+    TAGS.forEach(function (t) {
+      var b = document.createElement("button"); b.textContent = t;
+      if (t === "Favourite") b.className = "good";
+      b.onclick = function () {
+        var v = review(), j = v.tags.indexOf(t);
+        if (j >= 0) v.tags.splice(j, 1); else { v.tags.push(t); if (!v.r) v.r = t === "Favourite" ? "ok" : "fix"; }
+        if (aud.tour && v.r === "fix") audPause();
+        touchReview(v);
+      };
+      tg.appendChild(b);
+    });
+    var note = document.getElementById("rnote");
+    note.oninput = function () { var v = review(); v.note = note.value; touchReview(v); };
+    note.onfocus = audPause;
+    note.onkeydown = function (e) { if (e.key === "Enter") note.blur(); };
+    document.getElementById("rok").onclick = function () { rate("ok"); };
+    document.getElementById("rfix").onclick = function () { rate("fix"); };
+    document.getElementById("audplay").onclick = function () { aud.paused = false; audPlay(); };
+    document.getElementById("audauto").onclick = function () { aud.auto = !aud.auto; this.classList.toggle("on", aud.auto); };
+    document.getElementById("audtour").onclick = function () { setTour(!aud.tour); };
+    document.getElementById("audnext").onclick = audNext;
+    var dlg = document.getElementById("rdlg");
+    document.getElementById("rexport").onclick = function () {
+      document.getElementById("rtext").value = report(); document.getElementById("rcopied").textContent = "";
+      if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+    };
+    document.getElementById("rclose").onclick = function () { if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); };
+    document.getElementById("rcopy").onclick = function () {
+      var ta = document.getElementById("rtext"), done = function () { document.getElementById("rcopied").textContent = "copied"; };
+      if (navigator.clipboard) navigator.clipboard.writeText(ta.value).then(done, function () { ta.select(); document.execCommand("copy"); done(); });
+      else { ta.select(); document.execCommand("copy"); done(); }
+    };
+    document.getElementById("rdl").onclick = function () {
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(reviews, null, 1)], { type: "application/json" }));
+      a.download = "quark-review-" + new Date().toISOString().slice(0, 10) + ".json"; a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    };
+    document.getElementById("rclear").onclick = function () {
+      if (!Object.keys(reviews).length || !confirm("Clear every rating, tag and note?")) return;
+      reviews = {}; saveReviews(); showReview(); markOptions();
+    };
   }
 
   /* ------------------------------------------------------------------ boot */
@@ -797,6 +976,7 @@
     var sel = document.getElementById("preset");
     M.presets.forEach(function (p, i) { var o = document.createElement("option"); o.value = i; o.textContent = (i + 1) + "  " + p.name; sel.appendChild(o); });
     sel.onchange = function () { loadPreset(+sel.value); };
+    markOptions();
     document.getElementById("pprev").onclick = function () { loadPreset(presetIndex - 1); };
     document.getElementById("pnext").onclick = function () { loadPreset(presetIndex + 1); };
     document.getElementById("power").onclick = async function () {
@@ -830,6 +1010,7 @@
     document.getElementById("bpm").onchange = function () { if (engine) engine.tempo(+this.value || 120, running); };
     document.getElementById("run").onclick = function () { running = !running; this.classList.toggle("on", running); if (engine) engine.tempo(+document.getElementById("bpm").value || 120, running); };
     document.getElementById("load").onclick = measureCpu;
+    buildAudition();
     buildTabs();
     buildMove();
     buildPiano();

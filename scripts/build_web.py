@@ -26,6 +26,7 @@ def main():
         read("build", "ui", "cards.js"),
         "var QUARK_WORKLET = " + json.dumps(read("web", "worklet.js")) + ";",
         'var QUARK_WASM_B64 = "' + wasm + '";',
+        read("web", "chords.js"),
         read("web", "app.js"),
     ])
     assert "</script" not in scripts.replace("<\\/script", ""), "a script contains </script>"

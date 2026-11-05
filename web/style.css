@@ -108,6 +108,25 @@ button.big { min-height: 32px; }
 .piano .w.latched::after, .piano .b.latched::after { content: ""; position: absolute; left: 50%; bottom: 18px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: var(--red); }
 .piano .b.latched::after { background: #fff; bottom: 8px; }
 
+/* ---- audition chords + preset review ---- */
+.aud { padding: 8px 18px; background: #222327; border-bottom: 1px solid #000; display: flex; flex-direction: column; gap: 6px; }
+.audrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+#audplay b { color: var(--oled); letter-spacing: 1px; }
+#audplay.live .tri { color: var(--red); }
+#audtour.on { background: var(--beige); border-color: var(--beige); color: #111; }
+.audtime { color: var(--beige); min-width: 120px; font-size: 12px; }
+.audsep { width: 1px; align-self: stretch; background: #44454b; }
+.rate.ok.sel { background: #4f8a5b; border-color: #4f8a5b; color: #fff; }
+.rate.fix.sel { background: var(--red); border-color: var(--red); color: #fff; }
+.tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.tags button { font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+.tags button.sel { background: var(--beige); border-color: var(--beige); color: #111; }
+.tags button.good.sel { background: #4f8a5b; border-color: #4f8a5b; color: #fff; }
+#rnote { flex: 1 1 220px; min-width: 180px; background: #1d1e21; color: var(--ink); border: 1px solid #55565c; border-radius: 4px; padding: 4px 8px; font: inherit; }
+#rdlg { background: var(--panel); color: var(--ink); border: 1px solid #000; border-radius: 10px; width: min(760px, 94vw); }
+#rdlg::backdrop { background: rgba(0, 0, 0, 0.6); }
+#rtext { width: 100%; height: 50vh; background: #1d1e21; color: var(--ink); border: 1px solid #55565c; border-radius: 4px; font: 12px/1.4 Menlo, monospace; margin: 8px 0; }
+
 /* ---- phones and small tablets ---- */
 @media (max-width: 900px) {
   body { font-size: 14px; padding-bottom: env(safe-area-inset-bottom); }
