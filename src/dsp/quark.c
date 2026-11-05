@@ -86,10 +86,12 @@ static int user_of(const QInstance *q, int layer) {
     return v >= b && v < b + q->uw_n ? v - b : -1;
 }
 
-/* state: {"v":2,"preset":3,"p":{"tx_type":0,...},"tx_user":"name","ln_user":"name"}. A user table is
- * saved by name, so the patch finds it again when the folder changes. */
+/* state: {"v":3,"preset":3,"pname":"Name","p":{"tx_type":0,...},"tx_user":"name","ln_user":"name"}. A
+ * user table is saved by name, so the patch finds it again when the folder changes; so is the preset,
+ * so a reordered bank still shows the right name. */
 static int state_get(QInstance *q, char *buf, int len) {
-    int pos = snprintf(buf, (size_t)len, "{\"v\":2,\"preset\":%d,\"p\":{", q->preset);
+    int pos = snprintf(buf, (size_t)len, "{\"v\":3,\"preset\":%d,\"pname\":\"%s\",\"p\":{", q->preset,
+                       quark_preset_names[q->preset]);
     if (pos < 0 || pos >= len) return -1;
     for (int i = 0; i < P_COUNT; i++) {
         char tmp[48];
@@ -123,7 +125,21 @@ static void state_set(QInstance *q, const char *js) {
     const char *pp = strstr(js, "\"preset\"");
     if (pp) {
         pp = strchr(pp, ':');
-        if (pp) q->preset = q_clampi(atoi(pp + 1), 0, quark_preset_count - 1);
+        if (pp) {
+            int idx = atoi(pp + 1);
+            /* 0.4 (v2 and older) saved the index into the 0.4 bank */
+            if (ver < 3 && idx >= 0 && idx < quark_preset_legacy_count) idx = quark_preset_legacy[idx];
+            q->preset = q_clampi(idx, 0, quark_preset_count - 1);
+        }
+    }
+    const char *pn = strstr(js, "\"pname\"");
+    if (pn && (pn = strchr(pn + 7, '"'))) {
+        const char *pe = strchr(++pn, '"');
+        for (int k = 0; pe && k < quark_preset_count; k++)
+            if ((size_t)(pe - pn) == strlen(quark_preset_names[k]) && !strncmp(pn, quark_preset_names[k], (size_t)(pe - pn))) {
+                q->preset = k;
+                break;
+            }
     }
     const char *s = strstr(js, "\"p\"");
     s = s ? strchr(s, '{') : js;

@@ -39,6 +39,19 @@ static void midi(plugin_api_v2_t *api, void *in, int s, int d1, int d2) {
     api->on_midi(in, m, 3, 0);
 }
 
+/* select a factory preset by name (the bank is ordered for browsing, so indices move) */
+static void preset_named(plugin_api_v2_t *api, void *in, const char *name) {
+    for (int k = 0; k < quark_preset_count; k++)
+        if (strcmp(quark_preset_names[k], name) == 0) {
+            char v[16];
+            snprintf(v, sizeof v, "%d", k);
+            api->set_param(in, "preset", v);
+            return;
+        }
+    fprintf(stderr, "no preset %s\n", name);
+    exit(1);
+}
+
 static double now_s(void) {
     struct timespec t;
     clock_gettime(CLOCK_MONOTONIC, &t);
@@ -172,7 +185,7 @@ int main(int argc, char **argv) {
     }
 
     /* state round trip */
-    api->set_param(in, "preset", "7");
+    preset_named(api, in, "Shimmer Glass");
     int sl = api->get_param(in, "state", buf, sizeof buf);
     CHECK(sl > 100, "state get");
     static char buf2[65536];
@@ -197,6 +210,14 @@ int main(int argc, char **argv) {
         api->set_param(in, "state", "{\"v\":1,\"preset\":0,\"p\":{\"key_mode\":1}}");
         api->get_param(in, "key_mode", km, sizeof km);
         CHECK(atoi(km) == 1, "v1 state: Split stays Mono Low (got %s)", km);
+        /* a 0.4 state's preset index points into the 0.4 bank (21 was Sync Arp); v3 names it */
+        char pn[64];
+        api->set_param(in, "state", "{\"v\":2,\"preset\":21,\"p\":{}}");
+        api->get_param(in, "preset_name", pn, sizeof pn);
+        CHECK(strcmp(pn, "Sync Arp") == 0, "v2 state: preset index mapped to the reordered bank (got %s)", pn);
+        api->set_param(in, "state", "{\"v\":3,\"preset\":0,\"pname\":\"Acid Line\",\"p\":{}}");
+        api->get_param(in, "preset_name", pn, sizeof pn);
+        CHECK(strcmp(pn, "Acid Line") == 0, "v3 state: preset found by name (got %s)", pn);
     }
 
     /* enums by option name: names that read as numbers must not be taken as the index */
@@ -263,7 +284,7 @@ int main(int argc, char **argv) {
 
     /* arp smoke test: runs, makes sound, stops when keys are released */
     api->set_param(in, "all_notes_off", "1");
-    api->set_param(in, "preset", "21");
+    preset_named(api, in, "Sync Arp");
     for (int i = 0; i < 3; i++) midi(api, in, 0x90, 60 + 4 * i, 100);
     double apk = 0.0;
     for (int f = 0; f < 44100 * 2; f += 128) {
@@ -324,7 +345,7 @@ int main(int argc, char **argv) {
     for (int dp = 0; dp < 3; dp++) {
         char v[8];
         api->set_param(in, "all_notes_off", "1");
-        api->set_param(in, "preset", "8");
+        preset_named(api, in, "Poly Saw Pad");
         api->set_param(in, "tx_drive", "1");
         snprintf(v, sizeof v, "%d", dp);
         api->set_param(in, "tx_drvpos", v);
@@ -342,7 +363,7 @@ int main(int argc, char **argv) {
 
     /* pads latch + the arp following the pad chord */
     midi(api, in, 0xB0, 120, 0);
-    api->set_param(in, "preset", "26");   /* Chord Pluck Arp: keys -> Pads only, arp source = Pads chord */
+    preset_named(api, in, "Chord Pluck Arp");   /* Chord Pluck Arp: keys -> Pads only, arp source = Pads chord */
     api->set_param(in, "tx_latch", "1");
     int c1[3] = {60, 64, 67}, c2[3] = {62, 65, 69};
     for (int i = 0; i < 3; i++) midi(api, in, 0x90, c1[i], 100);
@@ -377,7 +398,7 @@ int main(int argc, char **argv) {
         for (int mode = 1; mode <= 10; mode++) {
             char v[8], seq[256] = "", last[64] = "";
             midi(api, in, 0xB0, 120, 0);
-            api->set_param(in, "preset", "26");
+            preset_named(api, in, "Chord Pluck Arp");
             api->set_param(in, "arp_drop", "0");
             api->set_param(in, "arp_vrnd", "0");
             api->set_param(in, "arp_rhy", "0");
@@ -408,7 +429,7 @@ int main(int argc, char **argv) {
         }
         /* Drop 100%: nothing plays; Drop 0: plays */
         midi(api, in, 0xB0, 120, 0);
-        api->set_param(in, "preset", "26");
+        preset_named(api, in, "Chord Pluck Arp");
         api->set_param(in, "arp_drop", "1");
         for (int i = 0; i < 3; i++) midi(api, in, 0x90, 60 + 4 * i, 100);
         int any = 0;
@@ -1167,7 +1188,7 @@ int main(int argc, char **argv) {
             static char st[65536];
             api->get_param(u, "state", st, sizeof st);
             CHECK(strstr(st, "\"tx_user\":\"Test Saw Sine\"") && strstr(st, "\"ln_user\":\"single\""), "state names the user tables");
-            api->set_param(u, "preset", "3");
+            preset_named(api, u, "Vintage Dream");
             api->set_param(u, "state", st);
             api->get_param(u, "tx_type", tv, sizeof tv);
             CHECK(atoi(tv) == Q_NUM_TEX_BUILTIN + 1, "user table restored by name (got %s)", tv);
@@ -1189,7 +1210,7 @@ int main(int argc, char **argv) {
                 if (at) {
                     size_t pre = (size_t)(at - st);
                     snprintf(old, sizeof old, "%.*s%s%s", (int)pre, st, from, at + strlen(want));
-                    api->set_param(u, "preset", "3");
+                    preset_named(api, u, "Vintage Dream");
                     api->set_param(u, "state", old);
                     api->get_param(u, "tx_type", tv, sizeof tv);
                     okp = atoi(tv) == Q_NUM_TEX_BUILTIN + 1;

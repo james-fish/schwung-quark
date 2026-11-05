@@ -253,6 +253,10 @@ Proposed (Claude Code: refine this into a short UI spec, show me it, then build)
 5. **Content + presets** — the §2.3 waves, then ~10 presets aimed at 90s ambient / liquid DnB
    (long attack, LP24 slow sweep, Ensemble Deep, shimmer +12, Vintage ~0.3, Bloom on).
    Original names only.
+   Bank audit (done 2026-11-05): 75 -> 88 presets, browsing order by sound (`BANK` in gen.py; states
+   save the preset name, 0.4 indices map through `quark_preset_legacy`); every filter, effect, LFO
+   mode and Key Mode now used; 23 presets give the wheel a job; levels trimmed by
+   `tools/level_presets.py` (spread 21 dB -> 7 dB).
 6. **User samples** — §2.4, `smpl` parsing, worker thread, name-based state.
 7. **Web + docs** — wasm build (check `--initial-memory`/`--max-memory` headroom), browser UI meta,
    README section "Your Own Samples", `help.json`, version bump, `THIRD_PARTY_NOTICES.md` if CC0 used.

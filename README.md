@@ -21,7 +21,7 @@ Whether you're after classic string-machine swells, 90s rompler chord stabs, gla
 - 🎼 **Chord-following arp** — Melody can arpeggiate whatever the Atmos are holding, with 10 types, 40 patterns, 40 rhythms and smart randomisation.
 - 🌌 **FX** — chorus, flanger, phaser, tremolo, drive, delays and tape echo, plus a shimmer reverb that can freeze.
 - 📼 **Vintage** — one knob of analog-style drift for pitch, filter, envelopes and level.
-- 💾 **57 factory presets** to get you started — a quarter of them pair the Atmos with a matching Melody part.
+- 💾 **88 factory presets**, grouped by sound (pads, voices, chords, keys, bells, arps, splits, bass and lead, drones) — a quarter of them pair the Atmos with a matching Melody part.
 
 ---
 

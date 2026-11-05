@@ -114,6 +114,8 @@ extern const int quark_preset_count;
 extern const char *const quark_preset_names[];
 extern const float quark_presets[][P_COUNT];
 extern const char quark_chain_params[];
+extern const int quark_preset_legacy_count;
+extern const unsigned char quark_preset_legacy[];
 extern const char quark_ui_hierarchy[];
 
 #define Q_NUM_TEX_TYPES 117
